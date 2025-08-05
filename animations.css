@@ -3,23 +3,25 @@
 /* ===== 3D ЗАГРУЗКА ЗАПЧАСТЕЙ ===== */
 .engine-assembly {
     position: relative;
-    width: 120px;
-    height: 120px;
+    width: 200px;
+    height: 200px;
     margin: 0 auto var(--spacing-lg);
-    perspective: 1200px;
+    perspective: 1500px;
     transform-style: preserve-3d;
+    animation: engineRotate 10s infinite linear;
 }
 
 .part {
     position: absolute;
-    width: 60px;
-    height: 60px;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
-    border-radius: 12px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #3498db, #2c3e50);
+    border-radius: 15px;
+    border: 3px solid rgba(52, 152, 219, 0.5);
     transform-style: preserve-3d;
-    animation: partFloat 3s ease-in-out infinite;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    animation: partFloat 4s ease-in-out infinite;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(5px);
 }
 
 .part::before {
@@ -62,23 +64,52 @@
     transform: translateZ(60px);
 }
 
+@keyframes engineRotate {
+    from { transform: rotateY(0deg) rotateX(20deg); }
+    to { transform: rotateY(360deg) rotateX(20deg); }
+}
+
 @keyframes partFloat {
     0%, 100% {
-        transform: translateY(0px) rotateY(0deg) translateZ(0px);
-        opacity: 0.8;
+        transform: translateY(0px) rotateY(0deg) translateZ(50px);
+        opacity: 1;
     }
     25% {
-        transform: translateY(-15px) rotateY(90deg) translateZ(30px);
-        opacity: 1;
-    }
-    50% {
-        transform: translateY(-5px) rotateY(180deg) translateZ(60px);
+        transform: translateY(-30px) rotateY(90deg) translateZ(80px);
         opacity: 0.9;
     }
-    75% {
-        transform: translateY(-20px) rotateY(270deg) translateZ(30px);
-        opacity: 1;
+    50% {
+        transform: translateY(-10px) rotateY(180deg) translateZ(100px);
+        opacity: 0.8;
     }
+    75% {
+        transform: translateY(-40px) rotateY(270deg) translateZ(80px);
+        opacity: 0.9;
+    }
+}
+
+/* ===== АНИМАЦИИ КНОПОК ===== */
+@keyframes buttonPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+@keyframes buttonClick {
+    0% { transform: scale(1); }
+    50% { transform: scale(0.95); }
+    100% { transform: scale(1); }
+}
+
+.nav-btn:active,
+.action-btn:active,
+.category-card:active {
+    animation: buttonClick 0.2s ease-in-out;
+}
+
+.nav-btn:hover,
+.action-btn:hover {
+    animation: buttonPulse 1s infinite;
 }
 
 /* ===== АНИМАЦИИ ПОЯВЛЕНИЯ ===== */

@@ -36,9 +36,15 @@ class AutoPartsApp {
     setupLoadingScreen() {
         const loadingScreen = document.querySelector('.loading-screen');
         const progressBar = document.querySelector('.loading-progress-bar');
+        const app = document.getElementById('app');
         
         if (loadingScreen) {
+            loadingScreen.style.display = 'flex';
             loadingScreen.classList.remove('hidden');
+        }
+        
+        if (app) {
+            app.style.display = 'none';
         }
         
         if (progressBar) {
@@ -206,12 +212,19 @@ class AutoPartsApp {
     hideLoadingScreen() {
         try {
             const loadingScreen = document.querySelector('.loading-screen');
+            const app = document.getElementById('app');
+            
             if (loadingScreen) {
                 loadingScreen.classList.add('hidden');
                 setTimeout(() => {
                     loadingScreen.style.display = 'none';
-                }, 500);
+                    if (app) {
+                        app.style.display = 'block';
+                        app.classList.add('fade-in');
+                    }
+                }, 1000);
             }
+            
             this.isLoading = false;
         } catch (error) {
             console.error('Ошибка скрытия экрана загрузки:', error);

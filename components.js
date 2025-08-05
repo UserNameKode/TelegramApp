@@ -65,12 +65,15 @@ class UIComponents {
         const categoriesContainer = document.querySelector('.categories-grid');
         if (!categoriesContainer) return;
 
-        const categories = window.categories || [];
+        const categories = Object.values(window.categories || {});
         categoriesContainer.innerHTML = categories.map(category => `
             <div class="category-card" data-category="${category.id}">
                 <div class="category-icon">${category.icon}</div>
                 <h3>${category.name}</h3>
                 <p>${category.description}</p>
+                <div class="category-stats">
+                    <span class="category-count">${window.products[category.id]?.length || 0} товаров</span>
+                </div>
             </div>
         `).join('');
     }
@@ -671,7 +674,10 @@ class UIComponents {
     // ===== ОБРАБОТЧИКИ СОБЫТИЙ =====
     setupEventListeners() {
         document.addEventListener('click', (e) => {
-            console.log('Click event:', e.target);
+            const target = e.target.closest('[data-action], [data-category], [data-product-id], .btn-back, .nav-btn');
+            if (!target) return;
+            
+            console.log('Click event:', target);
             
             // Навигация по категориям
             if (e.target.closest('.category-card')) {

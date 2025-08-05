@@ -1,11 +1,11 @@
 /* ===== ОСНОВНЫЕ СТИЛИ ===== */
 :root {
-    /* Цветовая палитра - светлая тема */
-    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-    --success-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-    --warning-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    /* Цветовая палитра - автомобильная тема */
+    --primary-gradient: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+    --secondary-gradient: linear-gradient(135deg, #2980b9 0%, #2c3e50 100%);
+    --accent-gradient: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    --success-gradient: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+    --warning-gradient: linear-gradient(135deg, #f39c12 0%, #f1c40f 100%);
     
     /* Фоновые цвета */
     --bg-primary: #ffffff;
@@ -1264,12 +1264,22 @@ body {
 .visible { display: block !important; }
 
 .fade-in {
-    animation: fadeIn 0.5s ease;
+    animation: fadeIn 0.8s ease-out;
+    opacity: 0;
+    animation-fill-mode: forwards;
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    0% {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+        filter: blur(10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+    }
 }
 
 .slide-up {
