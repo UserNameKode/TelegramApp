@@ -9,9 +9,14 @@ class UIComponents {
     }
 
     init() {
-        this.loadCartFromStorage();
-        this.setupEventListeners();
-        this.updateCartBadge();
+        try {
+            this.loadCartFromStorage();
+            this.setupEventListeners();
+            this.updateCartBadge();
+            console.log('UI компоненты инициализированы');
+        } catch (error) {
+            console.error('Ошибка инициализации UI компонентов:', error);
+        }
     }
 
     // Загрузка корзины из localStorage

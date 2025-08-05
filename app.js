@@ -399,15 +399,73 @@ class AutoPartsApp {
     }
 }
 
-// Создание экземпляра приложения
-const app = new AutoPartsApp();
-
-// Экспорт для использования в других модулях
-window.app = app;
+// Функция инициализации приложения
+function initializeApp() {
+    try {
+        // Проверяем, что все необходимые модули загружены
+        if (typeof DataService === 'undefined') {
+            console.error('DataService не загружен');
+            return;
+        }
+        
+        if (typeof telegramAPI === 'undefined') {
+            console.error('telegramAPI не загружен');
+            return;
+        }
+        
+        if (typeof uiComponents === 'undefined') {
+            console.error('uiComponents не загружен');
+            return;
+        }
+        
+        if (typeof performanceOptimizer === 'undefined') {
+            console.error('performanceOptimizer не загружен');
+            return;
+        }
+        
+        // Создание экземпляра приложения
+        const app = new AutoPartsApp();
+        
+        // Экспорт для использования в других модулях
+        window.app = app;
+        
+        console.log('Приложение "АвтоЗапчасти" успешно инициализировано');
+        
+    } catch (error) {
+        console.error('Ошибка инициализации приложения:', error);
+        
+        // Показываем ошибку пользователю
+        const loadingScreen = document.getElementById('loading-screen');
+        if (loadingScreen) {
+            loadingScreen.innerHTML = `
+                <div class="loading-container">
+                    <div style="text-align: center; color: #ff6b6b;">
+                        <h2>Произошла ошибка</h2>
+                        <p>Не удалось загрузить приложение</p>
+                        <button onclick="location.reload()" style="
+                            background: #ff6b6b;
+                            color: white;
+                            border: none;
+                            padding: 10px 20px;
+                            border-radius: 8px;
+                            cursor: pointer;
+                            margin-top: 20px;
+                        ">Перезагрузить</button>
+                    </div>
+                </div>
+            `;
+        }
+    }
+}
 
 // Глобальные обработчики
 window.addEventListener('load', () => {
-    console.log('Приложение "АвтоЗапчасти" загружено');
+    console.log('Страница загружена, инициализация приложения...');
+    
+    // Даем время всем скриптам загрузиться
+    setTimeout(() => {
+        initializeApp();
+    }, 100);
 });
 
 // Обработка ошибок загрузки ресурсов

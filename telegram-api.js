@@ -7,12 +7,18 @@ class TelegramAPI {
     }
 
     init() {
-        // Проверяем, запущено ли приложение в Telegram
-        if (window.Telegram && window.Telegram.WebApp) {
-            this.webApp = window.Telegram.WebApp;
-            this.setupTelegram();
-        } else {
-            // Демо-режим для тестирования вне Telegram
+        try {
+            // Проверяем, запущено ли приложение в Telegram
+            if (window.Telegram && window.Telegram.WebApp) {
+                this.webApp = window.Telegram.WebApp;
+                this.setupTelegram();
+            } else {
+                // Демо-режим для тестирования вне Telegram
+                this.setupDemoMode();
+            }
+            console.log('Telegram API инициализирован');
+        } catch (error) {
+            console.error('Ошибка инициализации Telegram API:', error);
             this.setupDemoMode();
         }
     }
