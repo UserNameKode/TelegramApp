@@ -113,7 +113,8 @@ class PerformanceOptimizer {
         if ('performance' in window) {
             // Мониторинг времени загрузки
             window.addEventListener('load', () => {
-                const loadTime = performance.timing.loadEventEnd - performance.timing.navigationStart;
+                const navigation = performance.getEntriesByType('navigation')[0];
+                const loadTime = navigation ? navigation.loadEventEnd - navigation.loadEventStart : 0;
                 console.log(`Время загрузки страницы: ${loadTime}ms`);
                 
                 // Отправляем метрики

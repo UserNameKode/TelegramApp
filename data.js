@@ -60,6 +60,26 @@ const products = {
             inStock: true,
             icon: 'belt',
             image: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=300&h=300&fit=crop&crop=center'
+        },
+        {
+            id: 'engine_004',
+            name: 'Свечи зажигания',
+            description: 'Иридиевые свечи зажигания для оптимальной работы двигателя',
+            price: 1800,
+            brand: 'NGK',
+            inStock: true,
+            icon: 'spark',
+            image: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=300&h=300&fit=crop&crop=center'
+        },
+        {
+            id: 'engine_005',
+            name: 'Топливный насос',
+            description: 'Электрический топливный насос высокого давления',
+            price: 4500,
+            brand: 'Bosch',
+            inStock: true,
+            icon: 'pump',
+            image: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=300&h=300&fit=crop&crop=center'
         }
     ],
     brakes: [
@@ -168,6 +188,12 @@ const orderHistory = [
 
 // Сервис для работы с данными
 const DataService = {
+    // Инициализация сервиса
+    init() {
+        console.log('DataService инициализирован');
+        return Promise.resolve();
+    },
+
     // Получение категорий
     getCategories() {
         return Object.values(categories);

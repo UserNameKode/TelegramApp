@@ -65,8 +65,10 @@ class AutoPartsApp {
                 } catch (error) {
                     console.error(`Ошибка инициализации модуля ${name}:`, error);
                 }
+            } else if (module) {
+                console.log(`Модуль ${name} загружен (без init метода)`);
             } else {
-                console.warn(`Модуль ${name} не найден или не имеет метода init`);
+                console.warn(`Модуль ${name} не найден`);
             }
         }
 

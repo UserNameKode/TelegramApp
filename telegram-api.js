@@ -129,14 +129,18 @@ class TelegramAPI {
 
     // Показать кнопку назад
     showBackButton() {
-        this.webApp.BackButton.show();
-        this.webApp.BackButton.isVisible = true;
+        if (this.webApp.BackButton && this.webApp.BackButton.show) {
+            this.webApp.BackButton.show();
+            this.webApp.BackButton.isVisible = true;
+        }
     }
 
     // Скрыть кнопку назад
     hideBackButton() {
-        this.webApp.BackButton.hide();
-        this.webApp.BackButton.isVisible = false;
+        if (this.webApp.BackButton && this.webApp.BackButton.hide) {
+            this.webApp.BackButton.hide();
+            this.webApp.BackButton.isVisible = false;
+        }
     }
 
     // Обработка кнопки назад
