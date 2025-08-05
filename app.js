@@ -12,17 +12,32 @@ class AutoPartsApp {
         try {
             console.log('Инициализация приложения AutoParts...');
             
+            // Показываем экран загрузки
+            const loadingScreen = document.getElementById('loading-screen');
+            const app = document.getElementById('app');
+            
+            if (loadingScreen && app) {
+                loadingScreen.style.display = 'flex';
+                app.style.display = 'none';
+            }
+            
             // Настройка экрана загрузки
             this.setupLoadingScreen();
             
             // Инициализация модулей
             await this.initializeModules();
+            console.log('Модули инициализированы');
             
             // Настройка приложения
             this.setupApp();
+            console.log('Приложение настроено');
             
-            // Скрытие экрана загрузки
-            this.hideLoadingScreen();
+            // Показываем приложение
+            if (loadingScreen && app) {
+                loadingScreen.style.display = 'none';
+                app.style.display = 'block';
+                app.classList.add('fade-in');
+            }
             
             this.isInitialized = true;
             console.log('Приложение успешно инициализировано');
@@ -30,6 +45,18 @@ class AutoPartsApp {
         } catch (error) {
             console.error('Ошибка инициализации приложения:', error);
             this.handleError(error);
+            
+            // Показываем ошибку на экране загрузки
+            const loadingScreen = document.getElementById('loading-screen');
+            if (loadingScreen) {
+                loadingScreen.innerHTML = `
+                    <div class="error-message">
+                        <h2>Ошибка загрузки</h2>
+                        <p>Пожалуйста, обновите страницу</p>
+                        <p class="error-details">${error.message}</p>
+                    </div>
+                `;
+            }
         }
     }
 
