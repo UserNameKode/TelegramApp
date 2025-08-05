@@ -1,213 +1,107 @@
-// UI компоненты для Telegram MiniApp
+// ===== КОМПОНЕНТЫ UI ДЛЯ TELEGRAM MINIAPP =====
 
 class UIComponents {
     constructor() {
-        this.cart = [];
         this.currentScreen = 'home';
-        this.screenHistory = [];
+        this.cart = this.loadCart();
+        this.favorites = this.loadFavorites();
         this.init();
     }
 
     init() {
         try {
-            this.loadCartFromStorage();
+            console.log('Инициализация UI компонентов...');
             this.setupEventListeners();
             this.updateCartBadge();
+            this.updateFavoritesBadge();
             console.log('UI компоненты инициализированы');
         } catch (error) {
             console.error('Ошибка инициализации UI компонентов:', error);
         }
     }
 
-    // Загрузка корзины из localStorage
-    loadCartFromStorage() {
-        const savedCart = localStorage.getItem('autoparts_cart');
-        if (savedCart) {
-            this.cart = JSON.parse(savedCart);
-        }
-    }
-
-    // Сохранение корзины в localStorage
-    saveCartToStorage() {
-        localStorage.setItem('autoparts_cart', JSON.stringify(this.cart));
-    }
-
-    // Обновление счетчика корзины
-    updateCartBadge() {
-        const cartCount = document.getElementById('cart-count');
-        if (cartCount) {
-            const totalItems = this.cart.reduce((sum, item) => sum + item.quantity, 0);
-            cartCount.textContent = totalItems;
-            cartCount.style.display = totalItems > 0 ? 'flex' : 'none';
-        }
-    }
-
-    // Добавление товара в корзину
-    addToCart(productId) {
-        const product = DataService.getProduct(productId);
-        if (!product) return;
-
-        const existingItem = this.cart.find(item => item.id === productId);
-        if (existingItem) {
-            existingItem.quantity += 1;
-        } else {
-            this.cart.push({
-                ...product,
-                quantity: 1
-            });
-        }
-
-        this.saveCartToStorage();
-        this.updateCartBadge();
-        this.showNotification('Товар добавлен в корзину');
-    }
-
-    // Удаление товара из корзины
-    removeFromCart(productId) {
-        this.cart = this.cart.filter(item => item.id !== productId);
-        this.saveCartToStorage();
-        this.updateCartBadge();
-        this.updateCartDisplay();
-        this.showNotification('Товар удален из корзины');
-    }
-
-    // Обновление количества товара
-    updateQuantity(productId, quantity) {
-        const item = this.cart.find(item => item.id === productId);
-        if (item) {
-            if (quantity <= 0) {
-                this.removeFromCart(productId);
-            } else {
-                item.quantity = quantity;
-                this.saveCartToStorage();
-                this.updateCartBadge();
-                this.updateCartDisplay();
-            }
-        }
-    }
-
-    // Показать уведомление
-    showNotification(message, type = 'success') {
-        // Создаем уведомление
-        const notification = document.createElement('div');
-        notification.className = `notification ${type}`;
-        notification.textContent = message;
-        notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: ${type === 'success' ? '#00ff88' : '#ff4757'};
-            color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
-            z-index: 10000;
-            animation: slideIn 0.3s ease;
-        `;
-
-        document.body.appendChild(notification);
-
-        // Удаляем через 3 секунды
-        setTimeout(() => {
-            notification.style.animation = 'slideOut 0.3s ease';
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.parentNode.removeChild(notification);
-                }
-            }, 300);
-        }, 3000);
-    }
-
-    // Переключение экранов
-    showScreen(screenId) {
+    // ===== УПРАВЛЕНИЕ ЭКРАНАМИ =====
+    showScreen(screenName) {
+        console.log('Переключение на экран:', screenName);
+        
         // Скрываем все экраны
         const screens = document.querySelectorAll('.screen');
-        screens.forEach(screen => screen.classList.remove('active'));
+        screens.forEach(screen => {
+            screen.classList.remove('active');
+        });
 
         // Показываем нужный экран
-        const targetScreen = document.getElementById(screenId);
+        const targetScreen = document.getElementById(`${screenName}-screen`);
         if (targetScreen) {
             targetScreen.classList.add('active');
-            this.currentScreen = screenId;
-            this.screenHistory.push(screenId);
-        }
-
-        // Настройка кнопки назад
-        if (screenId === 'home') {
-            telegramAPI.hideBackButton();
+            this.currentScreen = screenName;
+            console.log('Экран показан:', screenName);
         } else {
-            telegramAPI.showBackButton();
+            console.error('Экран не найден:', screenName);
         }
+
+        // Обновляем активную кнопку навигации
+        this.updateActiveNavButton(screenName);
     }
 
-    // Показать главную страницу
+    updateActiveNavButton(screenName) {
+        const navButtons = document.querySelectorAll('.nav-btn');
+        navButtons.forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.dataset.screen === screenName) {
+                btn.classList.add('active');
+            }
+        });
+    }
+
+    // ===== ГЛАВНАЯ СТРАНИЦА =====
     showHome() {
-        this.showScreen('home-screen');
+        this.showScreen('home');
+        this.renderCategories();
+        this.renderProducts();
     }
 
-    // Показать категорию
-    showCategory(categoryId) {
-        const category = DataService.getCategory(categoryId);
-        const products = DataService.getProductsByCategory(categoryId);
+    renderCategories() {
+        const categoriesContainer = document.querySelector('.categories-grid');
+        if (!categoriesContainer) return;
 
-        if (category) {
-            document.getElementById('category-title').textContent = category.name;
-            this.renderProducts(products);
-            this.showScreen('category-screen');
+        const categories = window.categories || [];
+        categoriesContainer.innerHTML = categories.map(category => `
+            <div class="category-card" data-category="${category.id}">
+                <div class="category-icon">
+                    <i class="icon-${category.icon}"></i>
+                </div>
+                <h3>${category.name}</h3>
+                <p>${category.description}</p>
+            </div>
+        `).join('');
+    }
+
+    renderProducts(categoryId = null) {
+        const productsContainer = document.querySelector('.products-grid');
+        if (!productsContainer) return;
+
+        let products = window.products || [];
+        
+        if (categoryId) {
+            products = products.filter(product => product.categoryId === categoryId);
         }
+
+        productsContainer.innerHTML = products.map(product => this.createProductCard(product)).join('');
     }
 
-    // Показать товар
-    showProduct(productId) {
-        const product = DataService.getProduct(productId);
-        if (product) {
-            this.renderProductDetail(product);
-            this.showScreen('product-screen');
-        }
-    }
-
-    // Показать корзину
-    showCart() {
-        this.updateCartDisplay();
-        this.showScreen('cart-screen');
-    }
-
-    // Показать оформление заказа
-    showCheckout() {
-        this.showScreen('checkout-screen');
-    }
-
-    // Показать профиль
-    showProfile() {
-        this.loadUserProfile();
-        this.showScreen('profile-screen');
-    }
-
-    // Показать историю заказов
-    showOrderHistory() {
-        this.loadOrderHistory();
-        this.showScreen('orders-screen');
-    }
-
-    // Рендеринг товаров
-    renderProducts(products) {
-        const container = document.getElementById('products-grid');
-        if (!container) return;
-
-        container.innerHTML = products.map(product => this.createProductCard(product)).join('');
-    }
-
-    // Создание карточки товара
     createProductCard(product) {
         const isFavorite = this.isInFavorites(product.id);
         return `
             <div class="product-card" data-product-id="${product.id}">
                 <div class="product-image">
                     ${product.image ? 
-                        `<img src="${product.image}" alt="${product.name}" loading="lazy">` :
-                        `<div class="product-placeholder">
-                            <i class="icon-${product.icon}"></i>
-                        </div>`
+                        `<img src="${product.image}" alt="${product.name}" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">` :
+                        ''
                     }
+                    <div class="product-placeholder" style="${product.image ? 'display: none;' : ''}">
+                        <i class="icon-${product.icon}"></i>
+                    </div>
                     <button class="btn-favorite ${isFavorite ? 'active' : ''}" data-product-id="${product.id}">
                         <i class="icon-heart"></i>
                     </button>
@@ -217,403 +111,566 @@ class UIComponents {
                     <p class="product-description">${product.description}</p>
                     <div class="product-meta">
                         <span class="product-brand">${product.brand}</span>
-                        <span class="product-availability ${product.inStock ? 'in-stock' : 'out-of-stock'}">
+                        <span class="product-stock ${product.inStock ? 'in-stock' : 'out-of-stock'}">
                             ${product.inStock ? 'В наличии' : 'Нет в наличии'}
                         </span>
                     </div>
-                    <div class="product-price">
+                    <div class="product-footer">
                         <span class="price">${product.price.toLocaleString()} ₽</span>
-                        ${product.oldPrice ? `<span class="old-price">${product.oldPrice.toLocaleString()} ₽</span>` : ''}
+                        <button class="btn-add-to-cart" data-product-id="${product.id}" ${!product.inStock ? 'disabled' : ''}>
+                            ${product.inStock ? 'В корзину' : 'Нет в наличии'}
+                        </button>
                     </div>
-                </div>
-                <div class="product-actions">
-                    <button class="btn-add-to-cart" data-product-id="${product.id}">
-                        <i class="icon-cart-plus"></i>
-                    </button>
                 </div>
             </div>
         `;
     }
 
-    // Рендеринг детальной страницы товара
-    renderProductDetail(product) {
-        const container = document.getElementById('product-detail');
-        if (!container) return;
-
-        container.innerHTML = `
-            <div class="product-detail-image">
-                <i class="icon-${product.icon}"></i>
-            </div>
-            <div class="product-detail-info">
-                <h3>${product.name}</h3>
-                <p class="product-detail-description">${product.description}</p>
-                <div class="product-specs">
-                    <h4>Характеристики</h4>
-                    <div class="spec-item">
-                        <span class="spec-label">Бренд:</span>
-                        <span class="spec-value">${product.brand}</span>
-                    </div>
-                    <div class="spec-item">
-                        <span class="spec-label">Наличие:</span>
-                        <span class="spec-value">${product.inStock ? 'В наличии' : 'Нет в наличии'}</span>
-                    </div>
-                </div>
-                <div class="product-detail-actions">
-                    <div class="quantity-controls">
-                        <button class="quantity-btn" data-action="decrease" data-product-id="${product.id}">-</button>
-                        <span class="quantity-display" data-product-id="${product.id}">1</span>
-                        <button class="quantity-btn" data-action="increase" data-product-id="${product.id}">+</button>
-                    </div>
-                    <button class="add-to-cart-btn" data-product-id="${product.id}">
-                        Добавить в корзину - ${product.price.toLocaleString()} ₽
-                    </button>
-                </div>
-            </div>
-        `;
+    // ===== КАТЕГОРИИ =====
+    showCategory(categoryId) {
+        console.log('Показ категории:', categoryId);
+        this.showScreen('category');
+        this.renderCategoryProducts(categoryId);
     }
 
-    // Обновление отображения корзины
-    updateCartDisplay() {
-        const container = document.getElementById('cart-items');
-        const totalElement = document.getElementById('cart-total');
-        
-        if (!container) return;
+    renderCategoryProducts(categoryId) {
+        const category = window.categories?.find(c => c.id === categoryId);
+        if (!category) return;
 
-        if (this.cart.length === 0) {
-            container.innerHTML = '<p class="text-center">Корзина пуста</p>';
-            if (totalElement) totalElement.textContent = '0 ₽';
-            return;
+        // Обновляем заголовок
+        const categoryTitle = document.querySelector('.category-title');
+        if (categoryTitle) {
+            categoryTitle.textContent = category.name;
         }
 
-        container.innerHTML = this.cart.map(item => `
-            <div class="cart-item">
-                <div class="cart-item-image">
-                    <i class="icon-${item.icon}"></i>
+        // Рендерим товары категории
+        this.renderProducts(categoryId);
+    }
+
+    // ===== ДЕТАЛЬНАЯ СТРАНИЦА ТОВАРА =====
+    showProduct(productId) {
+        console.log('Показ товара:', productId);
+        this.showScreen('product');
+        this.renderProductDetail(productId);
+    }
+
+    renderProductDetail(productId) {
+        const product = window.products?.find(p => p.id === productId);
+        if (!product) return;
+
+        const productDetailContainer = document.getElementById('product-detail-screen');
+        if (!productDetailContainer) return;
+
+        const isFavorite = this.isInFavorites(product.id);
+        
+        productDetailContainer.innerHTML = `
+            <div class="product-detail">
+                <div class="product-detail-header">
+                    ${product.image ? 
+                        `<img src="${product.image}" alt="${product.name}" class="product-detail-image">` :
+                        `<div class="product-placeholder" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 4rem; color: var(--text-muted);">
+                            <i class="icon-${product.icon}"></i>
+                        </div>`
+                    }
+                    ${product.inStock ? '<div class="product-detail-badge">В наличии</div>' : ''}
                 </div>
-                <div class="cart-item-info">
-                    <div class="cart-item-title">${item.name}</div>
-                    <div class="cart-item-price">${item.price.toLocaleString()} ₽</div>
-                    <div class="cart-item-actions">
-                        <button class="quantity-btn" data-action="decrease" data-product-id="${item.id}">-</button>
-                        <span class="quantity-display">${item.quantity}</span>
-                        <button class="quantity-btn" data-action="increase" data-product-id="${item.id}">+</button>
-                        <button class="remove-item-btn" data-product-id="${item.id}">Удалить</button>
+                <div class="product-detail-content">
+                    <h1 class="product-detail-title">${product.name}</h1>
+                    <div class="product-detail-brand">${product.brand}</div>
+                    <p class="product-detail-description">${product.description}</p>
+                    
+                    <div class="product-detail-specs">
+                        <div class="spec-item">
+                            <div class="spec-label">Бренд</div>
+                            <div class="spec-value">${product.brand}</div>
+                        </div>
+                        <div class="spec-item">
+                            <div class="spec-label">Состояние</div>
+                            <div class="spec-value">${product.inStock ? 'В наличии' : 'Нет в наличии'}</div>
+                        </div>
+                        <div class="spec-item">
+                            <div class="spec-label">Артикул</div>
+                            <div class="spec-value">${product.id}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="product-detail-price">${product.price.toLocaleString()} ₽</div>
+                    
+                    <div class="product-detail-actions">
+                        <button class="btn-add-to-cart-large" data-product-id="${product.id}" ${!product.inStock ? 'disabled' : ''}>
+                            ${product.inStock ? 'Добавить в корзину' : 'Нет в наличии'}
+                        </button>
+                        <button class="btn-favorite-large ${isFavorite ? 'active' : ''}" data-product-id="${product.id}">
+                            <i class="icon-heart"></i>
+                        </button>
                     </div>
                 </div>
             </div>
-        `).join('');
-
-        const total = this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        if (totalElement) totalElement.textContent = `${total.toLocaleString()} ₽`;
+        `;
     }
 
-    // Загрузка профиля пользователя
-    loadUserProfile() {
-        const profile = DataService.getUserProfile();
-        const orders = DataService.getOrderHistory();
-        const favorites = this.getFavorites();
+    // ===== КОРЗИНА =====
+    showCart() {
+        console.log('Показ корзины');
+        this.showScreen('cart');
+        this.renderCart();
+    }
 
-        document.getElementById('user-name').textContent = profile.name;
-        document.getElementById('user-phone').textContent = profile.phone;
+    renderCart() {
+        const cartContainer = document.getElementById('cart-screen');
+        if (!cartContainer) return;
 
-        // Добавляем статистику
-        const profileContent = document.querySelector('.profile-content');
-        if (profileContent) {
-            const statsHTML = `
-                <div class="profile-stats">
-                    <div class="stat-item">
-                        <span class="stat-number">${orders.length}</span>
-                        <span class="stat-label">Заказов</span>
+        if (this.cart.length === 0) {
+            cartContainer.innerHTML = `
+                <div class="cart-empty">
+                    <div class="cart-empty-icon">
+                        <i class="icon-cart"></i>
                     </div>
-                    <div class="stat-item">
-                        <span class="stat-number">${favorites.length}</span>
-                        <span class="stat-label">Избранное</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number">${this.cart.length}</span>
-                        <span class="stat-label">В корзине</span>
-                    </div>
-                </div>
-                <div class="profile-actions">
-                    <button class="btn-profile-action" data-action="favorites">
-                        <i class="icon-heart"></i>
-                        Избранные товары
-                    </button>
-                    <button class="btn-profile-action" data-action="settings">
-                        <i class="icon-settings"></i>
-                        Настройки
-                    </button>
-                    <button class="btn-profile-action" data-action="edit-profile">
-                        <i class="icon-edit"></i>
-                        Редактировать профиль
+                    <h2 class="cart-empty-title">Корзина пуста</h2>
+                    <p class="cart-empty-message">Добавьте товары в корзину для оформления заказа</p>
+                    <button class="btn-start-shopping" onclick="uiComponents.showHome()">
+                        Начать покупки
                     </button>
                 </div>
             `;
-            
-            const existingStats = profileContent.querySelector('.profile-stats');
-            if (existingStats) {
-                existingStats.remove();
-            }
-            const existingActions = profileContent.querySelector('.profile-actions');
-            if (existingActions) {
-                existingActions.remove();
-            }
-            
-            profileContent.insertAdjacentHTML('beforeend', statsHTML);
-        }
-    }
-
-    // Загрузка истории заказов
-    loadOrderHistory() {
-        const orders = DataService.getOrderHistory();
-        const container = document.getElementById('orders-list');
-        
-        if (!container) return;
-
-        if (orders.length === 0) {
-            container.innerHTML = '<p class="text-center">История заказов пуста</p>';
             return;
         }
 
-        container.innerHTML = orders.map(order => this.createOrderHistoryItem(order)).join('');
-    }
+        const cartItems = this.cart.map(item => {
+            const product = window.products?.find(p => p.id === item.productId);
+            if (!product) return '';
 
-    // Создание элемента истории заказа
-    createOrderHistoryItem(order) {
-        const statusText = {
-            'completed': 'Выполнен',
-            'processing': 'В обработке',
-            'pending': 'Ожидает'
-        };
+            return `
+                <div class="cart-item" data-product-id="${item.productId}">
+                    <div class="cart-item-image">
+                        ${product.image ? 
+                            `<img src="${product.image}" alt="${product.name}">` :
+                            `<div class="product-placeholder">
+                                <i class="icon-${product.icon}"></i>
+                            </div>`
+                        }
+                    </div>
+                    <div class="cart-item-info">
+                        <div class="cart-item-name">${product.name}</div>
+                        <div class="cart-item-price">${product.price.toLocaleString()} ₽</div>
+                    </div>
+                    <div class="cart-item-actions">
+                        <div class="quantity-controls">
+                            <button class="quantity-btn" onclick="uiComponents.updateQuantity('${item.productId}', -1)">-</button>
+                            <span class="quantity-display">${item.quantity}</span>
+                            <button class="quantity-btn" onclick="uiComponents.updateQuantity('${item.productId}', 1)">+</button>
+                        </div>
+                        <button class="btn-remove" onclick="uiComponents.removeFromCart('${item.productId}')">
+                            Удалить
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
 
-        return `
-            <div class="order-item" data-order-id="${order.id}">
-                <div class="order-header">
-                    <span class="order-number">Заказ #${order.id}</span>
-                    <span class="order-status ${order.status}">${statusText[order.status]}</span>
+        const total = this.cart.reduce((sum, item) => {
+            const product = window.products?.find(p => p.id === item.productId);
+            return sum + (product?.price || 0) * item.quantity;
+        }, 0);
+
+        cartContainer.innerHTML = `
+            <div class="cart-header">
+                <h1 class="cart-title">Корзина</h1>
+                <span class="cart-count">${this.cart.length} товар(ов)</span>
+            </div>
+            <div class="cart-items">
+                ${cartItems}
+            </div>
+            <div class="cart-summary">
+                <div class="cart-total">
+                    <span>Итого:</span>
+                    <span>${total.toLocaleString()} ₽</span>
                 </div>
-                <div class="order-date">${order.date}</div>
-                <div class="order-summary">
-                    <span>${order.items.length} товаров</span>
-                    <span>${order.total.toLocaleString()} ₽</span>
-                </div>
-                <div class="order-actions">
-                    <button class="btn-repeat-order" data-order-id="${order.id}">
-                        Повторить заказ
-                    </button>
-                </div>
+                <button class="btn-checkout" onclick="uiComponents.showCheckout()">
+                    Оформить заказ
+                </button>
             </div>
         `;
     }
 
-    // Работа с избранным
-    getFavorites() {
-        const favorites = localStorage.getItem('autoparts_favorites');
-        return favorites ? JSON.parse(favorites) : [];
-    }
-
-    addToFavorites(productId) {
-        const favorites = this.getFavorites();
-        if (!favorites.includes(productId)) {
-            favorites.push(productId);
-            localStorage.setItem('autoparts_favorites', JSON.stringify(favorites));
+    // ===== УПРАВЛЕНИЕ КОРЗИНОЙ =====
+    addToCart(productId) {
+        console.log('Добавление в корзину:', productId);
+        
+        const existingItem = this.cart.find(item => item.productId === productId);
+        
+        if (existingItem) {
+            existingItem.quantity += 1;
+        } else {
+            this.cart.push({ productId, quantity: 1 });
+        }
+        
+        this.saveCart();
+        this.updateCartBadge();
+        this.showNotification('Товар добавлен в корзину', 'success');
+        
+        // Обновляем отображение корзины если она открыта
+        if (this.currentScreen === 'cart') {
+            this.renderCart();
         }
     }
 
-    removeFromFavorites(productId) {
-        const favorites = this.getFavorites();
-        const updatedFavorites = favorites.filter(id => id !== productId);
-        localStorage.setItem('autoparts_favorites', JSON.stringify(updatedFavorites));
+    updateQuantity(productId, change) {
+        const item = this.cart.find(item => item.productId === productId);
+        if (!item) return;
+
+        item.quantity += change;
+        
+        if (item.quantity <= 0) {
+            this.removeFromCart(productId);
+        } else {
+            this.saveCart();
+            this.updateCartBadge();
+            this.renderCart();
+        }
+    }
+
+    removeFromCart(productId) {
+        this.cart = this.cart.filter(item => item.productId !== productId);
+        this.saveCart();
+        this.updateCartBadge();
+        this.renderCart();
+        this.showNotification('Товар удален из корзины', 'info');
+    }
+
+    // ===== ИЗБРАННОЕ =====
+    toggleFavorite(productId) {
+        const index = this.favorites.indexOf(productId);
+        
+        if (index > -1) {
+            this.favorites.splice(index, 1);
+            this.showNotification('Удалено из избранного', 'info');
+        } else {
+            this.favorites.push(productId);
+            this.showNotification('Добавлено в избранное', 'success');
+        }
+        
+        this.saveFavorites();
+        this.updateFavoritesBadge();
+        
+        // Обновляем отображение если нужно
+        if (this.currentScreen === 'home' || this.currentScreen === 'category') {
+            this.renderProducts();
+        }
     }
 
     isInFavorites(productId) {
-        const favorites = this.getFavorites();
-        return favorites.includes(productId);
+        return this.favorites.includes(productId);
     }
 
-    // Показать избранные товары
-    showFavorites() {
-        const favorites = this.getFavorites();
-        const favoriteProducts = favorites.map(id => DataService.getProduct(id)).filter(Boolean);
-        
-        document.getElementById('category-title').textContent = 'Избранные товары';
-        this.renderProducts(favoriteProducts);
-        this.showScreen('category-screen');
+    // ===== ПРОФИЛЬ =====
+    showProfile() {
+        console.log('Показ профиля');
+        this.showScreen('profile');
+        this.renderProfile();
     }
 
-    // Настройки приложения
-    showSettings() {
-        const settings = this.getSettings();
-        
-        const settingsHTML = `
-            <div class="settings-container">
-                <div class="setting-group">
-                    <h3>Уведомления</h3>
-                    <div class="setting-item">
-                        <label>
-                            <input type="checkbox" id="notifications" ${settings.notifications ? 'checked' : ''}>
-                            Получать уведомления
-                        </label>
-                    </div>
+    renderProfile() {
+        const profileContainer = document.getElementById('profile-screen');
+        if (!profileContainer) return;
+
+        const user = this.getUserInfo();
+        const stats = this.getUserStats();
+
+        profileContainer.innerHTML = `
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    <i class="icon-user"></i>
                 </div>
-                
-                <div class="setting-group">
-                    <h3>Внешний вид</h3>
-                    <div class="setting-item">
-                        <label>
-                            <input type="checkbox" id="dark-mode" ${settings.darkMode ? 'checked' : ''}>
-                            Темная тема
-                        </label>
-                    </div>
-                    <div class="setting-item">
-                        <label>
-                            <input type="checkbox" id="animations" ${settings.animations ? 'checked' : ''}>
-                            Анимации
-                        </label>
-                    </div>
+                <h2 class="profile-name">${user.name}</h2>
+                <p class="profile-email">${user.email}</p>
+            </div>
+            
+            <div class="profile-stats">
+                <div class="stat-card">
+                    <div class="stat-number">${stats.totalOrders}</div>
+                    <div class="stat-label">Заказов</div>
                 </div>
-                
-                <div class="setting-group">
-                    <h3>Данные</h3>
-                    <button class="btn-danger" id="clear-data">Очистить все данные</button>
-                    <button class="btn-secondary" id="export-data">Экспорт данных</button>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.totalSpent.toLocaleString()} ₽</div>
+                    <div class="stat-label">Потрачено</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${this.favorites.length}</div>
+                    <div class="stat-label">Избранное</div>
                 </div>
             </div>
-        `;
-
-        const mainContent = document.querySelector('.main-content');
-        mainContent.innerHTML = settingsHTML;
-        this.setupSettingsEventListeners();
-    }
-
-    getSettings() {
-        const settings = localStorage.getItem('autoparts_settings');
-        return settings ? JSON.parse(settings) : {
-            notifications: true,
-            darkMode: true,
-            animations: true
-        };
-    }
-
-    saveSettings(settings) {
-        localStorage.setItem('autoparts_settings', JSON.stringify(settings));
-    }
-
-    setupSettingsEventListeners() {
-        // Обработчики настроек
-        document.getElementById('clear-data')?.addEventListener('click', () => {
-            if (confirm('Вы уверены, что хотите очистить все данные?')) {
-                localStorage.clear();
-                this.cart = [];
-                this.updateCartBadge();
-                this.showNotification('Все данные очищены');
-                this.showHome();
-            }
-        });
-
-        document.getElementById('export-data')?.addEventListener('click', () => {
-            const data = {
-                cart: this.cart,
-                favorites: this.getFavorites(),
-                settings: this.getSettings()
-            };
             
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'autoparts_data.json';
-            a.click();
-            URL.revokeObjectURL(url);
-            
-            this.showNotification('Данные экспортированы');
-        });
-    }
-
-    // Редактирование профиля
-    showEditProfile() {
-        const profile = DataService.getUserProfile();
-        
-        const editHTML = `
-            <div class="edit-profile-form">
-                <div class="form-group">
-                    <label for="edit-name">Имя</label>
-                    <input type="text" id="edit-name" value="${profile.name}">
-                </div>
-                <div class="form-group">
-                    <label for="edit-phone">Телефон</label>
-                    <input type="tel" id="edit-phone" value="${profile.phone}">
-                </div>
-                <div class="form-group">
-                    <label for="edit-email">Email</label>
-                    <input type="email" id="edit-email" value="${profile.email}">
-                </div>
-                <div class="form-group">
-                    <label for="edit-address">Адрес</label>
-                    <textarea id="edit-address">${profile.address}</textarea>
-                </div>
-                <div class="form-actions">
-                    <button class="btn-secondary" id="cancel-edit">Отмена</button>
-                    <button class="submit-btn" id="save-profile">Сохранить</button>
-                </div>
+            <div class="profile-menu">
+                <a href="#" class="profile-menu-item" onclick="uiComponents.showOrders()">
+                    <div class="profile-menu-icon">
+                        <i class="icon-orders"></i>
+                    </div>
+                    <div class="profile-menu-content">
+                        <div class="profile-menu-title">История заказов</div>
+                        <div class="profile-menu-subtitle">Просмотр всех заказов</div>
+                    </div>
+                    <div class="profile-menu-arrow">
+                        <i class="icon-arrow-right"></i>
+                    </div>
+                </a>
+                <a href="#" class="profile-menu-item" onclick="uiComponents.showFavorites()">
+                    <div class="profile-menu-icon">
+                        <i class="icon-heart"></i>
+                    </div>
+                    <div class="profile-menu-content">
+                        <div class="profile-menu-title">Избранное</div>
+                        <div class="profile-menu-subtitle">Сохраненные товары</div>
+                    </div>
+                    <div class="profile-menu-arrow">
+                        <i class="icon-arrow-right"></i>
+                    </div>
+                </a>
+                <a href="#" class="profile-menu-item" onclick="uiComponents.showSettings()">
+                    <div class="profile-menu-icon">
+                        <i class="icon-settings"></i>
+                    </div>
+                    <div class="profile-menu-content">
+                        <div class="profile-menu-title">Настройки</div>
+                        <div class="profile-menu-subtitle">Настройки приложения</div>
+                    </div>
+                    <div class="profile-menu-arrow">
+                        <i class="icon-arrow-right"></i>
+                    </div>
+                </a>
             </div>
         `;
+    }
 
-        const mainContent = document.querySelector('.main-content');
-        mainContent.innerHTML = editHTML;
+    // ===== ИСТОРИЯ ЗАКАЗОВ =====
+    showOrders() {
+        console.log('Показ истории заказов');
+        this.showScreen('orders');
+        this.renderOrders();
+    }
+
+    renderOrders() {
+        const ordersContainer = document.getElementById('orders-screen');
+        if (!ordersContainer) return;
+
+        const orders = this.getOrders();
         
-        document.getElementById('save-profile')?.addEventListener('click', () => this.saveProfile());
-        document.getElementById('cancel-edit')?.addEventListener('click', () => this.showProfile());
-    }
-
-    saveProfile() {
-        const name = document.getElementById('edit-name').value;
-        const phone = document.getElementById('edit-phone').value;
-        const email = document.getElementById('edit-email').value;
-        const address = document.getElementById('edit-address').value;
-
-        // В реальном приложении здесь был бы запрос к серверу
-        this.showNotification('Профиль обновлен');
-        this.showProfile();
-    }
-
-    // Повторение заказа
-    repeatOrder(orderId) {
-        const order = DataService.getOrder(orderId);
-        if (!order) {
-            this.showNotification('Заказ не найден', 'error');
+        if (orders.length === 0) {
+            ordersContainer.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">
+                        <i class="icon-orders"></i>
+                    </div>
+                    <h2 class="empty-state-title">Заказов пока нет</h2>
+                    <p class="empty-state-message">Сделайте первый заказ, чтобы увидеть его здесь</p>
+                    <button class="btn-start-shopping" onclick="uiComponents.showHome()">
+                        Начать покупки
+                    </button>
+                </div>
+            `;
             return;
         }
 
-        // Очищаем текущую корзину
-        this.cart = [];
-        
-        // Добавляем все товары из заказа в корзину
-        order.items.forEach(item => {
-            const product = DataService.getProduct(item.id);
-            if (product) {
-                this.cart.push({
-                    ...product,
-                    quantity: item.quantity
-                });
-            }
-        });
+        const ordersList = orders.map(order => `
+            <div class="order-item" onclick="uiComponents.showOrderDetail('${order.id}')">
+                <div class="order-header">
+                    <div class="order-number">Заказ #${order.id}</div>
+                    <div class="order-date">${new Date(order.date).toLocaleDateString()}</div>
+                </div>
+                <div class="order-status ${order.status}">${this.getStatusText(order.status)}</div>
+                <div class="order-total">${order.total.toLocaleString()} ₽</div>
+            </div>
+        `).join('');
 
-        this.saveCartToStorage();
-        this.updateCartBadge();
-        this.updateCartDisplay();
-        
-        this.showNotification(`Заказ #${orderId} добавлен в корзину`);
-        this.showCart();
+        ordersContainer.innerHTML = `
+            <h1 class="section-title">История заказов</h1>
+            ${ordersList}
+        `;
     }
 
-    // Настройка обработчиков событий
+    // ===== ОФОРМЛЕНИЕ ЗАКАЗА =====
+    showCheckout() {
+        console.log('Показ оформления заказа');
+        this.showScreen('checkout');
+        this.renderCheckout();
+    }
+
+    renderCheckout() {
+        const checkoutContainer = document.getElementById('checkout-screen');
+        if (!checkoutContainer) return;
+
+        const total = this.cart.reduce((sum, item) => {
+            const product = window.products?.find(p => p.id === item.productId);
+            return sum + (product?.price || 0) * item.quantity;
+        }, 0);
+
+        checkoutContainer.innerHTML = `
+            <h1 class="section-title">Оформление заказа</h1>
+            
+            <div class="checkout-form">
+                <div class="checkout-section">
+                    <h2 class="checkout-section-title">Данные получателя</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Имя *</label>
+                            <input type="text" class="form-input" id="checkout-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Фамилия *</label>
+                            <input type="text" class="form-input" id="checkout-surname" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Телефон *</label>
+                            <input type="tel" class="form-input" id="checkout-phone" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-input" id="checkout-email">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="checkout-section">
+                    <h2 class="checkout-section-title">Адрес доставки</h2>
+                    <div class="form-row full">
+                        <div class="form-group">
+                            <label class="form-label">Адрес *</label>
+                            <textarea class="form-input form-textarea" id="checkout-address" required></textarea>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Город *</label>
+                            <input type="text" class="form-input" id="checkout-city" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Индекс</label>
+                            <input type="text" class="form-input" id="checkout-zip">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="checkout-summary">
+                    <div class="summary-row">
+                        <span>Товары (${this.cart.length}):</span>
+                        <span>${total.toLocaleString()} ₽</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Доставка:</span>
+                        <span>Бесплатно</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Итого:</span>
+                        <span>${total.toLocaleString()} ₽</span>
+                    </div>
+                </div>
+                
+                <button class="btn-submit-order" onclick="uiComponents.submitOrder()">
+                    Оформить заказ
+                </button>
+            </div>
+        `;
+    }
+
+    submitOrder() {
+        const formData = {
+            name: document.getElementById('checkout-name')?.value,
+            surname: document.getElementById('checkout-surname')?.value,
+            phone: document.getElementById('checkout-phone')?.value,
+            email: document.getElementById('checkout-email')?.value,
+            address: document.getElementById('checkout-address')?.value,
+            city: document.getElementById('checkout-city')?.value,
+            zip: document.getElementById('checkout-zip')?.value
+        };
+
+        // Проверка обязательных полей
+        const requiredFields = ['name', 'surname', 'phone', 'address', 'city'];
+        const missingFields = requiredFields.filter(field => !formData[field]);
+        
+        if (missingFields.length > 0) {
+            this.showNotification('Заполните все обязательные поля', 'error');
+            return;
+        }
+
+        // Создание заказа
+        const order = {
+            id: Date.now().toString(),
+            date: new Date().toISOString(),
+            status: 'pending',
+            items: [...this.cart],
+            total: this.cart.reduce((sum, item) => {
+                const product = window.products?.find(p => p.id === item.productId);
+                return sum + (product?.price || 0) * item.quantity;
+            }, 0),
+            customer: formData
+        };
+
+        // Сохранение заказа
+        this.saveOrder(order);
+        
+        // Очистка корзины
+        this.cart = [];
+        this.saveCart();
+        this.updateCartBadge();
+        
+        // Показ уведомления об успехе
+        this.showNotification('Заказ успешно оформлен!', 'success');
+        
+        // Переход к истории заказов
+        setTimeout(() => {
+            this.showOrders();
+        }, 2000);
+    }
+
+    // ===== УВЕДОМЛЕНИЯ =====
+    showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.innerHTML = `
+            <div class="notification-header">
+                <div class="notification-icon">
+                    <i class="icon-${type === 'success' ? 'check' : type === 'error' ? 'close' : type === 'warning' ? 'warning' : 'info'}"></i>
+                </div>
+                <div class="notification-title">${this.getNotificationTitle(type)}</div>
+            </div>
+            <div class="notification-message">${message}</div>
+        `;
+
+        document.body.appendChild(notification);
+        
+        // Показываем уведомление
+        setTimeout(() => {
+            notification.classList.add('show');
+        }, 100);
+
+        // Скрываем через 3 секунды
+        setTimeout(() => {
+            notification.classList.add('hiding');
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 300);
+        }, 3000);
+    }
+
+    getNotificationTitle(type) {
+        switch (type) {
+            case 'success': return 'Успешно';
+            case 'error': return 'Ошибка';
+            case 'warning': return 'Внимание';
+            default: return 'Информация';
+        }
+    }
+
+    // ===== ОБРАБОТЧИКИ СОБЫТИЙ =====
     setupEventListeners() {
-        // Навигация
         document.addEventListener('click', (e) => {
             console.log('Click event:', e.target);
             
-            // Категории
+            // Навигация по категориям
             if (e.target.closest('.category-card')) {
                 const card = e.target.closest('.category-card');
                 const categoryId = card.dataset.category;
@@ -621,8 +678,8 @@ class UIComponents {
                 this.showCategory(categoryId);
                 return;
             }
-
-            // Товары
+            
+            // Навигация по товарам
             if (e.target.closest('.product-card')) {
                 const card = e.target.closest('.product-card');
                 const productId = card.dataset.productId;
@@ -630,8 +687,8 @@ class UIComponents {
                 this.showProduct(productId);
                 return;
             }
-
-            // Кнопки добавления в корзину
+            
+            // Добавление в корзину
             if (e.target.closest('.btn-add-to-cart')) {
                 e.stopPropagation();
                 const button = e.target.closest('.btn-add-to-cart');
@@ -640,262 +697,195 @@ class UIComponents {
                 this.addToCart(productId);
                 return;
             }
-
-            // Кнопки навигации
-            if (e.target.closest('#cart-btn')) {
-                console.log('Cart button clicked');
-                this.showCart();
-                return;
-            }
-
-            if (e.target.closest('#profile-btn')) {
-                console.log('Profile button clicked');
-                this.showProfile();
-                return;
-            }
-
-            if (e.target.closest('#search-btn')) {
-                console.log('Search button clicked');
-                this.toggleSearch();
-                return;
-            }
-
-            if (e.target.closest('#search-close')) {
-                console.log('Search close clicked');
-                this.toggleSearch();
-                return;
-            }
-
-            // Кнопка назад
-            if (e.target.closest('.back-btn')) {
-                console.log('Back button clicked');
-                this.goBack();
-                return;
-            }
-
-            // Кнопка оформления заказа
-            if (e.target.closest('#checkout-btn')) {
-                console.log('Checkout button clicked');
-                this.showCheckout();
-                return;
-            }
-
-            // Форма оформления заказа
-            if (e.target.closest('#checkout-form')) {
-                e.preventDefault();
-                console.log('Checkout form submitted');
-                this.processOrder();
-                return;
-            }
-
-            // Меню профиля
-            if (e.target.closest('.profile-menu-item')) {
-                const item = e.target.closest('.profile-menu-item');
-                const action = item.dataset.action;
-                console.log('Profile menu item clicked:', action);
-                
-                switch (action) {
-                    case 'orders':
-                        this.showOrderHistory();
-                        break;
-                    case 'favorites':
-                        this.showFavorites();
-                        break;
-                    case 'settings':
-                        this.showSettings();
-                        break;
-                }
-                return;
-            }
-
-            // Действия профиля
-            if (e.target.closest('.btn-profile-action')) {
-                const button = e.target.closest('.btn-profile-action');
-                const action = button.dataset.action;
-                console.log('Profile action clicked:', action);
-                
-                switch (action) {
-                    case 'favorites':
-                        this.showFavorites();
-                        break;
-                    case 'settings':
-                        this.showSettings();
-                        break;
-                    case 'edit-profile':
-                        this.showEditProfile();
-                        break;
-                }
-                return;
-            }
-
-            // Кнопки избранного
+            
+            // Избранное
             if (e.target.closest('.btn-favorite')) {
+                e.stopPropagation();
                 const button = e.target.closest('.btn-favorite');
                 const productId = button.dataset.productId;
+                console.log('Favorite clicked:', productId);
+                this.toggleFavorite(productId);
+                return;
+            }
+            
+            // Навигационные кнопки
+            if (e.target.closest('.nav-btn')) {
+                const button = e.target.closest('.nav-btn');
+                const screen = button.dataset.screen;
+                console.log('Nav button clicked:', screen);
                 
-                if (this.isInFavorites(productId)) {
-                    this.removeFromFavorites(productId);
-                    button.classList.remove('active');
-                } else {
-                    this.addToFavorites(productId);
-                    button.classList.add('active');
+                switch (screen) {
+                    case 'home':
+                        this.showHome();
+                        break;
+                    case 'cart':
+                        this.showCart();
+                        break;
+                    case 'profile':
+                        this.showProfile();
+                        break;
                 }
+                return;
             }
-
-            // Кнопки количества
-            if (e.target.closest('.quantity-btn')) {
-                const button = e.target.closest('.quantity-btn');
-                const action = button.dataset.action;
-                const productId = button.dataset.productId;
-                
-                if (action === 'increase') {
-                    this.addToCart(productId);
-                } else if (action === 'decrease') {
-                    const item = this.cart.find(item => item.id === productId);
-                    if (item) {
-                        this.updateQuantity(productId, item.quantity - 1);
-                    }
-                }
+            
+            // Кнопка "Назад"
+            if (e.target.closest('.btn-back')) {
+                console.log('Back button clicked');
+                this.showHome();
+                return;
             }
-
-            // Удаление из корзины
-            if (e.target.closest('.remove-item-btn')) {
-                const button = e.target.closest('.remove-item-btn');
-                const productId = button.dataset.productId;
-                this.removeFromCart(productId);
-            }
-
-            // Повторение заказа
-            if (e.target.closest('.btn-repeat-order')) {
-                const button = e.target.closest('.btn-repeat-order');
-                const orderId = button.dataset.orderId;
-                this.repeatOrder(orderId);
-            }
-
-            // Закрытие модального окна
-            if (e.target.closest('#modal-close')) {
-                this.hideModal();
-            }
-        });
-
-        // Поиск
-        const searchInput = document.getElementById('search-input');
-        if (searchInput) {
-            searchInput.addEventListener('input', (e) => {
-                this.handleSearch(e.target.value);
-            });
-        }
-
-        // Кнопка назад Telegram
-        document.addEventListener('telegramBackButton', () => {
-            this.goBack();
         });
     }
 
-    // Переключение поиска
-    toggleSearch() {
-        const searchBar = document.getElementById('search-bar');
-        const searchInput = document.getElementById('search-input');
+    // ===== ЛОКАЛЬНОЕ ХРАНИЛИЩЕ =====
+    loadCart() {
+        try {
+            const cart = localStorage.getItem('cart');
+            return cart ? JSON.parse(cart) : [];
+        } catch (error) {
+            console.error('Ошибка загрузки корзины:', error);
+            return [];
+        }
+    }
+
+    saveCart() {
+        try {
+            localStorage.setItem('cart', JSON.stringify(this.cart));
+        } catch (error) {
+            console.error('Ошибка сохранения корзины:', error);
+        }
+    }
+
+    loadFavorites() {
+        try {
+            const favorites = localStorage.getItem('favorites');
+            return favorites ? JSON.parse(favorites) : [];
+        } catch (error) {
+            console.error('Ошибка загрузки избранного:', error);
+            return [];
+        }
+    }
+
+    saveFavorites() {
+        try {
+            localStorage.setItem('favorites', JSON.stringify(this.favorites));
+        } catch (error) {
+            console.error('Ошибка сохранения избранного:', error);
+        }
+    }
+
+    saveOrder(order) {
+        try {
+            const orders = this.getOrders();
+            orders.push(order);
+            localStorage.setItem('orders', JSON.stringify(orders));
+        } catch (error) {
+            console.error('Ошибка сохранения заказа:', error);
+        }
+    }
+
+    getOrders() {
+        try {
+            const orders = localStorage.getItem('orders');
+            return orders ? JSON.parse(orders) : [];
+        } catch (error) {
+            console.error('Ошибка загрузки заказов:', error);
+            return [];
+        }
+    }
+
+    // ===== ВСПОМОГАТЕЛЬНЫЕ МЕТОДЫ =====
+    updateCartBadge() {
+        const cartBadge = document.querySelector('.nav-btn[data-screen="cart"] .badge');
+        if (cartBadge) {
+            const totalItems = this.cart.reduce((sum, item) => sum + item.quantity, 0);
+            cartBadge.textContent = totalItems;
+            cartBadge.style.display = totalItems > 0 ? 'block' : 'none';
+        }
+    }
+
+    updateFavoritesBadge() {
+        const favoritesBadge = document.querySelector('.nav-btn[data-screen="favorites"] .badge');
+        if (favoritesBadge) {
+            favoritesBadge.textContent = this.favorites.length;
+            favoritesBadge.style.display = this.favorites.length > 0 ? 'block' : 'none';
+        }
+    }
+
+    getUserInfo() {
+        return {
+            name: 'Пользователь',
+            email: 'user@example.com'
+        };
+    }
+
+    getUserStats() {
+        const orders = this.getOrders();
+        const totalSpent = orders.reduce((sum, order) => sum + order.total, 0);
         
-        if (searchBar.style.display === 'none') {
-            searchBar.style.display = 'flex';
-            searchInput.focus();
-        } else {
-            searchBar.style.display = 'none';
-            searchInput.value = '';
-            this.handleSearch('');
+        return {
+            totalOrders: orders.length,
+            totalSpent: totalSpent
+        };
+    }
+
+    getStatusText(status) {
+        switch (status) {
+            case 'pending': return 'Ожидает обработки';
+            case 'processing': return 'В обработке';
+            case 'completed': return 'Выполнен';
+            case 'cancelled': return 'Отменен';
+            default: return 'Неизвестно';
         }
     }
 
-    // Обработка поиска
-    handleSearch(query) {
-        if (query.trim() === '') {
-            this.showHome();
+    showFavorites() {
+        console.log('Показ избранного');
+        this.showScreen('favorites');
+        this.renderFavorites();
+    }
+
+    renderFavorites() {
+        const favoritesContainer = document.getElementById('favorites-screen');
+        if (!favoritesContainer) return;
+
+        if (this.favorites.length === 0) {
+            favoritesContainer.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">
+                        <i class="icon-heart"></i>
+                    </div>
+                    <h2 class="empty-state-title">Избранное пусто</h2>
+                    <p class="empty-state-message">Добавьте товары в избранное, чтобы увидеть их здесь</p>
+                    <button class="btn-start-shopping" onclick="uiComponents.showHome()">
+                        Начать покупки
+                    </button>
+                </div>
+            `;
             return;
         }
 
-        const results = DataService.searchProducts(query);
-        document.getElementById('category-title').textContent = `Поиск: ${query}`;
-        this.renderProducts(results);
-        this.showScreen('category-screen');
+        const favoriteProducts = window.products?.filter(product => this.favorites.includes(product.id)) || [];
+        const productsHtml = favoriteProducts.map(product => this.createProductCard(product)).join('');
+
+        favoritesContainer.innerHTML = `
+            <h1 class="section-title">Избранное</h1>
+            <div class="products-grid">
+                ${productsHtml}
+            </div>
+        `;
     }
 
-    // Навигация назад
-    goBack() {
-        if (this.screenHistory.length > 1) {
-            this.screenHistory.pop(); // Убираем текущий экран
-            const previousScreen = this.screenHistory[this.screenHistory.length - 1];
-            
-            switch (previousScreen) {
-                case 'home-screen':
-                    this.showHome();
-                    break;
-                case 'category-screen':
-                    // Возвращаемся к категориям
-                    this.showHome();
-                    break;
-                case 'cart-screen':
-                    this.showCart();
-                    break;
-                case 'profile-screen':
-                    this.showProfile();
-                    break;
-                default:
-                    this.showHome();
-            }
-        } else {
-            this.showHome();
-        }
+    showSettings() {
+        console.log('Показ настроек');
+        this.showNotification('Функция настроек в разработке', 'info');
     }
 
-    // Обработка заказа
-    processOrder() {
-        const form = document.getElementById('checkout-form');
-        const formData = new FormData(form);
-        
-        const orderData = {
-            customer: {
-                name: formData.get('name') || document.getElementById('name').value,
-                phone: formData.get('phone') || document.getElementById('phone').value,
-                address: formData.get('address') || document.getElementById('address').value,
-                delivery: formData.get('delivery') || document.getElementById('delivery').value
-            },
-            items: this.cart,
-            total: this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0)
-        };
-
-        // Создаем заказ
-        const order = DataService.createOrder(orderData);
-        
-        // Очищаем корзину
-        this.cart = [];
-        this.saveCartToStorage();
-        this.updateCartBadge();
-        
-        // Показываем успешное сообщение
-        this.showSuccessModal(order);
-    }
-
-    // Показать модальное окно успеха
-    showSuccessModal(order) {
-        const modal = document.getElementById('success-modal');
-        if (modal) {
-            modal.style.display = 'flex';
-        }
-    }
-
-    // Скрыть модальное окно
-    hideModal() {
-        const modal = document.getElementById('success-modal');
-        if (modal) {
-            modal.style.display = 'none';
-            this.showHome();
-        }
+    showOrderDetail(orderId) {
+        console.log('Показ деталей заказа:', orderId);
+        this.showNotification('Детали заказа в разработке', 'info');
     }
 }
 
-// Создаем глобальный экземпляр
-const uiComponents = new UIComponents();
-
-// Экспорт для использования в других модулях
-window.uiComponents = uiComponents; 
+// Создание глобального экземпляра
+window.uiComponents = new UIComponents(); 

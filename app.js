@@ -1,395 +1,459 @@
-// Основная логика приложения Telegram MiniApp
+// ===== ОСНОВНОЕ ПРИЛОЖЕНИЕ TELEGRAM MINIAPP =====
 
 class AutoPartsApp {
     constructor() {
+        this.isInitialized = false;
         this.isLoading = true;
+        this.currentTheme = 'light';
         this.init();
     }
 
-    init() {
-        // Инициализация приложения
-        this.setupLoadingScreen();
-        this.initializeApp();
-        this.setupEventListeners();
-    }
-
-    // Настройка экрана загрузки
-    setupLoadingScreen() {
-        const loadingScreen = document.getElementById('loading-screen');
-        const appContainer = document.getElementById('app');
-
-        if (loadingScreen && appContainer) {
-            // Показываем экран загрузки
-            loadingScreen.style.display = 'flex';
-            appContainer.style.display = 'none';
-
-            // Имитируем загрузку данных
-            setTimeout(() => {
-                this.hideLoadingScreen();
-            }, 2000); // 2 секунды для демонстрации анимации
-        }
-    }
-
-    // Скрытие экрана загрузки
-    hideLoadingScreen() {
-        const loadingScreen = document.getElementById('loading-screen');
-        const appContainer = document.getElementById('app');
-
-        if (loadingScreen && appContainer) {
-            // Добавляем класс для анимации сборки
-            const engineAssembly = loadingScreen.querySelector('.engine-assembly');
-            if (engineAssembly) {
-                engineAssembly.classList.add('assembling');
-            }
-
-            // Плавное скрытие экрана загрузки
-            loadingScreen.classList.add('fade-out');
-
-            setTimeout(() => {
-                loadingScreen.style.display = 'none';
-                appContainer.style.display = 'block';
-                
-                // Плавное появление основного приложения
-                setTimeout(() => {
-                    appContainer.classList.add('loaded');
-                    this.isLoading = false;
-                    
-                    // Инициализация после загрузки
-                    this.postLoadInitialization();
-                }, 100);
-            }, 300);
-        }
-    }
-
-    // Инициализация приложения
-    initializeApp() {
+    async init() {
         try {
-            // Проверяем доступность всех необходимых модулей
-            if (!window.DataService) {
-                console.error('DataService не найден');
-                return;
-            }
-
-            if (!window.telegramAPI) {
-                console.error('TelegramAPI не найден');
-                return;
-            }
-
-            if (!window.uiComponents) {
-                console.error('UIComponents не найден');
-                return;
-            }
-
-            // Инициализация Telegram API
-            if (typeof telegramAPI.init === 'function') {
-                telegramAPI.init();
-            } else {
-                console.error('telegramAPI.init не найден');
-            }
-
-            // Настройка темы
-            this.setupTheme();
-
-            // Инициализация UI компонентов
-            if (typeof uiComponents.init === 'function') {
-                uiComponents.init();
-            } else {
-                console.error('uiComponents.init не найден');
-            }
-
-            console.log('Приложение инициализировано');
+            console.log('Инициализация приложения AutoParts...');
+            
+            // Настройка экрана загрузки
+            this.setupLoadingScreen();
+            
+            // Инициализация модулей
+            await this.initializeModules();
+            
+            // Настройка приложения
+            this.setupApp();
+            
+            // Скрытие экрана загрузки
+            this.hideLoadingScreen();
+            
+            this.isInitialized = true;
+            console.log('Приложение успешно инициализировано');
+            
         } catch (error) {
-            console.error('Ошибка в initializeApp:', error);
+            console.error('Ошибка инициализации приложения:', error);
+            this.handleError(error);
         }
     }
 
-    // Пост-загрузочная инициализация
+    setupLoadingScreen() {
+        const loadingScreen = document.querySelector('.loading-screen');
+        const progressBar = document.querySelector('.loading-progress-bar');
+        
+        if (loadingScreen) {
+            loadingScreen.classList.remove('hidden');
+        }
+        
+        if (progressBar) {
+            progressBar.style.width = '0%';
+        }
+    }
+
+    async initializeModules() {
+        console.log('Инициализация модулей...');
+        
+        // Проверяем доступность модулей
+        const modules = {
+            'DataService': window.DataService,
+            'telegramAPI': window.telegramAPI,
+            'uiComponents': window.uiComponents,
+            'performanceOptimizer': window.performanceOptimizer
+        };
+
+        for (const [name, module] of Object.entries(modules)) {
+            if (module && typeof module.init === 'function') {
+                try {
+                    await module.init();
+                    console.log(`Модуль ${name} инициализирован`);
+                } catch (error) {
+                    console.error(`Ошибка инициализации модуля ${name}:`, error);
+                }
+            } else {
+                console.warn(`Модуль ${name} не найден или не имеет метода init`);
+            }
+        }
+
+        // Обновляем прогресс загрузки
+        this.updateLoadingProgress(50);
+    }
+
+    setupApp() {
+        console.log('Настройка приложения...');
+        
+        // Настройка темы
+        this.setupTheme();
+        
+        // Настройка обработчиков событий
+        this.setupEventHandlers();
+        
+        // Настройка производительности
+        this.setupPerformance();
+        
+        // Инициализация после загрузки
+        this.postLoadInitialization();
+        
+        // Обновляем прогресс загрузки
+        this.updateLoadingProgress(100);
+    }
+
+    setupTheme() {
+        try {
+            // Загружаем сохраненную тему
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            this.setTheme(savedTheme);
+            
+            // Настройка переключателя темы
+            const themeToggle = document.getElementById('theme-toggle');
+            if (themeToggle) {
+                themeToggle.addEventListener('click', () => {
+                    this.toggleTheme();
+                });
+            }
+        } catch (error) {
+            console.error('Ошибка настройки темы:', error);
+        }
+    }
+
+    setTheme(theme) {
+        try {
+            this.currentTheme = theme;
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            
+            // Обновляем иконку переключателя
+            const themeToggle = document.getElementById('theme-toggle');
+            if (themeToggle) {
+                const icon = themeToggle.querySelector('i');
+                if (icon) {
+                    icon.className = theme === 'dark' ? 'icon-sun' : 'icon-moon';
+                }
+            }
+        } catch (error) {
+            console.error('Ошибка установки темы:', error);
+        }
+    }
+
+    toggleTheme() {
+        const newTheme = this.currentTheme === 'light' ? 'dark' : 'light';
+        this.setTheme(newTheme);
+    }
+
+    setupEventHandlers() {
+        try {
+            // Обработка изменения размера окна
+            window.addEventListener('resize', this.handleResize.bind(this));
+            
+            // Обработка скрытия/показа страницы
+            document.addEventListener('visibilitychange', this.handlePageVisibility.bind(this));
+            
+            // Обработка онлайн/офлайн статуса
+            window.addEventListener('online', this.handleOnline.bind(this));
+            window.addEventListener('offline', this.handleOffline.bind(this));
+            
+            // Обработка ошибок
+            window.addEventListener('error', this.handleError.bind(this));
+            window.addEventListener('unhandledrejection', this.handleUnhandledRejection.bind(this));
+            
+        } catch (error) {
+            console.error('Ошибка настройки обработчиков событий:', error);
+        }
+    }
+
+    setupPerformance() {
+        try {
+            if (window.performanceOptimizer && typeof window.performanceOptimizer.optimize === 'function') {
+                window.performanceOptimizer.optimize();
+            }
+        } catch (error) {
+            console.error('Ошибка настройки производительности:', error);
+        }
+    }
+
     postLoadInitialization() {
         try {
             // Показываем главную страницу
-            if (uiComponents && typeof uiComponents.showHome === 'function') {
-                uiComponents.showHome();
+            if (window.uiComponents && typeof window.uiComponents.showHome === 'function') {
+                window.uiComponents.showHome();
             } else {
                 console.error('uiComponents.showHome не найден');
             }
 
             // Настройка Telegram кнопок
-            if (telegramAPI && typeof telegramAPI.hideMainButton === 'function') {
-                telegramAPI.hideMainButton();
+            if (window.telegramAPI && typeof window.telegramAPI.hideMainButton === 'function') {
+                window.telegramAPI.hideMainButton();
             }
-            if (telegramAPI && typeof telegramAPI.hideBackButton === 'function') {
-                telegramAPI.hideBackButton();
+            if (window.telegramAPI && typeof window.telegramAPI.hideBackButton === 'function') {
+                window.telegramAPI.hideBackButton();
             }
 
             // Уведомление о готовности
             console.log('Приложение готово к использованию');
+            
         } catch (error) {
             console.error('Ошибка в postLoadInitialization:', error);
         }
     }
 
-    // Настройка темы
-    setupTheme() {
-        try {
-            // Применяем тему Telegram
-            if (telegramAPI && typeof telegramAPI.getTheme === 'function') {
-                const theme = telegramAPI.getTheme();
-                
-                if (theme) {
-                    // Обновляем CSS переменные
-                    document.documentElement.style.setProperty('--background-dark', theme.bg_color || '#0a0a0a');
-                    document.documentElement.style.setProperty('--text-primary', theme.text_color || '#ffffff');
-                    document.documentElement.style.setProperty('--text-secondary', theme.hint_color || '#b0b0b0');
-                    document.documentElement.style.setProperty('--primary-color', theme.button_color || '#00d4ff');
-                }
-            }
-
-            // Проверяем предпочтения пользователя
-            if (uiComponents && typeof uiComponents.getSettings === 'function') {
-                const settings = uiComponents.getSettings();
-                if (!settings.darkMode) {
-                    document.body.classList.add('light-theme');
-                }
-            }
-        } catch (error) {
-            console.error('Ошибка в setupTheme:', error);
+    updateLoadingProgress(percent) {
+        const progressBar = document.querySelector('.loading-progress-bar');
+        if (progressBar) {
+            progressBar.style.width = `${percent}%`;
         }
     }
 
-    // Настройка обработчиков событий
-    setupEventListeners() {
-        // Обработка ошибок
-        window.addEventListener('error', (e) => {
-            console.error('Ошибка приложения:', e.error);
-            this.handleError(e.error);
-        });
+    hideLoadingScreen() {
+        try {
+            const loadingScreen = document.querySelector('.loading-screen');
+            if (loadingScreen) {
+                loadingScreen.classList.add('hidden');
+                setTimeout(() => {
+                    loadingScreen.style.display = 'none';
+                }, 500);
+            }
+            this.isLoading = false;
+        } catch (error) {
+            console.error('Ошибка скрытия экрана загрузки:', error);
+        }
+    }
 
-        // Обработка необработанных промисов
-        window.addEventListener('unhandledrejection', (e) => {
-            console.error('Необработанная ошибка промиса:', e.reason);
-            this.handleError(e.reason);
-        });
+    handleError(error) {
+        console.error('Ошибка приложения:', error);
+        
+        // Показываем уведомление об ошибке
+        if (window.uiComponents && typeof window.uiComponents.showNotification === 'function') {
+            window.uiComponents.showNotification('Произошла ошибка. Попробуйте обновить страницу.', 'error');
+        }
+        
+        // Логируем ошибку для аналитики
+        this.logError(error);
+    }
 
-        // Обработка изменения размера окна
-        window.addEventListener('resize', this.debounce(() => {
-            this.handleResize();
-        }, 250));
+    handleUnhandledRejection(event) {
+        console.error('Необработанное отклонение промиса:', event.reason);
+        this.handleError(new Error('Необработанное отклонение промиса: ' + event.reason));
+    }
 
-        // Обработка видимости страницы
-        document.addEventListener('visibilitychange', () => {
+    handleResize() {
+        try {
+            // Обновляем размеры и позиции элементов
+            if (window.performanceOptimizer && typeof window.performanceOptimizer.handleResize === 'function') {
+                window.performanceOptimizer.handleResize();
+            }
+        } catch (error) {
+            console.error('Ошибка обработки изменения размера:', error);
+        }
+    }
+
+    handlePageVisibility() {
+        try {
             if (document.hidden) {
                 this.handlePageHidden();
             } else {
                 this.handlePageVisible();
             }
-        });
-
-        // Обработка онлайн/офлайн статуса
-        window.addEventListener('online', () => {
-            this.handleOnline();
-        });
-
-        window.addEventListener('offline', () => {
-            this.handleOffline();
-        });
-    }
-
-    // Обработка ошибок
-    handleError(error) {
-        console.error('Ошибка приложения:', error);
-        
-        // Показываем уведомление пользователю
-        if (uiComponents && typeof uiComponents.showNotification === 'function') {
-            uiComponents.showNotification('Произошла ошибка. Попробуйте обновить страницу.', 'error');
-        }
-
-        // Отправляем отчет об ошибке (в реальном приложении)
-        this.sendErrorReport(error);
-    }
-
-    // Отправка отчета об ошибке
-    sendErrorReport(error) {
-        const errorReport = {
-            message: error.message || 'Unknown error',
-            stack: error.stack,
-            timestamp: new Date().toISOString(),
-            userAgent: navigator.userAgent,
-            url: window.location.href
-        };
-
-        console.log('Отчет об ошибке:', errorReport);
-        // В реальном приложении здесь была бы отправка на сервер
-    }
-
-    // Обработка изменения размера окна
-    handleResize() {
-        // Пересчитываем размеры элементов
-        if (performanceOptimizer && typeof performanceOptimizer.optimizeForMobile === 'function') {
-            performanceOptimizer.optimizeForMobile();
-        }
-
-        // Обновляем отображение
-        if (uiComponents && typeof uiComponents.updateCartDisplay === 'function') {
-            uiComponents.updateCartDisplay();
+        } catch (error) {
+            console.error('Ошибка обработки видимости страницы:', error);
         }
     }
 
-    // Обработка скрытия страницы
     handlePageHidden() {
-        console.log('Страница скрыта');
-        
-        // Сохраняем состояние
-        if (uiComponents && typeof uiComponents.saveCartToStorage === 'function') {
-            uiComponents.saveCartToStorage();
-        }
-
-        // Останавливаем анимации для экономии ресурсов
-        this.pauseAnimations();
-    }
-
-    // Обработка показа страницы
-    handlePageVisible() {
-        console.log('Страница видна');
-        
-        // Возобновляем анимации
-        this.resumeAnimations();
-
-        // Обновляем данные если нужно
-        this.refreshData();
-    }
-
-    // Обработка подключения к интернету
-    handleOnline() {
-        console.log('Подключение к интернету восстановлено');
-        
-        if (uiComponents && typeof uiComponents.showNotification === 'function') {
-            uiComponents.showNotification('Подключение к интернету восстановлено');
-        }
-
-        // Обновляем данные
-        this.refreshData();
-    }
-
-    // Обработка отключения от интернету
-    handleOffline() {
-        console.log('Подключение к интернету потеряно');
-        
-        if (uiComponents && typeof uiComponents.showNotification === 'function') {
-            uiComponents.showNotification('Подключение к интернету потеряно', 'error');
-        }
-    }
-
-    // Приостановка анимаций
-    pauseAnimations() {
-        const animatedElements = document.querySelectorAll('.animated, .product-card, .category-card');
-        animatedElements.forEach(element => {
-            element.style.animationPlayState = 'paused';
-        });
-    }
-
-    // Возобновление анимаций
-    resumeAnimations() {
-        const animatedElements = document.querySelectorAll('.animated, .product-card, .category-card');
-        animatedElements.forEach(element => {
-            element.style.animationPlayState = 'running';
-        });
-    }
-
-    // Обновление данных
-    refreshData() {
-        // В реальном приложении здесь была бы синхронизация с сервером
-        console.log('Обновление данных...');
-    }
-
-    // Дебаунсинг для оптимизации
-    debounce(func, delay) {
-        let timeoutId;
-        return function (...args) {
-            clearTimeout(timeoutId);
-            timeoutId = setTimeout(() => func.apply(this, args), delay);
-        };
-    }
-
-    // Получение информации о приложении
-    getAppInfo() {
-        return {
-            name: 'АвтоЗапчасти',
-            version: '1.0.0',
-            platform: telegramAPI.isTelegram() ? 'Telegram' : 'Web',
-            userAgent: navigator.userAgent,
-            screenSize: {
-                width: window.innerWidth,
-                height: window.innerHeight
-            },
-            timestamp: new Date().toISOString()
-        };
-    }
-
-    // Экспорт данных приложения
-    exportAppData() {
-        const data = {
-            appInfo: this.getAppInfo(),
-            cart: uiComponents ? uiComponents.cart : [],
-            favorites: uiComponents && typeof uiComponents.getFavorites === 'function' ? uiComponents.getFavorites() : [],
-            settings: uiComponents && typeof uiComponents.getSettings === 'function' ? uiComponents.getSettings() : {},
-            orders: DataService && typeof DataService.getOrderHistory === 'function' ? DataService.getOrderHistory() : []
-        };
-
-        return data;
-    }
-
-    // Импорт данных приложения
-    importAppData(data) {
         try {
-            if (data.cart && uiComponents) {
-                uiComponents.cart = data.cart;
-                if (typeof uiComponents.saveCartToStorage === 'function') {
-                    uiComponents.saveCartToStorage();
+            // Сохраняем состояние приложения
+            this.saveAppState();
+            
+            // Приостанавливаем анимации и таймеры
+            if (window.performanceOptimizer && typeof window.performanceOptimizer.pauseAnimations === 'function') {
+                window.performanceOptimizer.pauseAnimations();
+            }
+        } catch (error) {
+            console.error('Ошибка обработки скрытия страницы:', error);
+        }
+    }
+
+    handlePageVisible() {
+        try {
+            // Восстанавливаем состояние приложения
+            this.restoreAppState();
+            
+            // Возобновляем анимации
+            if (window.performanceOptimizer && typeof window.performanceOptimizer.resumeAnimations === 'function') {
+                window.performanceOptimizer.resumeAnimations();
+            }
+        } catch (error) {
+            console.error('Ошибка обработки показа страницы:', error);
+        }
+    }
+
+    handleOnline() {
+        try {
+            console.log('Приложение онлайн');
+            if (window.uiComponents && typeof window.uiComponents.showNotification === 'function') {
+                window.uiComponents.showNotification('Соединение восстановлено', 'success');
+            }
+        } catch (error) {
+            console.error('Ошибка обработки онлайн статуса:', error);
+        }
+    }
+
+    handleOffline() {
+        try {
+            console.log('Приложение офлайн');
+            if (window.uiComponents && typeof window.uiComponents.showNotification === 'function') {
+                window.uiComponents.showNotification('Нет соединения с интернетом', 'warning');
+            }
+        } catch (error) {
+            console.error('Ошибка обработки офлайн статуса:', error);
+        }
+    }
+
+    saveAppState() {
+        try {
+            const state = {
+                currentScreen: window.uiComponents?.currentScreen || 'home',
+                cart: window.uiComponents?.cart || [],
+                favorites: window.uiComponents?.favorites || [],
+                theme: this.currentTheme,
+                timestamp: Date.now()
+            };
+            
+            localStorage.setItem('app_state', JSON.stringify(state));
+        } catch (error) {
+            console.error('Ошибка сохранения состояния приложения:', error);
+        }
+    }
+
+    restoreAppState() {
+        try {
+            const savedState = localStorage.getItem('app_state');
+            if (savedState) {
+                const state = JSON.parse(savedState);
+                
+                // Проверяем актуальность состояния (не старше 1 часа)
+                if (Date.now() - state.timestamp < 3600000) {
+                    this.currentTheme = state.theme || 'light';
+                    this.setTheme(this.currentTheme);
                 }
-                if (typeof uiComponents.updateCartBadge === 'function') {
-                    uiComponents.updateCartBadge();
-                }
             }
+        } catch (error) {
+            console.error('Ошибка восстановления состояния приложения:', error);
+        }
+    }
 
-            if (data.favorites && uiComponents) {
-                localStorage.setItem('autoparts_favorites', JSON.stringify(data.favorites));
+    logError(error) {
+        try {
+            const errorLog = {
+                message: error.message,
+                stack: error.stack,
+                timestamp: new Date().toISOString(),
+                userAgent: navigator.userAgent,
+                url: window.location.href
+            };
+            
+            // В реальном приложении здесь был бы отправка на сервер
+            console.error('Лог ошибки:', errorLog);
+            
+            // Сохраняем в localStorage для отладки
+            const errorLogs = JSON.parse(localStorage.getItem('error_logs') || '[]');
+            errorLogs.push(errorLog);
+            
+            // Ограничиваем количество логов
+            if (errorLogs.length > 10) {
+                errorLogs.shift();
             }
+            
+            localStorage.setItem('error_logs', JSON.stringify(errorLogs));
+        } catch (logError) {
+            console.error('Ошибка логирования:', logError);
+        }
+    }
 
-            if (data.settings && uiComponents && typeof uiComponents.saveSettings === 'function') {
-                uiComponents.saveSettings(data.settings);
-            }
-
-            console.log('Данные успешно импортированы');
+    // Методы для работы с данными
+    exportAppData() {
+        try {
+            const data = {
+                cart: window.uiComponents?.cart || [],
+                favorites: window.uiComponents?.favorites || [],
+                orders: window.uiComponents?.getOrders() || [],
+                settings: {
+                    theme: this.currentTheme
+                },
+                timestamp: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `autoparts_data_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
             return true;
         } catch (error) {
-            console.error('Ошибка импорта данных:', error);
+            console.error('Ошибка экспорта данных:', error);
             return false;
         }
     }
 
-    // Очистка всех данных приложения
+    importAppData(file) {
+        return new Promise((resolve, reject) => {
+            try {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        
+                        // Восстанавливаем данные
+                        if (data.cart && window.uiComponents) {
+                            window.uiComponents.cart = data.cart;
+                            window.uiComponents.saveCart();
+                        }
+                        
+                        if (data.favorites && window.uiComponents) {
+                            window.uiComponents.favorites = data.favorites;
+                            window.uiComponents.saveFavorites();
+                        }
+                        
+                        if (data.orders && window.uiComponents) {
+                            localStorage.setItem('orders', JSON.stringify(data.orders));
+                        }
+                        
+                        if (data.settings?.theme) {
+                            this.setTheme(data.settings.theme);
+                        }
+                        
+                        // Обновляем интерфейс
+                        if (window.uiComponents) {
+                            window.uiComponents.updateCartBadge();
+                            window.uiComponents.updateFavoritesBadge();
+                        }
+                        
+                        resolve(true);
+                    } catch (parseError) {
+                        reject(new Error('Неверный формат файла'));
+                    }
+                };
+                reader.onerror = () => reject(new Error('Ошибка чтения файла'));
+                reader.readAsText(file);
+            } catch (error) {
+                reject(error);
+            }
+        });
+    }
+
     clearAllData() {
         try {
-            // Очищаем localStorage
+            // Очищаем все данные
             localStorage.clear();
-
-            // Сбрасываем состояние компонентов
-            if (uiComponents) {
-                uiComponents.cart = [];
-                if (typeof uiComponents.updateCartBadge === 'function') {
-                    uiComponents.updateCartBadge();
-                }
-                if (typeof uiComponents.updateCartDisplay === 'function') {
-                    uiComponents.updateCartDisplay();
-                }
+            
+            // Сбрасываем состояние приложения
+            if (window.uiComponents) {
+                window.uiComponents.cart = [];
+                window.uiComponents.favorites = [];
+                window.uiComponents.updateCartBadge();
+                window.uiComponents.updateFavoritesBadge();
             }
-
-            // Очищаем кэш
-            if (performanceOptimizer && performanceOptimizer.cache && typeof performanceOptimizer.cache.clear === 'function') {
-                performanceOptimizer.cache.clear();
-            }
-
-            console.log('Все данные приложения очищены');
+            
+            // Сбрасываем тему
+            this.setTheme('light');
+            
             return true;
         } catch (error) {
             console.error('Ошибка очистки данных:', error);
@@ -397,122 +461,224 @@ class AutoPartsApp {
         }
     }
 
-    // Получение статистики приложения
     getAppStats() {
-        const stats = {
-            cartItems: uiComponents ? uiComponents.cart.length : 0,
-            favoritesCount: uiComponents && typeof uiComponents.getFavorites === 'function' ? uiComponents.getFavorites().length : 0,
-            ordersCount: DataService && typeof DataService.getOrderHistory === 'function' ? DataService.getOrderHistory().length : 0,
-            localStorageSize: this.getLocalStorageSize(),
-            uptime: Date.now() - this.startTime,
-            errors: this.errorCount || 0
-        };
-
-        return stats;
-    }
-
-    // Получение размера localStorage
-    getLocalStorageSize() {
-        let size = 0;
-        for (let key in localStorage) {
-            if (localStorage.hasOwnProperty(key)) {
-                size += localStorage[key].length + key.length;
-            }
+        try {
+            const stats = {
+                cartItems: window.uiComponents?.cart?.length || 0,
+                favoritesCount: window.uiComponents?.favorites?.length || 0,
+                ordersCount: window.uiComponents?.getOrders()?.length || 0,
+                theme: this.currentTheme,
+                isOnline: navigator.onLine,
+                userAgent: navigator.userAgent,
+                screenSize: `${window.innerWidth}x${window.innerHeight}`,
+                timestamp: new Date().toISOString()
+            };
+            
+            return stats;
+        } catch (error) {
+            console.error('Ошибка получения статистики:', error);
+            return null;
         }
-        return size;
     }
 
-    // Перезапуск приложения
-    restart() {
-        console.log('Перезапуск приложения...');
-        
-        // Сохраняем важные данные
-        const importantData = this.exportAppData();
-        
-        // Очищаем состояние
-        this.clearAllData();
-        
-        // Перезагружаем страницу
-        setTimeout(() => {
-            window.location.reload();
-        }, 1000);
+    // Методы для тестирования
+    runTests() {
+        try {
+            const tests = [
+                this.testDataLoading(),
+                this.testCartFunctionality(),
+                this.testFavoritesFunctionality(),
+                this.testNavigation(),
+                this.testThemeSwitching()
+            ];
+            
+            return Promise.all(tests);
+        } catch (error) {
+            console.error('Ошибка выполнения тестов:', error);
+            return Promise.reject(error);
+        }
+    }
+
+    async testDataLoading() {
+        try {
+            const categories = window.categories || [];
+            const products = window.products || [];
+            
+            return {
+                name: 'Data Loading',
+                passed: categories.length > 0 && products.length > 0,
+                details: {
+                    categories: categories.length,
+                    products: products.length
+                }
+            };
+        } catch (error) {
+            return {
+                name: 'Data Loading',
+                passed: false,
+                error: error.message
+            };
+        }
+    }
+
+    async testCartFunctionality() {
+        try {
+            if (!window.uiComponents) {
+                throw new Error('UI Components not available');
+            }
+            
+            const initialCartLength = window.uiComponents.cart.length;
+            window.uiComponents.addToCart('test_product');
+            const afterAddLength = window.uiComponents.cart.length;
+            
+            return {
+                name: 'Cart Functionality',
+                passed: afterAddLength > initialCartLength,
+                details: {
+                    initial: initialCartLength,
+                    afterAdd: afterAddLength
+                }
+            };
+        } catch (error) {
+            return {
+                name: 'Cart Functionality',
+                passed: false,
+                error: error.message
+            };
+        }
+    }
+
+    async testFavoritesFunctionality() {
+        try {
+            if (!window.uiComponents) {
+                throw new Error('UI Components not available');
+            }
+            
+            const initialFavoritesLength = window.uiComponents.favorites.length;
+            window.uiComponents.toggleFavorite('test_product');
+            const afterToggleLength = window.uiComponents.favorites.length;
+            
+            return {
+                name: 'Favorites Functionality',
+                passed: afterToggleLength !== initialFavoritesLength,
+                details: {
+                    initial: initialFavoritesLength,
+                    afterToggle: afterToggleLength
+                }
+            };
+        } catch (error) {
+            return {
+                name: 'Favorites Functionality',
+                passed: false,
+                error: error.message
+            };
+        }
+    }
+
+    async testNavigation() {
+        try {
+            if (!window.uiComponents) {
+                throw new Error('UI Components not available');
+            }
+            
+            window.uiComponents.showHome();
+            const homeScreen = document.getElementById('home-screen');
+            
+            return {
+                name: 'Navigation',
+                passed: homeScreen && homeScreen.classList.contains('active'),
+                details: {
+                    homeScreenExists: !!homeScreen,
+                    homeScreenActive: homeScreen?.classList.contains('active')
+                }
+            };
+        } catch (error) {
+            return {
+                name: 'Navigation',
+                passed: false,
+                error: error.message
+            };
+        }
+    }
+
+    async testThemeSwitching() {
+        try {
+            const initialTheme = this.currentTheme;
+            this.toggleTheme();
+            const newTheme = this.currentTheme;
+            
+            return {
+                name: 'Theme Switching',
+                passed: initialTheme !== newTheme,
+                details: {
+                    initialTheme,
+                    newTheme
+                }
+            };
+        } catch (error) {
+            return {
+                name: 'Theme Switching',
+                passed: false,
+                error: error.message
+            };
+        }
     }
 }
 
-// Функция инициализации приложения
+// Инициализация приложения после загрузки страницы
 function initializeApp() {
     try {
-        // Проверяем, что все необходимые модули загружены
-        if (typeof DataService === 'undefined') {
-            console.error('DataService не загружен');
+        console.log('Запуск инициализации приложения...');
+        
+        // Проверяем доступность необходимых модулей
+        if (typeof window.DataService === 'undefined') {
+            console.error('DataService не найден');
             return;
         }
         
-        if (typeof telegramAPI === 'undefined') {
-            console.error('telegramAPI не загружен');
+        if (typeof window.telegramAPI === 'undefined') {
+            console.error('telegramAPI не найден');
             return;
         }
         
-        if (typeof uiComponents === 'undefined') {
-            console.error('uiComponents не загружен');
+        if (typeof window.uiComponents === 'undefined') {
+            console.error('uiComponents не найден');
             return;
         }
         
-        if (typeof performanceOptimizer === 'undefined') {
-            console.error('performanceOptimizer не загружен');
-            return;
-        }
-        
-        // Создание экземпляра приложения
-        const app = new AutoPartsApp();
-        
-        // Экспорт для использования в других модулях
-        window.app = app;
-        
-        console.log('Приложение "АвтоЗапчасти" успешно инициализировано');
+        // Создаем экземпляр приложения
+        window.app = new AutoPartsApp();
         
     } catch (error) {
         console.error('Ошибка инициализации приложения:', error);
         
-        // Показываем ошибку пользователю
-        const loadingScreen = document.getElementById('loading-screen');
-        if (loadingScreen) {
-            loadingScreen.innerHTML = `
-                <div class="loading-container">
-                    <div style="text-align: center; color: #ff6b6b;">
-                        <h2>Произошла ошибка</h2>
-                        <p>Не удалось загрузить приложение</p>
-                        <button onclick="location.reload()" style="
-                            background: #ff6b6b;
-                            color: white;
-                            border: none;
-                            padding: 10px 20px;
-                            border-radius: 8px;
-                            cursor: pointer;
-                            margin-top: 20px;
-                        ">Перезагрузить</button>
-                    </div>
-                </div>
+        // Показываем сообщение об ошибке на экране загрузки
+        const loadingContainer = document.querySelector('.loading-container');
+        if (loadingContainer) {
+            loadingContainer.innerHTML = `
+                <h2 class="loading-title">Ошибка загрузки</h2>
+                <p class="loading-subtitle">Произошла ошибка при инициализации приложения</p>
+                <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; background: white; border: none; border-radius: 8px; cursor: pointer;">
+                    Обновить страницу
+                </button>
             `;
         }
     }
 }
 
-// Глобальные обработчики
+// Запускаем инициализацию после полной загрузки страницы
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeApp);
+} else {
+    // Если DOM уже загружен, запускаем сразу
+    initializeApp();
+}
+
+// Альтернативный способ инициализации через window.onload
 window.addEventListener('load', () => {
-    console.log('Страница загружена, инициализация приложения...');
-    
-    // Даем время всем скриптам загрузиться
-    setTimeout(() => {
-        initializeApp();
-    }, 100);
-});
-
-// Обработка ошибок загрузки ресурсов
-window.addEventListener('error', (e) => {
-    if (e.target.tagName === 'LINK' || e.target.tagName === 'SCRIPT') {
-        console.error('Ошибка загрузки ресурса:', e.target.src || e.target.href);
+    // Дополнительная инициализация после загрузки всех ресурсов
+    if (window.app && !window.app.isInitialized) {
+        console.log('Дополнительная инициализация после загрузки ресурсов...');
+        // Здесь можно добавить дополнительную логику
     }
-}, true);
-
-console.log('Основной модуль приложения загружен'); 
+}); 

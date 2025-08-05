@@ -1,49 +1,25 @@
-/* Анимации для Telegram MiniApp - АвтоЗапчасти */
+/* ===== АНИМАЦИИ ДЛЯ TELEGRAM MINIAPP ===== */
 
-/* Экран загрузки */
-.loading-screen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: var(--bg-primary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 10000;
-    opacity: 1;
-    transition: all var(--transition-slow) ease;
-}
-
-.loading-screen.fade-out {
-    opacity: 0;
-    transform: scale(0.95);
-}
-
-.loading-container {
-    text-align: center;
-    position: relative;
-}
-
-/* Анимация сборки двигателя с 3D эффектами */
+/* ===== 3D ЗАГРУЗКА ЗАПЧАСТЕЙ ===== */
 .engine-assembly {
     position: relative;
-    width: 200px;
-    height: 200px;
-    margin: 0 auto var(--spacing-xl);
+    width: 120px;
+    height: 120px;
+    margin: 0 auto var(--spacing-lg);
     perspective: 1200px;
     transform-style: preserve-3d;
 }
 
 .part {
     position: absolute;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
     border-radius: 12px;
-    background: var(--primary-gradient);
-    box-shadow: var(--shadow-medium);
-    animation: partFloat 3s ease-in-out infinite;
-    border: 2px solid rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.3);
     transform-style: preserve-3d;
+    animation: partFloat 3s ease-in-out infinite;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
 .part::before {
@@ -59,42 +35,30 @@
 }
 
 .part-1 {
-    width: 80px;
-    height: 80px;
-    top: 20px;
-    left: 60px;
+    top: 0;
+    left: 0;
     animation-delay: 0s;
-    background: var(--primary-gradient);
     transform: translateZ(0px);
 }
 
 .part-2 {
-    width: 60px;
-    height: 60px;
-    top: 80px;
-    left: 20px;
+    top: 30px;
+    left: 30px;
     animation-delay: 0.5s;
-    background: var(--secondary-gradient);
     transform: translateZ(20px);
 }
 
 .part-3 {
-    width: 70px;
-    height: 70px;
-    top: 100px;
-    right: 20px;
+    top: 60px;
+    left: 0;
     animation-delay: 1s;
-    background: var(--accent-gradient);
     transform: translateZ(40px);
 }
 
 .part-4 {
-    width: 50px;
-    height: 50px;
-    top: 40px;
-    right: 60px;
+    top: 30px;
+    left: 60px;
     animation-delay: 1.5s;
-    background: var(--success-gradient);
     transform: translateZ(60px);
 }
 
@@ -117,303 +81,30 @@
     }
 }
 
-/* Анимация сборки */
-.engine-assembly.assembling .part {
-    animation: assemble 2s ease-in-out forwards;
-}
-
-@keyframes assemble {
-    0% {
-        transform: translateY(0px) rotate(0deg) scale(1);
-        opacity: 0.7;
-    }
-    50% {
-        transform: translateY(-20px) rotate(180deg) scale(1.1);
-        opacity: 1;
-    }
-    100% {
-        transform: translateY(0px) rotate(360deg) scale(1);
-        opacity: 1;
-    }
-}
-
-/* Текст загрузки */
-.loading-text {
-    position: relative;
-    z-index: 1;
-}
-
-.loading-text h2 {
-    font-size: 2.5rem;
-    font-weight: 700;
-    background: var(--primary-gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: var(--spacing-md);
-    animation: textGlow 2s ease-in-out infinite alternate;
-}
-
-@keyframes textGlow {
-    0% {
-        filter: drop-shadow(0 0 5px rgba(102, 126, 234, 0.3));
-    }
-    100% {
-        filter: drop-shadow(0 0 20px rgba(102, 126, 234, 0.6));
-    }
-}
-
-.loading-text p {
-    color: var(--text-secondary);
-    font-size: 1.1rem;
-    animation: textPulse 1.5s ease-in-out infinite;
-}
-
-@keyframes textPulse {
-    0%, 100% {
-        opacity: 0.7;
-        transform: scale(1);
-    }
-    50% {
-        opacity: 1;
-        transform: scale(1.05);
-    }
-}
-
-/* Прогресс-бар загрузки */
-.loading-progress {
-    width: 200px;
-    height: 4px;
-    background: var(--bg-tertiary);
-    border-radius: 2px;
-    margin: var(--spacing-lg) auto 0;
-    overflow: hidden;
-    position: relative;
-}
-
-.loading-progress-bar {
-    height: 100%;
-    background: var(--accent-gradient);
-    border-radius: 2px;
-    width: 0%;
-    animation: progressFill 3s ease-in-out forwards;
-    position: relative;
-}
-
-.loading-progress-bar::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-    animation: progressShimmer 1.5s ease-in-out infinite;
-}
-
-@keyframes progressFill {
-    0% { width: 0%; }
-    100% { width: 100%; }
-}
-
-@keyframes progressShimmer {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
-}
-
-/* Анимации переходов между экранами */
-.screen {
-    animation: screenEnter var(--transition-normal) ease;
-}
-
-@keyframes screenEnter {
+/* ===== АНИМАЦИИ ПОЯВЛЕНИЯ ===== */
+@keyframes fadeInUp {
     from {
         opacity: 0;
-        transform: translateY(30px) scale(0.95);
+        transform: translateY(30px);
     }
     to {
         opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-.screen.exit {
-    animation: screenExit var(--transition-normal) ease forwards;
-}
-
-@keyframes screenExit {
-    from {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-    to {
-        opacity: 0;
-        transform: translateY(-30px) scale(0.95);
-    }
-}
-
-/* Анимации карточек */
-.category-card,
-.product-card {
-    animation: cardAppear 0.6s ease backwards;
-}
-
-.category-card:nth-child(1) { animation-delay: 0.1s; }
-.category-card:nth-child(2) { animation-delay: 0.2s; }
-.category-card:nth-child(3) { animation-delay: 0.3s; }
-.category-card:nth-child(4) { animation-delay: 0.4s; }
-
-@keyframes cardAppear {
-    from {
-        opacity: 0;
-        transform: translateY(40px) scale(0.9);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-/* Анимации кнопок */
-.nav-btn,
-.back-btn,
-.add-to-cart-btn,
-.checkout-btn,
-.submit-btn {
-    position: relative;
-    overflow: hidden;
-}
-
-.nav-btn::before,
-.back-btn::before,
-.add-to-cart-btn::before,
-.checkout-btn::before,
-.submit-btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-    transition: left var(--transition-slow);
-}
-
-.nav-btn:hover::before,
-.back-btn:hover::before,
-.add-to-cart-btn:hover::before,
-.checkout-btn:hover::before,
-.submit-btn:hover::before {
-    left: 100%;
-}
-
-/* Анимации иконок */
-.category-icon {
-    animation: iconFloat 3s ease-in-out infinite;
-}
-
-@keyframes iconFloat {
-    0%, 100% {
-        transform: translateY(0px);
-    }
-    50% {
-        transform: translateY(-5px);
-    }
-}
-
-/* Анимации модальных окон */
-.modal {
-    animation: modalBackdrop var(--transition-normal) ease;
-}
-
-@keyframes modalBackdrop {
-    from {
-        opacity: 0;
-        backdrop-filter: blur(0px);
-    }
-    to {
-        opacity: 1;
-        backdrop-filter: blur(10px);
-    }
-}
-
-.modal-content {
-    animation: modalContent var(--transition-normal) ease;
-}
-
-@keyframes modalContent {
-    from {
-        opacity: 0;
-        transform: scale(0.8) translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
-}
-
-/* Анимации уведомлений */
-.notification {
-    animation: notificationSlide var(--transition-normal) ease;
-}
-
-@keyframes notificationSlide {
-    from {
-        transform: translateX(100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
-}
-
-/* Анимации поиска */
-.search-bar {
-    animation: searchSlide var(--transition-normal) ease;
-}
-
-@keyframes searchSlide {
-    from {
-        transform: translateY(-100%);
-        opacity: 0;
-    }
-    to {
         transform: translateY(0);
-        opacity: 1;
     }
 }
 
-/* Анимации корзины */
-.cart-item {
-    animation: cartItemAppear 0.4s ease backwards;
-}
-
-.cart-item:nth-child(1) { animation-delay: 0.1s; }
-.cart-item:nth-child(2) { animation-delay: 0.2s; }
-.cart-item:nth-child(3) { animation-delay: 0.3s; }
-
-@keyframes cartItemAppear {
+@keyframes fadeInDown {
     from {
         opacity: 0;
-        transform: translateX(-20px);
+        transform: translateY(-30px);
     }
     to {
         opacity: 1;
-        transform: translateX(0);
+        transform: translateY(0);
     }
 }
 
-/* Анимации профиля */
-.profile-menu-item {
-    animation: menuItemSlide 0.4s ease backwards;
-}
-
-.profile-menu-item:nth-child(1) { animation-delay: 0.1s; }
-.profile-menu-item:nth-child(2) { animation-delay: 0.2s; }
-.profile-menu-item:nth-child(3) { animation-delay: 0.3s; }
-
-@keyframes menuItemSlide {
+@keyframes fadeInLeft {
     from {
         opacity: 0;
         transform: translateX(-30px);
@@ -424,94 +115,112 @@
     }
 }
 
-/* Анимации заказов */
-.order-item {
-    animation: orderItemAppear 0.5s ease backwards;
-}
-
-.order-item:nth-child(1) { animation-delay: 0.1s; }
-.order-item:nth-child(2) { animation-delay: 0.2s; }
-.order-item:nth-child(3) { animation-delay: 0.3s; }
-
-@keyframes orderItemAppear {
+@keyframes fadeInRight {
     from {
         opacity: 0;
-        transform: translateY(20px) scale(0.95);
+        transform: translateX(30px);
     }
     to {
         opacity: 1;
-        transform: translateY(0) scale(1);
+        transform: translateX(0);
     }
 }
 
-/* Анимации успеха */
-.success-animation {
-    animation: successBounce 1s ease-in-out;
-}
-
-@keyframes successBounce {
-    0% {
-        transform: scale(0);
+@keyframes scaleIn {
+    from {
         opacity: 0;
+        transform: scale(0.8);
     }
-    50% {
-        transform: scale(1.3);
+    to {
         opacity: 1;
-    }
-    100% {
         transform: scale(1);
-        opacity: 1;
     }
 }
 
-/* Анимации shimmer эффектов */
-.shimmer {
-    position: relative;
-    overflow: hidden;
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-.shimmer::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-    animation: shimmer 2s infinite;
+/* ===== АНИМАЦИИ КАРТОЧЕК ===== */
+.category-card {
+    animation: fadeInUp 0.6s ease forwards;
 }
 
-@keyframes shimmer {
+.category-card:nth-child(1) { animation-delay: 0.1s; }
+.category-card:nth-child(2) { animation-delay: 0.2s; }
+.category-card:nth-child(3) { animation-delay: 0.3s; }
+.category-card:nth-child(4) { animation-delay: 0.4s; }
+.category-card:nth-child(5) { animation-delay: 0.5s; }
+.category-card:nth-child(6) { animation-delay: 0.6s; }
+
+.product-card {
+    animation: scaleIn 0.5s ease forwards;
+}
+
+.product-card:nth-child(1) { animation-delay: 0.1s; }
+.product-card:nth-child(2) { animation-delay: 0.15s; }
+.product-card:nth-child(3) { animation-delay: 0.2s; }
+.product-card:nth-child(4) { animation-delay: 0.25s; }
+.product-card:nth-child(5) { animation-delay: 0.3s; }
+.product-card:nth-child(6) { animation-delay: 0.35s; }
+
+/* ===== АНИМАЦИИ КНОПОК ===== */
+@keyframes buttonPulse {
     0% {
-        transform: translateX(-100%);
-    }
-    100% {
-        transform: translateX(100%);
-    }
-}
-
-/* Анимации пульсации */
-.pulse {
-    animation: pulse 2s ease-in-out infinite;
-}
-
-@keyframes pulse {
-    0%, 100% {
         transform: scale(1);
-        opacity: 1;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     }
     50% {
         transform: scale(1.05);
-        opacity: 0.8;
+        box-shadow: 0 6px 30px rgba(0, 0, 0, 0.15);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     }
 }
 
-/* Анимации вращения */
-.rotate {
-    animation: rotate 2s linear infinite;
+@keyframes buttonShake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    10%, 30%, 50%, 70%, 90% {
+        transform: translateX(-2px);
+    }
+    20%, 40%, 60%, 80% {
+        transform: translateX(2px);
+    }
 }
 
-@keyframes rotate {
+.btn-add-to-cart:active {
+    animation: buttonPulse 0.3s ease;
+}
+
+.nav-btn:active {
+    animation: buttonShake 0.3s ease;
+}
+
+/* ===== АНИМАЦИИ ИКОНОК ===== */
+@keyframes iconBounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-8px);
+    }
+    60% {
+        transform: translateY(-4px);
+    }
+}
+
+@keyframes iconRotate {
     from {
         transform: rotate(0deg);
     }
@@ -520,12 +229,198 @@
     }
 }
 
-/* Анимации появления текста */
-.text-reveal {
-    animation: textReveal 0.8s ease forwards;
+@keyframes iconPulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+    }
 }
 
-@keyframes textReveal {
+.category-icon:hover {
+    animation: iconBounce 0.6s ease;
+}
+
+.btn-favorite:hover {
+    animation: iconPulse 0.3s ease;
+}
+
+/* ===== АНИМАЦИИ ЗАГРУЗКИ ===== */
+@keyframes loadingSpin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes loadingDots {
+    0%, 20% {
+        opacity: 0;
+        transform: translateY(0);
+    }
+    50% {
+        opacity: 1;
+        transform: translateY(-10px);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(0);
+    }
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-top: 3px solid white;
+    border-radius: 50%;
+    animation: loadingSpin 1s linear infinite;
+}
+
+.loading-dots {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-top: var(--spacing-md);
+}
+
+.loading-dot {
+    width: 8px;
+    height: 8px;
+    background: white;
+    border-radius: 50%;
+    animation: loadingDots 1.4s ease-in-out infinite;
+}
+
+.loading-dot:nth-child(1) { animation-delay: 0s; }
+.loading-dot:nth-child(2) { animation-delay: 0.2s; }
+.loading-dot:nth-child(3) { animation-delay: 0.4s; }
+
+/* ===== АНИМАЦИИ УВЕДОМЛЕНИЙ ===== */
+@keyframes notificationSlideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes notificationSlideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+.notification {
+    animation: notificationSlideIn 0.3s ease;
+}
+
+.notification.hiding {
+    animation: notificationSlideOut 0.3s ease;
+}
+
+/* ===== АНИМАЦИИ МОДАЛЬНЫХ ОКОН ===== */
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8) translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+@keyframes modalFadeOut {
+    from {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: scale(0.8) translateY(-20px);
+    }
+}
+
+.modal {
+    animation: modalFadeIn 0.3s ease;
+}
+
+.modal.closing {
+    animation: modalFadeOut 0.3s ease;
+}
+
+/* ===== АНИМАЦИИ ПРОГРЕССА ===== */
+@keyframes progressFill {
+    from {
+        width: 0%;
+    }
+    to {
+        width: 100%;
+    }
+}
+
+@keyframes progressGlow {
+    0%, 100% {
+        box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+    }
+}
+
+.loading-progress-bar {
+    animation: progressFill 2s ease-in-out, progressGlow 2s ease-in-out infinite;
+}
+
+/* ===== АНИМАЦИИ HOVER ЭФФЕКТОВ ===== */
+@keyframes cardHover {
+    from {
+        transform: translateY(0) scale(1);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+    to {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    }
+}
+
+@keyframes buttonHover {
+    from {
+        transform: translateY(0);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+    to {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    }
+}
+
+/* ===== АНИМАЦИИ ТЕКСТА ===== */
+@keyframes textGlow {
+    0%, 100% {
+        text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    }
+    50% {
+        text-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+    }
+}
+
+@keyframes textSlideIn {
     from {
         opacity: 0;
         transform: translateY(20px);
@@ -536,93 +431,381 @@
     }
 }
 
-/* Анимации градиентов */
-.gradient-shift {
-    background-size: 200% 200%;
-    animation: gradientShift 3s ease infinite;
+.loading-title {
+    animation: textGlow 2s ease-in-out infinite;
 }
 
-@keyframes gradientShift {
-    0% {
+.welcome-banner h2 {
+    animation: textSlideIn 0.8s ease;
+}
+
+.welcome-banner p {
+    animation: textSlideIn 0.8s ease 0.2s both;
+}
+
+/* ===== АНИМАЦИИ ФОНА ===== */
+@keyframes backgroundShift {
+    0%, 100% {
         background-position: 0% 50%;
     }
     50% {
         background-position: 100% 50%;
     }
+}
+
+.app-container {
+    background: linear-gradient(-45deg, #f5f7fa, #c3cfe2, #e0eafc, #f0f4f8);
+    background-size: 400% 400%;
+    animation: backgroundShift 15s ease infinite;
+}
+
+/* ===== АНИМАЦИИ ПЕРЕХОДОВ ЭКРАНОВ ===== */
+@keyframes screenSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes screenSlideOut {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(-100%);
+    }
+}
+
+.screen.sliding-in {
+    animation: screenSlideIn 0.4s ease;
+}
+
+.screen.sliding-out {
+    animation: screenSlideOut 0.4s ease;
+}
+
+/* ===== АНИМАЦИИ КОРЗИНЫ ===== */
+@keyframes cartBounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-10px);
+    }
+    60% {
+        transform: translateY(-5px);
+    }
+}
+
+@keyframes cartItemAdd {
+    0% {
+        opacity: 0;
+        transform: scale(0.5) translateY(20px);
+    }
+    50% {
+        transform: scale(1.1) translateY(-5px);
+    }
     100% {
-        background-position: 0% 50%;
+        opacity: 1;
+        transform: scale(1) translateY(0);
     }
 }
 
-/* Анимации для мобильных устройств */
-@media (max-width: 768px) {
-    .engine-assembly {
-        width: 150px;
-        height: 150px;
+.cart-item.adding {
+    animation: cartItemAdd 0.5s ease;
+}
+
+.nav-btn[data-screen="cart"]:active {
+    animation: cartBounce 0.6s ease;
+}
+
+/* ===== АНИМАЦИИ ПОИСКА ===== */
+@keyframes searchExpand {
+    from {
+        width: 0;
+        opacity: 0;
     }
-    
-    .part-1 {
-        width: 60px;
-        height: 60px;
-        top: 15px;
-        left: 45px;
-    }
-    
-    .part-2 {
-        width: 45px;
-        height: 45px;
-        top: 60px;
-        left: 15px;
-    }
-    
-    .part-3 {
-        width: 50px;
-        height: 50px;
-        top: 75px;
-        right: 15px;
-    }
-    
-    .part-4 {
-        width: 35px;
-        height: 35px;
-        top: 30px;
-        right: 45px;
-    }
-    
-    .loading-text h2 {
-        font-size: 2rem;
-    }
-    
-    .loading-progress {
-        width: 150px;
+    to {
+        width: 100%;
+        opacity: 1;
     }
 }
 
-/* Анимации для устройств с поддержкой prefers-reduced-motion */
+.search-bar.expanding {
+    animation: searchExpand 0.3s ease;
+}
+
+/* ===== АНИМАЦИИ ПРОФИЛЯ ===== */
+@keyframes profileGlow {
+    0%, 100% {
+        box-shadow: 0 10px 40px rgba(102, 126, 234, 0.2);
+    }
+    50% {
+        box-shadow: 0 10px 40px rgba(102, 126, 234, 0.4);
+    }
+}
+
+.profile-header {
+    animation: profileGlow 3s ease-in-out infinite;
+}
+
+/* ===== АНИМАЦИИ СТАТИСТИКИ ===== */
+@keyframes statCountUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.stat-card {
+    animation: statCountUp 0.6s ease forwards;
+}
+
+.stat-card:nth-child(1) { animation-delay: 0.1s; }
+.stat-card:nth-child(2) { animation-delay: 0.2s; }
+.stat-card:nth-child(3) { animation-delay: 0.3s; }
+
+/* ===== АНИМАЦИИ ИСТОРИИ ЗАКАЗОВ ===== */
+@keyframes orderItemSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.order-item {
+    animation: orderItemSlideIn 0.5s ease forwards;
+}
+
+.order-item:nth-child(1) { animation-delay: 0.1s; }
+.order-item:nth-child(2) { animation-delay: 0.2s; }
+.order-item:nth-child(3) { animation-delay: 0.3s; }
+.order-item:nth-child(4) { animation-delay: 0.4s; }
+
+/* ===== АНИМАЦИИ ПУСТЫХ СОСТОЯНИЙ ===== */
+@keyframes emptyStateFloat {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+.empty-state-icon {
+    animation: emptyStateFloat 3s ease-in-out infinite;
+}
+
+/* ===== АНИМАЦИИ ФОРМ ===== */
+@keyframes formFieldFocus {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.02);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.form-input:focus {
+    animation: formFieldFocus 0.3s ease;
+}
+
+/* ===== АНИМАЦИИ ЦЕН ===== */
+@keyframes priceHighlight {
+    0%, 100% {
+        color: var(--text-accent);
+    }
+    50% {
+        color: #28a745;
+    }
+}
+
+.price.updating {
+    animation: priceHighlight 0.5s ease;
+}
+
+/* ===== АНИМАЦИИ СКРОЛЛА ===== */
+@keyframes scrollIndicator {
+    0%, 100% {
+        opacity: 0.5;
+        transform: translateY(0);
+    }
+    50% {
+        opacity: 1;
+        transform: translateY(5px);
+    }
+}
+
+.scroll-indicator {
+    animation: scrollIndicator 2s ease-in-out infinite;
+}
+
+/* ===== АНИМАЦИИ ЗАГРУЗКИ ИЗОБРАЖЕНИЙ ===== */
+@keyframes imageLoad {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.product-image img.loading {
+    animation: imageLoad 0.5s ease;
+}
+
+/* ===== АНИМАЦИИ ОШИБОК ===== */
+@keyframes errorShake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    10%, 30%, 50%, 70%, 90% {
+        transform: translateX(-5px);
+    }
+    20%, 40%, 60%, 80% {
+        transform: translateX(5px);
+    }
+}
+
+.error-shake {
+    animation: errorShake 0.5s ease;
+}
+
+/* ===== АНИМАЦИИ УСПЕХА ===== */
+@keyframes successPulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.success-pulse {
+    animation: successPulse 0.5s ease;
+}
+
+/* ===== АНИМАЦИИ ЗАГРУЗКИ ДАННЫХ ===== */
+@keyframes dataLoad {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.data-loading {
+    animation: dataLoad 0.3s ease;
+}
+
+/* ===== АНИМАЦИИ ПЕРЕКЛЮЧЕНИЯ ТЕМ ===== */
+@keyframes themeTransition {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.theme-transitioning {
+    animation: themeTransition 0.3s ease;
+}
+
+/* ===== АНИМАЦИИ РЕСПОНСИВНОСТИ ===== */
 @media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
+    * {
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
     }
-    
-    .loading-screen {
-        transition: none;
+}
+
+/* ===== АНИМАЦИИ ПРОИЗВОДИТЕЛЬНОСТИ ===== */
+@keyframes performanceOptimize {
+    from {
+        opacity: 0;
     }
-    
-    .part {
-        animation: none;
+    to {
+        opacity: 1;
     }
-    
-    .loading-text h2,
-    .loading-text p {
-        animation: none;
+}
+
+.performance-optimized {
+    animation: performanceOptimize 0.2s ease;
+}
+
+/* ===== АНИМАЦИИ КЭШИРОВАНИЯ ===== */
+@keyframes cacheLoad {
+    0% {
+        transform: scale(0.8);
+        opacity: 0;
     }
-    
-    .loading-progress-bar {
-        animation: none;
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.cache-loaded {
+    animation: cacheLoad 0.3s ease;
+}
+
+/* ===== АНИМАЦИИ ПРЕДЗАГРУЗКИ ===== */
+@keyframes preloadProgress {
+    from {
+        width: 0%;
+    }
+    to {
         width: 100%;
     }
-} 
+}
+
+.preload-progress {
+    animation: preloadProgress 1s ease;
+}
+
+/* ===== АНИМАЦИИ ОЧИСТКИ ПАМЯТИ ===== */
+@keyframes memoryCleanup {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.memory-cleaning {
+    animation: memoryCleanup 0.5s ease;
+}
