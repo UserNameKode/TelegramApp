@@ -63,64 +63,96 @@ class AutoPartsApp {
 
     // Инициализация приложения
     initializeApp() {
-        // Проверяем доступность всех необходимых модулей
-        if (!window.DataService) {
-            console.error('DataService не найден');
-            return;
+        try {
+            // Проверяем доступность всех необходимых модулей
+            if (!window.DataService) {
+                console.error('DataService не найден');
+                return;
+            }
+
+            if (!window.telegramAPI) {
+                console.error('TelegramAPI не найден');
+                return;
+            }
+
+            if (!window.uiComponents) {
+                console.error('UIComponents не найден');
+                return;
+            }
+
+            // Инициализация Telegram API
+            if (typeof telegramAPI.init === 'function') {
+                telegramAPI.init();
+            } else {
+                console.error('telegramAPI.init не найден');
+            }
+
+            // Настройка темы
+            this.setupTheme();
+
+            // Инициализация UI компонентов
+            if (typeof uiComponents.init === 'function') {
+                uiComponents.init();
+            } else {
+                console.error('uiComponents.init не найден');
+            }
+
+            console.log('Приложение инициализировано');
+        } catch (error) {
+            console.error('Ошибка в initializeApp:', error);
         }
-
-        if (!window.telegramAPI) {
-            console.error('TelegramAPI не найден');
-            return;
-        }
-
-        if (!window.uiComponents) {
-            console.error('UIComponents не найден');
-            return;
-        }
-
-        // Инициализация Telegram API
-        telegramAPI.init();
-
-        // Настройка темы
-        this.setupTheme();
-
-        // Инициализация UI компонентов
-        uiComponents.init();
-
-        console.log('Приложение инициализировано');
     }
 
     // Пост-загрузочная инициализация
     postLoadInitialization() {
-        // Показываем главную страницу
-        uiComponents.showHome();
+        try {
+            // Показываем главную страницу
+            if (uiComponents && typeof uiComponents.showHome === 'function') {
+                uiComponents.showHome();
+            } else {
+                console.error('uiComponents.showHome не найден');
+            }
 
-        // Настройка Telegram кнопок
-        telegramAPI.hideMainButton();
-        telegramAPI.hideBackButton();
+            // Настройка Telegram кнопок
+            if (telegramAPI && typeof telegramAPI.hideMainButton === 'function') {
+                telegramAPI.hideMainButton();
+            }
+            if (telegramAPI && typeof telegramAPI.hideBackButton === 'function') {
+                telegramAPI.hideBackButton();
+            }
 
-        // Уведомление о готовности
-        console.log('Приложение готово к использованию');
+            // Уведомление о готовности
+            console.log('Приложение готово к использованию');
+        } catch (error) {
+            console.error('Ошибка в postLoadInitialization:', error);
+        }
     }
 
     // Настройка темы
     setupTheme() {
-        // Применяем тему Telegram
-        const theme = telegramAPI.getTheme();
-        
-        if (theme) {
-            // Обновляем CSS переменные
-            document.documentElement.style.setProperty('--background-dark', theme.bg_color || '#0a0a0a');
-            document.documentElement.style.setProperty('--text-primary', theme.text_color || '#ffffff');
-            document.documentElement.style.setProperty('--text-secondary', theme.hint_color || '#b0b0b0');
-            document.documentElement.style.setProperty('--primary-color', theme.button_color || '#00d4ff');
-        }
+        try {
+            // Применяем тему Telegram
+            if (telegramAPI && typeof telegramAPI.getTheme === 'function') {
+                const theme = telegramAPI.getTheme();
+                
+                if (theme) {
+                    // Обновляем CSS переменные
+                    document.documentElement.style.setProperty('--background-dark', theme.bg_color || '#0a0a0a');
+                    document.documentElement.style.setProperty('--text-primary', theme.text_color || '#ffffff');
+                    document.documentElement.style.setProperty('--text-secondary', theme.hint_color || '#b0b0b0');
+                    document.documentElement.style.setProperty('--primary-color', theme.button_color || '#00d4ff');
+                }
+            }
 
-        // Проверяем предпочтения пользователя
-        const settings = uiComponents.getSettings();
-        if (!settings.darkMode) {
-            document.body.classList.add('light-theme');
+            // Проверяем предпочтения пользователя
+            if (uiComponents && typeof uiComponents.getSettings === 'function') {
+                const settings = uiComponents.getSettings();
+                if (!settings.darkMode) {
+                    document.body.classList.add('light-theme');
+                }
+            }
+        } catch (error) {
+            console.error('Ошибка в setupTheme:', error);
         }
     }
 
@@ -167,7 +199,7 @@ class AutoPartsApp {
         console.error('Ошибка приложения:', error);
         
         // Показываем уведомление пользователю
-        if (uiComponents) {
+        if (uiComponents && typeof uiComponents.showNotification === 'function') {
             uiComponents.showNotification('Произошла ошибка. Попробуйте обновить страницу.', 'error');
         }
 
@@ -192,12 +224,12 @@ class AutoPartsApp {
     // Обработка изменения размера окна
     handleResize() {
         // Пересчитываем размеры элементов
-        if (performanceOptimizer) {
+        if (performanceOptimizer && typeof performanceOptimizer.optimizeForMobile === 'function') {
             performanceOptimizer.optimizeForMobile();
         }
 
         // Обновляем отображение
-        if (uiComponents) {
+        if (uiComponents && typeof uiComponents.updateCartDisplay === 'function') {
             uiComponents.updateCartDisplay();
         }
     }
@@ -207,7 +239,7 @@ class AutoPartsApp {
         console.log('Страница скрыта');
         
         // Сохраняем состояние
-        if (uiComponents) {
+        if (uiComponents && typeof uiComponents.saveCartToStorage === 'function') {
             uiComponents.saveCartToStorage();
         }
 
@@ -230,7 +262,7 @@ class AutoPartsApp {
     handleOnline() {
         console.log('Подключение к интернету восстановлено');
         
-        if (uiComponents) {
+        if (uiComponents && typeof uiComponents.showNotification === 'function') {
             uiComponents.showNotification('Подключение к интернету восстановлено');
         }
 
@@ -242,7 +274,7 @@ class AutoPartsApp {
     handleOffline() {
         console.log('Подключение к интернету потеряно');
         
-        if (uiComponents) {
+        if (uiComponents && typeof uiComponents.showNotification === 'function') {
             uiComponents.showNotification('Подключение к интернету потеряно', 'error');
         }
     }
@@ -298,9 +330,9 @@ class AutoPartsApp {
         const data = {
             appInfo: this.getAppInfo(),
             cart: uiComponents ? uiComponents.cart : [],
-            favorites: uiComponents ? uiComponents.getFavorites() : [],
-            settings: uiComponents ? uiComponents.getSettings() : {},
-            orders: DataService ? DataService.getOrderHistory() : []
+            favorites: uiComponents && typeof uiComponents.getFavorites === 'function' ? uiComponents.getFavorites() : [],
+            settings: uiComponents && typeof uiComponents.getSettings === 'function' ? uiComponents.getSettings() : {},
+            orders: DataService && typeof DataService.getOrderHistory === 'function' ? DataService.getOrderHistory() : []
         };
 
         return data;
@@ -311,15 +343,19 @@ class AutoPartsApp {
         try {
             if (data.cart && uiComponents) {
                 uiComponents.cart = data.cart;
-                uiComponents.saveCartToStorage();
-                uiComponents.updateCartBadge();
+                if (typeof uiComponents.saveCartToStorage === 'function') {
+                    uiComponents.saveCartToStorage();
+                }
+                if (typeof uiComponents.updateCartBadge === 'function') {
+                    uiComponents.updateCartBadge();
+                }
             }
 
             if (data.favorites && uiComponents) {
                 localStorage.setItem('autoparts_favorites', JSON.stringify(data.favorites));
             }
 
-            if (data.settings && uiComponents) {
+            if (data.settings && uiComponents && typeof uiComponents.saveSettings === 'function') {
                 uiComponents.saveSettings(data.settings);
             }
 
@@ -340,12 +376,16 @@ class AutoPartsApp {
             // Сбрасываем состояние компонентов
             if (uiComponents) {
                 uiComponents.cart = [];
-                uiComponents.updateCartBadge();
-                uiComponents.updateCartDisplay();
+                if (typeof uiComponents.updateCartBadge === 'function') {
+                    uiComponents.updateCartBadge();
+                }
+                if (typeof uiComponents.updateCartDisplay === 'function') {
+                    uiComponents.updateCartDisplay();
+                }
             }
 
             // Очищаем кэш
-            if (performanceOptimizer && performanceOptimizer.cache) {
+            if (performanceOptimizer && performanceOptimizer.cache && typeof performanceOptimizer.cache.clear === 'function') {
                 performanceOptimizer.cache.clear();
             }
 
@@ -361,8 +401,8 @@ class AutoPartsApp {
     getAppStats() {
         const stats = {
             cartItems: uiComponents ? uiComponents.cart.length : 0,
-            favoritesCount: uiComponents ? uiComponents.getFavorites().length : 0,
-            ordersCount: DataService ? DataService.getOrderHistory().length : 0,
+            favoritesCount: uiComponents && typeof uiComponents.getFavorites === 'function' ? uiComponents.getFavorites().length : 0,
+            ordersCount: DataService && typeof DataService.getOrderHistory === 'function' ? DataService.getOrderHistory().length : 0,
             localStorageSize: this.getLocalStorageSize(),
             uptime: Date.now() - this.startTime,
             errors: this.errorCount || 0
