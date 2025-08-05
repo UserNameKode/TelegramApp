@@ -106,10 +106,12 @@ class TelegramAPI {
             text_color: '#ffffff'
         });
 
-        // Настройка кнопки назад
-        this.webApp.BackButton.onClick(() => {
-            this.handleBackButton();
-        });
+        // Настройка кнопки назад (с проверкой поддержки)
+        if (this.webApp.BackButton && this.webApp.BackButton.onClick) {
+            this.webApp.BackButton.onClick(() => {
+                this.handleBackButton();
+            });
+        }
     }
 
     // Показать главную кнопку

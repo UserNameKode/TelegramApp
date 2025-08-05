@@ -102,6 +102,26 @@ const products = {
             inStock: true,
             icon: 'disc',
             image: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=300&h=300&fit=crop&crop=center'
+        },
+        {
+            id: 'brakes_003',
+            name: 'Тормозная жидкость',
+            description: 'Высококачественная тормозная жидкость DOT 4',
+            price: 350,
+            brand: 'Castrol',
+            inStock: true,
+            icon: 'fluid',
+            image: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=300&h=300&fit=crop&crop=center'
+        },
+        {
+            id: 'brakes_004',
+            name: 'Тормозные шланги',
+            description: 'Гибкие тормозные шланги высокого давления',
+            price: 1200,
+            brand: 'Goodridge',
+            inStock: true,
+            icon: 'hose',
+            image: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=300&h=300&fit=crop&crop=center'
         }
     ],
     suspension: [
@@ -268,4 +288,10 @@ const DataService = {
 };
 
 // Экспорт для использования в других модулях
-window.DataService = DataService; 
+window.DataService = DataService;
+
+// Убеждаемся, что DataService доступен глобально
+if (typeof window !== 'undefined') {
+    window.DataService = DataService;
+    console.log('DataService экспортирован в window');
+} 
