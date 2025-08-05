@@ -170,6 +170,9 @@ class AutoPartsApp {
 
     postLoadInitialization() {
         try {
+            // Скрываем экран загрузки
+            this.hideLoadingScreen();
+            
             // Показываем главную страницу
             if (window.uiComponents && typeof window.uiComponents.showHome === 'function') {
                 window.uiComponents.showHome();

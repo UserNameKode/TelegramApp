@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>АвтоЗапчасти - Telegram MiniApp</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="components.css">
+    <link rel="stylesheet" href="animations.css">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loading-container">
+            <div class="engine-assembly">
+                <div class="part part-1"></div>
+                <div class="part part-2"></div>
+                <div class="part part-3"></div>
+                <div class="part part-4"></div>
+            </div>
+            <div class="loading-text">
+                <h2>АвтоЗапчасти</h2>
+                <p>Сборка компонентов...</p>
+            </div>
+            <div class="loading-progress">
+                <div class="loading-progress-bar"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App Container -->
+    <div id="app" class="app-container">
+        <!-- Navigation -->
+        <nav class="nav-bar">
+            <div class="nav-content">
+                <div class="nav-brand">
+                    <h1>АвтоЗапчасти</h1>
+                </div>
+                <div class="nav-actions">
+                    <button id="search-btn" class="nav-btn">
+                        <span class="icon">🔍</span>
+                    </button>
+                    <button id="cart-btn" class="nav-btn">
+                        <span class="icon">🛒</span>
+                        <span id="cart-count" class="cart-count">0</span>
+                    </button>
+                    <button id="profile-btn" class="nav-btn">
+                        <span class="icon">👤</span>
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Search Bar -->
+        <div id="search-bar" class="search-bar" style="display: none;">
+            <input type="text" id="search-input" placeholder="Поиск автозапчастей...">
+            <button id="search-close" class="search-close">✕</button>
+        </div>
+
+        <!-- Main Content -->
+        <main id="main-content" class="main-content">
+            <!-- Home Screen -->
+            <div id="home-screen" class="screen active">
+                <div class="welcome-banner">
+                    <h2>Добро пожаловать в мир качественных автозапчастей</h2>
+                    <p>Найдите нужные детали для вашего автомобиля</p>
+                    <div class="quick-stats">
+                        <div class="stat-item">
+                            <span class="stat-number">150+</span>
+                            <span class="stat-label">Товаров</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">4</span>
+                            <span class="stat-label">Категории</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">24/7</span>
+                            <span class="stat-label">Поддержка</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="featured-section">
+                    <h3>🔥 Популярные категории</h3>
+                    <div class="categories-grid">
+                        <div class="category-card featured" data-category="engine">
+                            <div class="category-icon">🔧</div>
+                            <h3>Двигатель</h3>
+                            <p>Детали двигателя и системы</p>
+                            <div class="category-badge">Популярно</div>
+                        </div>
+                        <div class="category-card" data-category="brakes">
+                            <div class="category-icon">🛑</div>
+                            <h3>Тормоза</h3>
+                            <p>Тормозная система</p>
+                        </div>
+                        <div class="category-card" data-category="suspension">
+                            <div class="category-icon">⚙️</div>
+                            <h3>Подвеска</h3>
+                            <p>Подвеска и ходовая часть</p>
+                        </div>
+                        <div class="category-card" data-category="electronics">
+                            <div class="category-icon">⚡</div>
+                            <h3>Электроника</h3>
+                            <p>Электронные компоненты</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quick-actions">
+                    <h3>⚡ Быстрые действия</h3>
+                    <div class="actions-grid">
+                        <button class="action-btn" onclick="uiComponents.showScreen('cart')">
+                            <span class="action-icon">🛒</span>
+                            <span>Корзина</span>
+                        </button>
+                        <button class="action-btn" onclick="uiComponents.showScreen('profile')">
+                            <span class="action-icon">👤</span>
+                            <span>Профиль</span>
+                        </button>
+                        <button class="action-btn" onclick="uiComponents.showScreen('orders')">
+                            <span class="action-icon">📋</span>
+                            <span>Заказы</span>
+                        </button>
+                        <button class="action-btn" onclick="document.getElementById('search-btn').click()">
+                            <span class="action-icon">🔍</span>
+                            <span>Поиск</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category Products Screen -->
+            <div id="category-screen" class="screen">
+                <div class="screen-header">
+                    <button class="back-btn">← Назад</button>
+                    <h2 id="category-title">Категория</h2>
+                </div>
+                <div id="products-grid" class="products-grid"></div>
+            </div>
+
+            <!-- Product Detail Screen -->
+            <div id="product-screen" class="screen">
+                <div class="screen-header">
+                    <button class="back-btn">← Назад</button>
+                    <h2>Товар</h2>
+                </div>
+                <div id="product-detail" class="product-detail"></div>
+            </div>
+
+            <!-- Cart Screen -->
+            <div id="cart-screen" class="screen">
+                <div class="screen-header">
+                    <button class="back-btn">← Назад</button>
+                    <h2>Корзина</h2>
+                </div>
+                <div id="cart-items" class="cart-items"></div>
+                <div class="cart-summary">
+                    <div class="total">
+                        <span>Итого:</span>
+                        <span id="cart-total">0 ₽</span>
+                    </div>
+                    <button id="checkout-btn" class="checkout-btn">Оформить заказ</button>
+                </div>
+            </div>
+
+            <!-- Checkout Screen -->
+            <div id="checkout-screen" class="screen">
+                <div class="screen-header">
+                    <button class="back-btn">← Назад</button>
+                    <h2>Оформление заказа</h2>
+                </div>
+                <form id="checkout-form" class="checkout-form">
+                    <div class="form-group">
+                        <label for="name">Имя получателя</label>
+                        <input type="text" id="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Телефон</label>
+                        <input type="tel" id="phone" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="address">Адрес доставки</label>
+                        <textarea id="address" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="delivery">Способ доставки</label>
+                        <select id="delivery" required>
+                            <option value="">Выберите способ</option>
+                            <option value="courier">Курьер</option>
+                            <option value="pickup">Самовывоз</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="submit-btn">Подтвердить заказ</button>
+                </form>
+            </div>
+
+            <!-- Profile Screen -->
+            <div id="profile-screen" class="screen">
+                <div class="screen-header">
+                    <button class="back-btn">← Назад</button>
+                    <h2>Профиль</h2>
+                </div>
+                <div class="profile-content">
+                    <div class="profile-info">
+                        <div class="profile-avatar">👤</div>
+                        <h3 id="user-name">Пользователь</h3>
+                        <p id="user-phone">+7 (999) 123-45-67</p>
+                    </div>
+                    <div class="profile-menu">
+                        <button class="profile-menu-item" data-action="orders">
+                            <span class="icon">📋</span>
+                            <span>История заказов</span>
+                        </button>
+                        <button class="profile-menu-item" data-action="favorites">
+                            <span class="icon">❤️</span>
+                            <span>Избранное</span>
+                        </button>
+                        <button class="profile-menu-item" data-action="settings">
+                            <span class="icon">⚙️</span>
+                            <span>Настройки</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orders History Screen -->
+            <div id="orders-screen" class="screen">
+                <div class="screen-header">
+                    <button class="back-btn">← Назад</button>
+                    <h2>История заказов</h2>
+                </div>
+                <div id="orders-list" class="orders-list"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="success-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="success-animation">✅</div>
+            <h3>Заказ оформлен!</h3>
+            <p>Ваш заказ успешно создан. Мы свяжемся с вами в ближайшее время.</p>
+            <button id="modal-close" class="modal-btn">Продолжить покупки</button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="data.js"></script>
+    <script src="telegram-api.js"></script>
+    <script src="components.js"></script>
+    <script src="optimization.js"></script>
+    <script src="app.js"></script>
+</body>
+</html> 
