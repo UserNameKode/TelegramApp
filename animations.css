@@ -1,6 +1,6 @@
-/* HiTech анимации для Telegram MiniApp */
+/* Анимации для Telegram MiniApp "АвтоЗапчасти" */
 
-/* Экран загрузки */
+/* Экран загрузки - анимация сборки двигателя */
 .loading-screen {
     position: fixed;
     top: 0;
@@ -11,198 +11,110 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 9999;
+    z-index: 10000;
+    transition: all 0.3s ease;
 }
 
 .loading-container {
     text-align: center;
-    animation: loadingFadeIn 1s ease;
+    animation: fadeInUp 0.5s ease;
 }
 
-@keyframes loadingFadeIn {
-    from {
-        opacity: 0;
-        transform: scale(0.8);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-/* Анимация сборки двигателя */
 .engine-assembly {
     position: relative;
     width: 200px;
     height: 200px;
-    margin: 0 auto var(--spacing-xl);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    margin: 0 auto 2rem;
 }
 
 .part {
     position: absolute;
+    background: var(--primary-color);
     border-radius: 50%;
-    background: var(--gradient-primary);
-    box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
-    animation: partFloat 3s ease-in-out infinite;
+    opacity: 0;
+    animation: partAssemble 2s ease-in-out infinite;
 }
 
 .part-1 {
     width: 80px;
     height: 80px;
+    top: 60px;
+    left: 60px;
     animation-delay: 0s;
 }
 
 .part-2 {
     width: 60px;
     height: 60px;
+    top: 70px;
+    left: 70px;
     animation-delay: 0.5s;
-    background: var(--accent-color);
-    box-shadow: 0 0 20px rgba(255, 107, 53, 0.5);
 }
 
 .part-3 {
     width: 40px;
     height: 40px;
+    top: 80px;
+    left: 80px;
     animation-delay: 1s;
-    background: var(--success-color);
-    box-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
 }
 
 .part-4 {
     width: 20px;
     height: 20px;
+    top: 90px;
+    left: 90px;
     animation-delay: 1.5s;
-    background: var(--warning-color);
-    box-shadow: 0 0 20px rgba(255, 165, 2, 0.5);
 }
 
-@keyframes partFloat {
-    0%, 100% {
-        transform: translateY(0) rotate(0deg);
-        opacity: 0.7;
-    }
-    25% {
-        transform: translateY(-20px) rotate(90deg);
-        opacity: 1;
+@keyframes partAssemble {
+    0% {
+        opacity: 0;
+        transform: scale(0) rotate(0deg);
     }
     50% {
-        transform: translateY(-10px) rotate(180deg);
-        opacity: 0.9;
-    }
-    75% {
-        transform: translateY(-30px) rotate(270deg);
         opacity: 1;
+        transform: scale(1) rotate(180deg);
     }
-}
-
-/* Анимация сборки */
-.engine-assembly::before {
-    content: '';
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    border: 2px solid var(--primary-color);
-    border-radius: 50%;
-    animation: assemblyPulse 2s ease-in-out infinite;
-}
-
-@keyframes assemblyPulse {
-    0%, 100% {
-        transform: scale(1);
-        opacity: 0.3;
-    }
-    50% {
-        transform: scale(1.1);
-        opacity: 0.6;
+    100% {
+        opacity: 1;
+        transform: scale(1) rotate(360deg);
     }
 }
 
 .loading-text h2 {
     font-size: 2rem;
-    margin-bottom: var(--spacing-md);
+    font-weight: 700;
     background: var(--gradient-primary);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    animation: textGlow 2s ease-in-out infinite;
-}
-
-@keyframes textGlow {
-    0%, 100% {
-        filter: drop-shadow(0 0 5px rgba(0, 212, 255, 0.5));
-    }
-    50% {
-        filter: drop-shadow(0 0 20px rgba(0, 212, 255, 0.8));
-    }
+    margin-bottom: 1rem;
+    animation: pulse 2s ease-in-out infinite;
 }
 
 .loading-text p {
     color: var(--text-secondary);
     font-size: 1.1rem;
-    animation: textPulse 1.5s ease-in-out infinite;
+    animation: fadeInOut 1.5s ease-in-out infinite;
 }
 
-@keyframes textPulse {
+@keyframes pulse {
     0%, 100% {
-        opacity: 0.7;
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+@keyframes fadeInOut {
+    0%, 100% {
+        opacity: 0.5;
     }
     50% {
         opacity: 1;
     }
-}
-
-/* Анимации переходов между экранами */
-.screen {
-    transition: all 0.3s ease;
-}
-
-.screen.slide-in {
-    animation: slideInRight 0.3s ease;
-}
-
-.screen.slide-out {
-    animation: slideOutLeft 0.3s ease;
-}
-
-@keyframes slideInRight {
-    from {
-        transform: translateX(100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
-}
-
-@keyframes slideOutLeft {
-    from {
-        transform: translateX(0);
-        opacity: 1;
-    }
-    to {
-        transform: translateX(-100%);
-        opacity: 0;
-    }
-}
-
-/* Анимации для карточек */
-.category-card,
-.product-card {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.category-card:hover,
-.product-card:hover {
-    transform: translateY(-8px) scale(1.02);
-}
-
-/* Анимация появления элементов */
-.fade-in-up {
-    animation: fadeInUp 0.6s ease;
 }
 
 @keyframes fadeInUp {
@@ -216,44 +128,105 @@
     }
 }
 
-/* Анимация для кнопок */
+/* Анимации переходов между экранами */
+.screen {
+    transition: all 0.3s ease;
+}
+
+.screen.slide-in {
+    animation: slideIn 0.3s ease;
+}
+
+.screen.slide-out {
+    animation: slideOut 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideOut {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(-100%);
+    }
+}
+
+/* Анимации карточек */
+.category-card,
+.product-card {
+    transition: all 0.3s ease;
+}
+
+.category-card:hover,
+.product-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-heavy);
+}
+
+/* Анимация появления карточек */
+.category-card,
+.product-card {
+    animation: cardAppear 0.5s ease;
+}
+
+@keyframes cardAppear {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Анимация кнопок */
 .nav-btn,
-.add-to-cart-btn,
-.checkout-btn,
-.submit-btn {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+.btn-add-to-cart,
+.quantity-btn,
+.remove-item-btn {
+    transition: all 0.3s ease;
 }
 
 .nav-btn:hover,
-.add-to-cart-btn:hover,
-.checkout-btn:hover,
-.submit-btn:hover {
+.btn-add-to-cart:hover,
+.quantity-btn:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-medium);
 }
 
 .nav-btn:active,
-.add-to-cart-btn:active,
-.checkout-btn:active,
-.submit-btn:active {
+.btn-add-to-cart:active,
+.quantity-btn:active {
     transform: translateY(0);
 }
 
-/* Анимация для иконок */
-.icon {
-    transition: transform 0.3s ease;
+/* Анимация избранного */
+.btn-favorite {
+    transition: all 0.3s ease;
 }
 
-.nav-btn:hover .icon {
+.btn-favorite:hover {
     transform: scale(1.1);
 }
 
-/* Анимация для счетчика корзины */
-.cart-count {
-    animation: cartCountPulse 0.3s ease;
+.btn-favorite.active {
+    animation: heartBeat 0.6s ease;
 }
 
-@keyframes cartCountPulse {
+@keyframes heartBeat {
     0% {
         transform: scale(1);
     }
@@ -265,25 +238,44 @@
     }
 }
 
-/* Анимация для поисковой строки */
-.search-bar {
-    animation: searchSlideDown 0.3s ease;
+/* Анимация уведомлений */
+.notification {
+    animation: notificationSlideIn 0.3s ease;
 }
 
-@keyframes searchSlideDown {
+@keyframes notificationSlideIn {
     from {
-        transform: translateY(-100%);
         opacity: 0;
+        transform: translateX(100%);
     }
     to {
-        transform: translateY(0);
         opacity: 1;
+        transform: translateX(0);
     }
 }
 
-/* Анимация для модального окна */
+.notification.slide-out {
+    animation: notificationSlideOut 0.3s ease;
+}
+
+@keyframes notificationSlideOut {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+}
+
+/* Анимация модального окна */
 .modal {
     animation: modalFadeIn 0.3s ease;
+}
+
+.modal-content {
+    animation: modalSlideIn 0.3s ease;
 }
 
 @keyframes modalFadeIn {
@@ -295,122 +287,107 @@
     }
 }
 
-/* Анимация для успешного заказа */
-.success-animation {
-    animation: successBounce 0.6s ease;
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8) translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
 }
 
-@keyframes successBounce {
-    0% {
-        transform: scale(0);
-    }
-    50% {
-        transform: scale(1.3);
-    }
-    100% {
+/* Анимация успеха */
+.success-animation {
+    animation: successPulse 1s ease;
+}
+
+@keyframes successPulse {
+    0%, 100% {
         transform: scale(1);
     }
-}
-
-/* Анимация для элементов формы */
-.form-group input:focus,
-.form-group textarea:focus,
-.form-group select:focus {
-    animation: inputFocus 0.3s ease;
-}
-
-@keyframes inputFocus {
-    0% {
-        box-shadow: 0 0 0 0 rgba(0, 212, 255, 0);
-    }
     50% {
-        box-shadow: 0 0 0 4px rgba(0, 212, 255, 0.2);
-    }
-    100% {
-        box-shadow: var(--shadow-light);
+        transform: scale(1.2);
     }
 }
 
-/* Анимация для профиля */
-.profile-menu-item {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.profile-menu-item:hover {
-    transform: translateX(8px) scale(1.02);
-}
-
-/* Анимация для истории заказов */
-.order-item {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.order-item:hover {
-    transform: translateY(-4px) scale(1.01);
-}
-
-/* Анимация для статусов заказов */
-.order-status {
-    animation: statusPulse 2s ease-in-out infinite;
-}
-
-@keyframes statusPulse {
-    0%, 100% {
-        opacity: 1;
-    }
-    50% {
-        opacity: 0.8;
-    }
-}
-
-/* Анимация для изображений товаров */
-.product-image::after {
-    animation: shimmer 2s infinite;
-}
-
-/* Анимация для кнопки "Назад" */
-.back-btn {
+/* Анимация поиска */
+.search-bar {
     transition: all 0.3s ease;
 }
 
-.back-btn:hover {
-    transform: translateX(-4px);
+.search-bar.slide-down {
+    animation: searchSlideDown 0.3s ease;
 }
 
-/* Анимация для заголовков экранов */
-.screen-header h2 {
-    animation: titleGlow 3s ease-in-out infinite;
-}
-
-@keyframes titleGlow {
-    0%, 100% {
-        filter: drop-shadow(0 0 2px rgba(0, 212, 255, 0.3));
+@keyframes searchSlideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
     }
-    50% {
-        filter: drop-shadow(0 0 8px rgba(0, 212, 255, 0.6));
-    }
-}
-
-/* Анимация для приветственного баннера */
-.welcome-banner {
-    animation: bannerFloat 4s ease-in-out infinite;
-}
-
-@keyframes bannerFloat {
-    0%, 100% {
+    to {
+        opacity: 1;
         transform: translateY(0);
     }
-    50% {
-        transform: translateY(-5px);
+}
+
+/* Анимация загрузки */
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--border-color);
+    border-top: 4px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
     }
 }
 
-/* Анимация для сетки категорий */
-.categories-grid {
-    animation: gridAppear 0.8s ease;
+/* Анимация shimmer эффекта */
+.shimmer {
+    position: relative;
+    overflow: hidden;
 }
 
-@keyframes gridAppear {
+.shimmer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.1),
+        transparent
+    );
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        left: -100%;
+    }
+    100% {
+        left: 100%;
+    }
+}
+
+/* Анимация появления элементов */
+.fade-in {
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
     from {
         opacity: 0;
         transform: translateY(20px);
@@ -421,15 +398,15 @@
     }
 }
 
-/* Анимация для сетки товаров */
-.products-grid {
-    animation: productsAppear 0.6s ease;
+/* Анимация масштабирования */
+.scale-in {
+    animation: scaleIn 0.3s ease;
 }
 
-@keyframes productsAppear {
+@keyframes scaleIn {
     from {
         opacity: 0;
-        transform: scale(0.95);
+        transform: scale(0.8);
     }
     to {
         opacity: 1;
@@ -437,66 +414,129 @@
     }
 }
 
-/* Анимация для корзины */
-.cart-items {
-    animation: cartAppear 0.5s ease;
+/* Анимация вращения */
+.rotate {
+    animation: rotate 1s linear infinite;
 }
 
-@keyframes cartAppear {
+@keyframes rotate {
     from {
-        opacity: 0;
-        transform: translateX(-20px);
+        transform: rotate(0deg);
     }
     to {
-        opacity: 1;
-        transform: translateX(0);
+        transform: rotate(360deg);
     }
 }
 
-/* Анимация для формы */
-.checkout-form {
-    animation: formSlideUp 0.4s ease;
+/* Анимация bounce */
+.bounce {
+    animation: bounce 0.6s ease;
 }
 
-@keyframes formSlideUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
         transform: translateY(0);
     }
-}
-
-/* Анимация для профиля */
-.profile-content {
-    animation: profileAppear 0.5s ease;
-}
-
-@keyframes profileAppear {
-    from {
-        opacity: 0;
-        transform: scale(0.9);
+    40% {
+        transform: translateY(-10px);
     }
-    to {
+    60% {
+        transform: translateY(-5px);
+    }
+}
+
+/* Анимация wiggle */
+.wiggle {
+    animation: wiggle 0.5s ease;
+}
+
+@keyframes wiggle {
+    0%, 100% {
+        transform: rotate(0deg);
+    }
+    25% {
+        transform: rotate(-5deg);
+    }
+    75% {
+        transform: rotate(5deg);
+    }
+}
+
+/* Анимация для мобильных устройств */
+@media (max-width: 768px) {
+    .category-card,
+    .product-card {
+        animation-duration: 0.3s;
+    }
+    
+    .loading-screen {
+        padding: 1rem;
+    }
+    
+    .engine-assembly {
+        width: 150px;
+        height: 150px;
+    }
+    
+    .part-1 {
+        width: 60px;
+        height: 60px;
+        top: 45px;
+        left: 45px;
+    }
+    
+    .part-2 {
+        width: 45px;
+        height: 45px;
+        top: 52px;
+        left: 52px;
+    }
+    
+    .part-3 {
+        width: 30px;
+        height: 30px;
+        top: 60px;
+        left: 60px;
+    }
+    
+    .part-4 {
+        width: 15px;
+        height: 15px;
+        top: 67px;
+        left: 67px;
+    }
+}
+
+/* Анимация для touch устройств */
+@media (hover: none) {
+    .category-card:hover,
+    .product-card:hover {
+        transform: none;
+    }
+    
+    .nav-btn:hover,
+    .btn-add-to-cart:hover,
+    .quantity-btn:hover {
+        transform: none;
+    }
+}
+
+/* Анимация для пользователей с предпочтением reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    .loading-screen {
+        animation: none;
+    }
+    
+    .part {
+        animation: none;
         opacity: 1;
-        transform: scale(1);
-    }
-}
-
-/* Анимация для истории заказов */
-.orders-list {
-    animation: ordersAppear 0.6s ease;
-}
-
-@keyframes ordersAppear {
-    from {
-        opacity: 0;
-        transform: translateY(15px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
     }
 } 

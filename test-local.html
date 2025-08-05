@@ -3,13 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>АвтоЗапчасти - Telegram MiniApp</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <title>Тест АвтоЗапчасти</title>
     <link rel="stylesheet" href="main.css">
     <link rel="stylesheet" href="components.css">
     <link rel="stylesheet" href="animations.css">
+    <style>
+        .test-info {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            z-index: 10000;
+        }
+    </style>
 </head>
 <body>
+    <div class="test-info">
+        <div>Тестовый режим</div>
+        <div id="test-status">Загрузка...</div>
+    </div>
+
     <!-- Loading Screen -->
     <div id="loading-screen" class="loading-screen">
         <div class="loading-container">
@@ -101,7 +118,7 @@
             <div id="product-screen" class="screen">
                 <div class="screen-header">
                     <button class="back-btn">← Назад</button>
-                    <h2>Товар</h2>
+                    <h2 id="product-title">Товар</h2>
                 </div>
                 <div id="product-detail" class="product-detail"></div>
             </div>
@@ -209,5 +226,46 @@
     <script src="components.js"></script>
     <script src="optimization.js"></script>
     <script src="app.js"></script>
+    
+    <script>
+        // Тестовый скрипт для проверки загрузки
+        window.addEventListener('load', () => {
+            const testStatus = document.getElementById('test-status');
+            
+            // Проверяем загрузку модулей
+            const modules = {
+                'DataService': window.DataService,
+                'telegramAPI': window.telegramAPI,
+                'uiComponents': window.uiComponents,
+                'performanceOptimizer': window.performanceOptimizer,
+                'app': window.app
+            };
+            
+            let loadedModules = 0;
+            const totalModules = Object.keys(modules).length;
+            
+            for (const [name, module] of Object.entries(modules)) {
+                if (module) {
+                    loadedModules++;
+                    console.log(`✅ ${name} загружен`);
+                } else {
+                    console.error(`❌ ${name} не загружен`);
+                }
+            }
+            
+            testStatus.textContent = `Модули: ${loadedModules}/${totalModules}`;
+            
+            // Проверяем через 3 секунды
+            setTimeout(() => {
+                if (window.app && !window.app.isLoading) {
+                    testStatus.textContent = `✅ Готово!`;
+                    testStatus.style.color = '#4CAF50';
+                } else {
+                    testStatus.textContent = `⚠️ Загрузка...`;
+                    testStatus.style.color = '#FF9800';
+                }
+            }, 3000);
+        });
+    </script>
 </body>
 </html> 

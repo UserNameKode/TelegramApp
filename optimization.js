@@ -1,4 +1,4 @@
-// Файл оптимизации производительности для Telegram MiniApp
+// Оптимизация производительности для Telegram MiniApp
 
 class PerformanceOptimizer {
     constructor() {
@@ -16,28 +16,31 @@ class PerformanceOptimizer {
 
     // Настройка Intersection Observer для ленивой загрузки
     setupIntersectionObserver() {
-        const options = {
-            root: null,
-            rootMargin: '50px',
-            threshold: 0.1
-        };
-
-        this.intersectionObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const element = entry.target;
-                    if (element.dataset.lazy) {
-                        this.loadLazyElement(element);
+        if ('IntersectionObserver' in window) {
+            this.intersectionObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        this.loadLazyElement(entry.target);
+                        this.intersectionObserver.unobserve(entry.target);
                     }
-                }
+                });
+            }, {
+                rootMargin: '50px',
+                threshold: 0.1
             });
-        }, options);
+        }
     }
 
     // Ленивая загрузка элементов
     setupLazyLoading() {
-        document.querySelectorAll('[data-lazy]').forEach(element => {
-            this.intersectionObserver.observe(element);
+        const lazyElements = document.querySelectorAll('[data-lazy]');
+        lazyElements.forEach(element => {
+            if (this.intersectionObserver) {
+                this.intersectionObserver.observe(element);
+            } else {
+                // Fallback для старых браузеров
+                this.loadLazyElement(element);
+            }
         });
     }
 
@@ -47,21 +50,17 @@ class PerformanceOptimizer {
         
         switch (type) {
             case 'image':
-                if (element.dataset.src) {
-                    element.src = element.dataset.src;
-                    element.removeAttribute('data-src');
+                const src = element.dataset.src;
+                if (src) {
+                    element.src = src;
+                    element.classList.remove('lazy');
                 }
                 break;
             case 'content':
-                if (element.dataset.content) {
-                    element.innerHTML = element.dataset.content;
-                    element.removeAttribute('data-content');
-                }
+                // Загрузка контента по требованию
+                this.loadContent(element);
                 break;
         }
-        
-        element.removeAttribute('data-lazy');
-        this.intersectionObserver.unobserve(element);
     }
 
     // Оптимизация изображений
@@ -73,27 +72,26 @@ class PerformanceOptimizer {
                 img.loading = 'lazy';
             }
             
-            // Добавляем обработку ошибок
-            img.addEventListener('error', () => {
-                img.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjMkEyQjJDIi8+CjxwYXRoIGQ9Ik0xMDAgMTEwQzExMC41IDExMCAxMTkgMTAxLjUgMTE5IDkxQzExOSA4MC41IDExMC41IDcyIDEwMCA3MkM4OS41IDcyIDgxIDgwLjUgODEgOTFDODEgMTAxLjUgODkuNSAxMTAgMTAwIDExMFoiIGZpbGw9IiM0QTVBN0IiLz4KPC9zdmc+';
-            });
+            // Оптимизация размера для мобильных устройств
+            if (window.innerWidth <= 768) {
+                img.style.maxWidth = '100%';
+                img.style.height = 'auto';
+            }
         });
     }
 
     // Дебаунсинг для оптимизации частых вызовов
     debounce(func, delay, key = 'default') {
-        return (...args) => {
-            if (this.debounceTimers.has(key)) {
-                clearTimeout(this.debounceTimers.get(key));
-            }
-            
-            const timer = setTimeout(() => {
-                func.apply(this, args);
-                this.debounceTimers.delete(key);
-            }, delay);
-            
-            this.debounceTimers.set(key, timer);
-        };
+        if (this.debounceTimers.has(key)) {
+            clearTimeout(this.debounceTimers.get(key));
+        }
+        
+        const timer = setTimeout(() => {
+            func();
+            this.debounceTimers.delete(key);
+        }, delay);
+        
+        this.debounceTimers.set(key, timer);
     }
 
     // Троттлинг для ограничения частоты вызовов
@@ -107,52 +105,57 @@ class PerformanceOptimizer {
                 inThrottle = true;
                 setTimeout(() => inThrottle = false, limit);
             }
-        };
+        }
     }
 
     // Мониторинг производительности
     setupPerformanceMonitoring() {
-        // Мониторинг времени загрузки
-        window.addEventListener('load', () => {
-            const loadTime = performance.now();
-            console.log(`Время загрузки: ${loadTime.toFixed(2)}ms`);
-            
-            // Отправка метрик в аналитику (если есть)
-            if (window.telegramAPI && window.telegramAPI.tg) {
+        if ('performance' in window) {
+            // Мониторинг времени загрузки
+            window.addEventListener('load', () => {
+                const loadTime = performance.timing.loadEventEnd - performance.timing.navigationStart;
+                console.log(`Время загрузки страницы: ${loadTime}ms`);
+                
+                // Отправляем метрики
                 this.sendPerformanceMetrics({
-                    loadTime: loadTime,
-                    userAgent: navigator.userAgent,
-                    screenSize: `${screen.width}x${screen.height}`
+                    loadTime,
+                    type: 'pageLoad'
                 });
-            }
-        });
+            });
 
-        // Мониторинг памяти
-        if ('memory' in performance) {
-            setInterval(() => {
-                const memory = performance.memory;
-                if (memory.usedJSHeapSize > memory.jsHeapSizeLimit * 0.8) {
-                    console.warn('Высокое потребление памяти');
-                    this.cleanupMemory();
-                }
-            }, 30000); // Проверка каждые 30 секунд
+            // Мониторинг памяти
+            if ('memory' in performance) {
+                setInterval(() => {
+                    const memoryInfo = performance.memory;
+                    console.log(`Использование памяти: ${Math.round(memoryInfo.usedJSHeapSize / 1048576)}MB`);
+                    
+                    if (memoryInfo.usedJSHeapSize > memoryInfo.jsHeapSizeLimit * 0.8) {
+                        this.cleanupMemory();
+                    }
+                }, 30000); // Проверяем каждые 30 секунд
+            }
         }
     }
 
     // Очистка памяти
     cleanupMemory() {
-        // Очистка неиспользуемых обработчиков событий
-        this.debounceTimers.forEach(timer => clearTimeout(timer));
+        // Очищаем неиспользуемые таймеры
+        this.debounceTimers.forEach((timer, key) => {
+            clearTimeout(timer);
+        });
         this.debounceTimers.clear();
-        
-        // Очистка observers
-        this.observers.forEach(observer => observer.disconnect());
-        this.observers.clear();
-        
-        // Принудительный сбор мусора (если доступен)
+
+        // Очищаем observers
+        if (this.intersectionObserver) {
+            this.intersectionObserver.disconnect();
+        }
+
+        // Принудительная сборка мусора (если доступна)
         if (window.gc) {
             window.gc();
         }
+
+        console.log('Очистка памяти выполнена');
     }
 
     // Отправка метрик производительности
@@ -163,26 +166,31 @@ class PerformanceOptimizer {
 
     // Оптимизация анимаций
     optimizeAnimations() {
-        // Использование transform вместо top/left для анимаций
+        // Используем transform вместо изменения позиции
         const animatedElements = document.querySelectorAll('.animated');
         animatedElements.forEach(element => {
             element.style.willChange = 'transform';
         });
+
+        // Оптимизация для мобильных устройств
+        if ('ontouchstart' in window) {
+            document.body.classList.add('touch-device');
+        }
     }
 
     // Предзагрузка критических ресурсов
     preloadCriticalResources() {
         const criticalResources = [
-            '/styles/main.css',
-            '/styles/components.css',
-            '/scripts/app.js'
+            'main.css',
+            'components.css',
+            'animations.css'
         ];
 
         criticalResources.forEach(resource => {
             const link = document.createElement('link');
             link.rel = 'preload';
             link.href = resource;
-            link.as = resource.endsWith('.css') ? 'style' : 'script';
+            link.as = 'style';
             document.head.appendChild(link);
         });
     }
@@ -190,16 +198,9 @@ class PerformanceOptimizer {
     // Оптимизация для мобильных устройств
     optimizeForMobile() {
         if (window.innerWidth <= 768) {
-            // Уменьшение количества элементов на экране
-            const productCards = document.querySelectorAll('.product-card');
-            if (productCards.length > 6) {
-                productCards.forEach((card, index) => {
-                    if (index >= 6) {
-                        card.style.display = 'none';
-                    }
-                });
-            }
-
+            // Отключаем некоторые анимации на мобильных
+            document.body.classList.add('mobile-optimized');
+            
             // Оптимизация touch событий
             this.optimizeTouchEvents();
         }
@@ -217,47 +218,83 @@ class PerformanceOptimizer {
         document.addEventListener('touchend', (e) => {
             touchEndY = e.changedTouches[0].clientY;
             const diff = touchStartY - touchEndY;
-            
-            // Предотвращение случайных свайпов
-            if (Math.abs(diff) < 50) {
-                e.preventDefault();
+
+            // Обработка свайпов
+            if (Math.abs(diff) > 50) {
+                if (diff > 0) {
+                    // Свайп вверх
+                    this.handleSwipeUp();
+                } else {
+                    // Свайп вниз
+                    this.handleSwipeDown();
+                }
             }
-        }, { passive: false });
+        }, { passive: true });
+    }
+
+    // Обработка свайпа вверх
+    handleSwipeUp() {
+        // Можно добавить навигацию или другие действия
+        console.log('Свайп вверх');
+    }
+
+    // Обработка свайпа вниз
+    handleSwipeDown() {
+        // Можно добавить навигацию или другие действия
+        console.log('Свайп вниз');
     }
 
     // Кэширование данных
     setupCaching() {
-        // Кэширование категорий
-        if (!localStorage.getItem('cached_categories')) {
-            const categories = DataService.getCategories();
-            localStorage.setItem('cached_categories', JSON.stringify(categories));
-        }
+        // Кэширование в localStorage
+        this.cache = {
+            set: (key, data, ttl = 3600000) => { // TTL по умолчанию 1 час
+                const item = {
+                    data,
+                    timestamp: Date.now(),
+                    ttl
+                };
+                localStorage.setItem(`cache_${key}`, JSON.stringify(item));
+            },
+            
+            get: (key) => {
+                const item = localStorage.getItem(`cache_${key}`);
+                if (!item) return null;
+                
+                const cached = JSON.parse(item);
+                const now = Date.now();
+                
+                if (now - cached.timestamp > cached.ttl) {
+                    localStorage.removeItem(`cache_${key}`);
+                    return null;
+                }
+                
+                return cached.data;
+            },
+            
+            clear: () => {
+                Object.keys(localStorage).forEach(key => {
+                    if (key.startsWith('cache_')) {
+                        localStorage.removeItem(key);
+                    }
+                });
+            }
+        };
 
-        // Кэширование популярных товаров
-        if (!localStorage.getItem('cached_popular_products')) {
-            const popularProducts = DataService.getProductsByCategory('engine').slice(0, 4);
-            localStorage.setItem('cached_popular_products', JSON.stringify(popularProducts));
-        }
+        // Очистка устаревшего кэша
+        this.clearStaleCache();
     }
 
     // Получение кэшированных данных
     getCachedData(key) {
-        const cached = localStorage.getItem(`cached_${key}`);
-        return cached ? JSON.parse(cached) : null;
+        return this.cache ? this.cache.get(key) : null;
     }
 
     // Очистка устаревшего кэша
     clearStaleCache() {
-        const cacheKeys = ['categories', 'popular_products'];
-        const cacheAge = 24 * 60 * 60 * 1000; // 24 часа
-
-        cacheKeys.forEach(key => {
-            const timestamp = localStorage.getItem(`cached_${key}_timestamp`);
-            if (timestamp && Date.now() - parseInt(timestamp) > cacheAge) {
-                localStorage.removeItem(`cached_${key}`);
-                localStorage.removeItem(`cached_${key}_timestamp`);
-            }
-        });
+        if (this.cache) {
+            this.cache.clear();
+        }
     }
 }
 

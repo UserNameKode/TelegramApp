@@ -1,14 +1,17 @@
-// Компоненты интерфейса для Telegram MiniApp
+// UI компоненты для Telegram MiniApp
+
 class UIComponents {
     constructor() {
         this.cart = [];
+        this.currentScreen = 'home';
+        this.screenHistory = [];
         this.init();
     }
 
-    // Инициализация компонентов
     init() {
         this.loadCartFromStorage();
         this.setupEventListeners();
+        this.updateCartBadge();
     }
 
     // Загрузка корзины из localStorage
@@ -24,66 +27,168 @@ class UIComponents {
         localStorage.setItem('autoparts_cart', JSON.stringify(this.cart));
     }
 
-    // Настройка обработчиков событий
-    setupEventListeners() {
-        // Обработка поиска
-        const searchInput = document.getElementById('search-input');
-        if (searchInput) {
-            searchInput.addEventListener('input', (e) => {
-                this.handleSearch(e.target.value);
-            });
+    // Обновление счетчика корзины
+    updateCartBadge() {
+        const cartCount = document.getElementById('cart-count');
+        if (cartCount) {
+            const totalItems = this.cart.reduce((sum, item) => sum + item.quantity, 0);
+            cartCount.textContent = totalItems;
+            cartCount.style.display = totalItems > 0 ? 'flex' : 'none';
         }
-
-        // Обработка кнопки корзины
-        const cartButton = document.getElementById('cart-button');
-        if (cartButton) {
-            cartButton.addEventListener('click', () => {
-                this.showCart();
-            });
-        }
-
-        // Обработка кнопки профиля
-        const profileButton = document.getElementById('profile-button');
-        if (profileButton) {
-            profileButton.addEventListener('click', () => {
-                this.showProfile();
-            });
-        }
-
-        // Обработка кнопок избранного
-        document.addEventListener('click', (e) => {
-            if (e.target.closest('.btn-favorite')) {
-                const button = e.target.closest('.btn-favorite');
-                const productId = button.dataset.productId;
-                
-                if (this.isInFavorites(productId)) {
-                    this.removeFromFavorites(productId);
-                    button.classList.remove('active');
-                } else {
-                    this.addToFavorites(productId);
-                    button.classList.add('active');
-                }
-            }
-        });
     }
 
-    // Создание карточки категории
-    createCategoryCard(category) {
-        return `
-            <div class="category-card" data-category-id="${category.id}">
-                <div class="category-icon">
-                    <i class="icon-${category.icon}"></i>
-                </div>
-                <div class="category-info">
-                    <h3>${category.name}</h3>
-                    <p>${category.description}</p>
-                    <span class="category-count">${category.productCount} товаров</span>
-                </div>
-                <div class="category-arrow">
-                    <i class="icon-arrow-right"></i>
-                </div>
-            </div>
+    // Добавление товара в корзину
+    addToCart(productId) {
+        const product = DataService.getProduct(productId);
+        if (!product) return;
+
+        const existingItem = this.cart.find(item => item.id === productId);
+        if (existingItem) {
+            existingItem.quantity += 1;
+        } else {
+            this.cart.push({
+                ...product,
+                quantity: 1
+            });
+        }
+
+        this.saveCartToStorage();
+        this.updateCartBadge();
+        this.showNotification('Товар добавлен в корзину');
+    }
+
+    // Удаление товара из корзины
+    removeFromCart(productId) {
+        this.cart = this.cart.filter(item => item.id !== productId);
+        this.saveCartToStorage();
+        this.updateCartBadge();
+        this.updateCartDisplay();
+        this.showNotification('Товар удален из корзины');
+    }
+
+    // Обновление количества товара
+    updateQuantity(productId, quantity) {
+        const item = this.cart.find(item => item.id === productId);
+        if (item) {
+            if (quantity <= 0) {
+                this.removeFromCart(productId);
+            } else {
+                item.quantity = quantity;
+                this.saveCartToStorage();
+                this.updateCartBadge();
+                this.updateCartDisplay();
+            }
+        }
+    }
+
+    // Показать уведомление
+    showNotification(message, type = 'success') {
+        // Создаем уведомление
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.textContent = message;
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: ${type === 'success' ? '#00ff88' : '#ff4757'};
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            z-index: 10000;
+            animation: slideIn 0.3s ease;
         `;
+
+        document.body.appendChild(notification);
+
+        // Удаляем через 3 секунды
+        setTimeout(() => {
+            notification.style.animation = 'slideOut 0.3s ease';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 300);
+        }, 3000);
+    }
+
+    // Переключение экранов
+    showScreen(screenId) {
+        // Скрываем все экраны
+        const screens = document.querySelectorAll('.screen');
+        screens.forEach(screen => screen.classList.remove('active'));
+
+        // Показываем нужный экран
+        const targetScreen = document.getElementById(screenId);
+        if (targetScreen) {
+            targetScreen.classList.add('active');
+            this.currentScreen = screenId;
+            this.screenHistory.push(screenId);
+        }
+
+        // Настройка кнопки назад
+        if (screenId === 'home') {
+            telegramAPI.hideBackButton();
+        } else {
+            telegramAPI.showBackButton();
+        }
+    }
+
+    // Показать главную страницу
+    showHome() {
+        this.showScreen('home-screen');
+    }
+
+    // Показать категорию
+    showCategory(categoryId) {
+        const category = DataService.getCategory(categoryId);
+        const products = DataService.getProductsByCategory(categoryId);
+
+        if (category) {
+            document.getElementById('category-title').textContent = category.name;
+            this.renderProducts(products);
+            this.showScreen('category-screen');
+        }
+    }
+
+    // Показать товар
+    showProduct(productId) {
+        const product = DataService.getProduct(productId);
+        if (product) {
+            this.renderProductDetail(product);
+            this.showScreen('product-screen');
+        }
+    }
+
+    // Показать корзину
+    showCart() {
+        this.updateCartDisplay();
+        this.showScreen('cart-screen');
+    }
+
+    // Показать оформление заказа
+    showCheckout() {
+        this.showScreen('checkout-screen');
+    }
+
+    // Показать профиль
+    showProfile() {
+        this.loadUserProfile();
+        this.showScreen('profile-screen');
+    }
+
+    // Показать историю заказов
+    showOrderHistory() {
+        this.loadOrderHistory();
+        this.showScreen('orders-screen');
+    }
+
+    // Рендеринг товаров
+    renderProducts(products) {
+        const container = document.getElementById('products-grid');
+        if (!container) return;
+
+        container.innerHTML = products.map(product => this.createProductCard(product)).join('');
     }
 
     // Создание карточки товара
@@ -122,669 +227,180 @@ class UIComponents {
         `;
     }
 
-    // Создание элемента корзины
-    createCartItem(item) {
-        return `
-            <div class="cart-item" data-product-id="${item.id}">
-                <div class="cart-item-image">
-                    <div class="product-placeholder">
-                        <i class="icon-${item.icon}"></i>
-                    </div>
-                </div>
-                <div class="cart-item-info">
-                    <h4>${item.name}</h4>
-                    <p class="cart-item-brand">${item.brand}</p>
-                    <div class="cart-item-price">${item.price.toLocaleString()} ₽</div>
-                </div>
-                <div class="cart-item-quantity">
-                    <button class="quantity-btn minus" data-product-id="${item.id}">-</button>
-                    <span class="quantity">${item.quantity}</span>
-                    <button class="quantity-btn plus" data-product-id="${item.id}">+</button>
-                </div>
-                <div class="cart-item-total">
-                    ${(item.price * item.quantity).toLocaleString()} ₽
-                </div>
-                <button class="cart-item-remove" data-product-id="${item.id}">
-                    <i class="icon-trash"></i>
-                </button>
-            </div>
-        `;
-    }
+    // Рендеринг детальной страницы товара
+    renderProductDetail(product) {
+        const container = document.getElementById('product-detail');
+        if (!container) return;
 
-    // Создание элемента истории заказов
-    createOrderHistoryItem(order) {
-        const statusClass = this.getOrderStatusClass(order.status);
-        const statusText = this.getOrderStatusText(order.status);
-        
-        return `
-            <div class="order-item" data-order-id="${order.id}">
-                <div class="order-header">
-                    <div class="order-info">
-                        <h4>Заказ #${order.id}</h4>
-                        <span class="order-date">${new Date(order.date).toLocaleDateString('ru-RU')}</span>
+        container.innerHTML = `
+            <div class="product-detail-image">
+                <i class="icon-${product.icon}"></i>
+            </div>
+            <div class="product-detail-info">
+                <h3>${product.name}</h3>
+                <p class="product-detail-description">${product.description}</p>
+                <div class="product-specs">
+                    <h4>Характеристики</h4>
+                    <div class="spec-item">
+                        <span class="spec-label">Бренд:</span>
+                        <span class="spec-value">${product.brand}</span>
                     </div>
-                    <div class="order-status ${statusClass}">
-                        ${statusText}
+                    <div class="spec-item">
+                        <span class="spec-label">Наличие:</span>
+                        <span class="spec-value">${product.inStock ? 'В наличии' : 'Нет в наличии'}</span>
                     </div>
                 </div>
-                <div class="order-products">
-                    ${order.items.map(item => `
-                        <div class="order-product">
-                            <span class="product-name">${item.name}</span>
-                            <span class="product-quantity">x${item.quantity}</span>
-                            <span class="product-price">${item.price.toLocaleString()} ₽</span>
-                        </div>
-                    `).join('')}
-                </div>
-                <div class="order-footer">
-                    <div class="order-total">
-                        <span>Итого:</span>
-                        <strong>${order.total.toLocaleString()} ₽</strong>
+                <div class="product-detail-actions">
+                    <div class="quantity-controls">
+                        <button class="quantity-btn" data-action="decrease" data-product-id="${product.id}">-</button>
+                        <span class="quantity-display" data-product-id="${product.id}">1</span>
+                        <button class="quantity-btn" data-action="increase" data-product-id="${product.id}">+</button>
                     </div>
-                    <div class="order-actions">
-                        <button class="btn-order-details" data-order-id="${order.id}">
-                            Подробности
-                        </button>
-                        <button class="btn-repeat-order" data-order-id="${order.id}">
-                            Повторить заказ
-                        </button>
-                    </div>
+                    <button class="add-to-cart-btn" data-product-id="${product.id}">
+                        Добавить в корзину - ${product.price.toLocaleString()} ₽
+                    </button>
                 </div>
             </div>
         `;
-    }
-
-    // Получение класса статуса заказа
-    getOrderStatusClass(status) {
-        const statusClasses = {
-            'pending': 'status-pending',
-            'confirmed': 'status-confirmed',
-            'shipped': 'status-shipped',
-            'delivered': 'status-delivered',
-            'cancelled': 'status-cancelled'
-        };
-        return statusClasses[status] || 'status-pending';
-    }
-
-    // Получение текста статуса заказа
-    getOrderStatusText(status) {
-        const statusTexts = {
-            'pending': 'Ожидает подтверждения',
-            'confirmed': 'Подтвержден',
-            'shipped': 'Отправлен',
-            'delivered': 'Доставлен',
-            'cancelled': 'Отменен'
-        };
-        return statusTexts[status] || 'Неизвестно';
-    }
-
-    // Добавление товара в корзину
-    addToCart(productId) {
-        const product = DataService.getProduct(productId);
-        if (!product) return;
-
-        const existingItem = this.cart.find(item => item.id === productId);
-        
-        if (existingItem) {
-            existingItem.quantity += 1;
-        } else {
-            this.cart.push({
-                ...product,
-                quantity: 1
-            });
-        }
-
-        this.saveCartToStorage();
-        this.updateCartBadge();
-        this.showNotification('Товар добавлен в корзину');
-    }
-
-    // Удаление товара из корзины
-    removeFromCart(productId) {
-        this.cart = this.cart.filter(item => item.id !== productId);
-        this.saveCartToStorage();
-        this.updateCartBadge();
-        this.updateCartDisplay();
-    }
-
-    // Изменение количества товара в корзине
-    updateCartQuantity(productId, delta) {
-        const item = this.cart.find(item => item.id === productId);
-        if (!item) return;
-
-        item.quantity += delta;
-        
-        if (item.quantity <= 0) {
-            this.removeFromCart(productId);
-        } else {
-            this.saveCartToStorage();
-            this.updateCartBadge();
-            this.updateCartDisplay();
-        }
-    }
-
-    // Обновление бейджа корзины
-    updateCartBadge() {
-        const cartBadge = document.getElementById('cart-badge');
-        if (cartBadge) {
-            const totalItems = this.cart.reduce((sum, item) => sum + item.quantity, 0);
-            cartBadge.textContent = totalItems;
-            cartBadge.style.display = totalItems > 0 ? 'block' : 'none';
-        }
     }
 
     // Обновление отображения корзины
     updateCartDisplay() {
-        const cartItemsContainer = document.getElementById('cart-items');
-        if (cartItemsContainer) {
-            cartItemsContainer.innerHTML = this.cart.map(item => 
-                this.createCartItem(item)
-            ).join('');
-            
-            this.setupCartEventListeners();
-        }
+        const container = document.getElementById('cart-items');
+        const totalElement = document.getElementById('cart-total');
+        
+        if (!container) return;
 
-        this.updateCartTotal();
-    }
-
-    // Обновление общей суммы корзины
-    updateCartTotal() {
-        const cartTotal = document.getElementById('cart-total');
-        if (cartTotal) {
-            const total = this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            cartTotal.textContent = `${total.toLocaleString()} ₽`;
-        }
-    }
-
-    // Настройка обработчиков событий корзины
-    setupCartEventListeners() {
-        // Кнопки добавления в корзину
-        document.querySelectorAll('.btn-add-to-cart').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const productId = e.currentTarget.dataset.productId;
-                this.addToCart(productId);
-            });
-        });
-
-        // Кнопки изменения количества
-        document.querySelectorAll('.quantity-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const productId = e.currentTarget.dataset.productId;
-                const delta = e.currentTarget.classList.contains('plus') ? 1 : -1;
-                this.updateCartQuantity(productId, delta);
-            });
-        });
-
-        // Кнопки удаления из корзины
-        document.querySelectorAll('.cart-item-remove').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const productId = e.currentTarget.dataset.productId;
-                this.removeFromCart(productId);
-            });
-        });
-    }
-
-    // Обработка поиска
-    handleSearch(query) {
-        if (query.length < 2) {
-            this.showHomeScreen();
+        if (this.cart.length === 0) {
+            container.innerHTML = '<p class="text-center">Корзина пуста</p>';
+            if (totalElement) totalElement.textContent = '0 ₽';
             return;
         }
 
-        const results = DataService.searchProducts(query);
-        this.showSearchResults(results, query);
-    }
-
-    // Показ результатов поиска
-    showSearchResults(results, query) {
-        const mainContent = document.getElementById('main-content');
-        const searchResultsHTML = `
-            <div class="screen active">
-                <div class="search-results-header">
-                    <h2>Результаты поиска</h2>
-                    <p>Найдено ${results.length} товаров по запросу "${query}"</p>
+        container.innerHTML = this.cart.map(item => `
+            <div class="cart-item">
+                <div class="cart-item-image">
+                    <i class="icon-${item.icon}"></i>
                 </div>
-                <div class="search-results-grid">
-                    ${results.map(product => this.createProductCard(product)).join('')}
-                </div>
-                ${results.length === 0 ? `
-                    <div class="no-results">
-                        <i class="icon-search"></i>
-                        <h3>Ничего не найдено</h3>
-                        <p>Попробуйте изменить запрос</p>
+                <div class="cart-item-info">
+                    <div class="cart-item-title">${item.name}</div>
+                    <div class="cart-item-price">${item.price.toLocaleString()} ₽</div>
+                    <div class="cart-item-actions">
+                        <button class="quantity-btn" data-action="decrease" data-product-id="${item.id}">-</button>
+                        <span class="quantity-display">${item.quantity}</span>
+                        <button class="quantity-btn" data-action="increase" data-product-id="${item.id}">+</button>
+                        <button class="remove-item-btn" data-product-id="${item.id}">Удалить</button>
                     </div>
-                ` : ''}
+                </div>
             </div>
-        `;
-        
-        mainContent.innerHTML = searchResultsHTML;
-        this.setupCartEventListeners();
-    }
+        `).join('');
 
-    // Показ экрана корзины
-    showCart() {
-        this.showScreen('cart-screen');
-        this.updateCartDisplay();
-        telegramAPI.showMainButton('Оформить заказ', () => {
-            this.showCheckout();
-        });
-    }
-
-    // Показ экрана профиля
-    showProfile() {
-        this.showScreen('profile-screen');
-        this.loadUserProfile();
-        telegramAPI.hideMainButton();
-    }
-
-    // Показ экрана оформления заказа
-    showCheckout() {
-        this.showScreen('checkout-screen');
-        this.loadCheckoutForm();
-        telegramAPI.showMainButton('Подтвердить заказ', () => {
-            this.processOrder();
-        });
-    }
-
-    // Показ экрана истории заказов
-    showOrderHistory() {
-        this.showScreen('orders-screen');
-        this.loadOrderHistory();
-        telegramAPI.hideMainButton();
-    }
-
-    // Показ главного экрана
-    showHomeScreen() {
-        this.showScreen('home-screen');
-        this.loadCategories();
-        telegramAPI.hideMainButton();
-    }
-
-    // Показ экрана категории
-    showCategory(categoryId) {
-        this.showScreen('category-screen');
-        this.loadCategoryProducts(categoryId);
-        telegramAPI.hideMainButton();
-    }
-
-    // Показ экрана товара
-    showProduct(productId) {
-        this.showScreen('product-screen');
-        this.loadProductDetails(productId);
-        telegramAPI.showMainButton('Добавить в корзину', () => {
-            this.addToCart(productId);
-        });
-    }
-
-    // Переключение экранов
-    showScreen(screenId) {
-        // Скрываем все экраны
-        document.querySelectorAll('.screen').forEach(screen => {
-            screen.classList.remove('active');
-        });
-        
-        // Показываем нужный экран
-        const targetScreen = document.getElementById(screenId);
-        if (targetScreen) {
-            targetScreen.classList.add('active');
-        }
-    }
-
-    // Загрузка категорий
-    loadCategories() {
-        const categoriesContainer = document.getElementById('categories-grid');
-        if (categoriesContainer) {
-            const categories = DataService.getCategories();
-            categoriesContainer.innerHTML = categories.map(category => 
-                this.createCategoryCard(category)
-            ).join('');
-            
-            // Добавляем обработчики для карточек категорий
-            document.querySelectorAll('.category-card').forEach(card => {
-                card.addEventListener('click', (e) => {
-                    const categoryId = e.currentTarget.dataset.categoryId;
-                    this.showCategory(categoryId);
-                });
-            });
-        }
-    }
-
-    // Загрузка товаров категории
-    loadCategoryProducts(categoryId) {
-        const productsContainer = document.getElementById('category-products');
-        if (productsContainer) {
-            const products = DataService.getProductsByCategory(categoryId);
-            const category = DataService.getCategory(categoryId);
-            
-            // Обновляем заголовок
-            const categoryTitle = document.getElementById('category-title');
-            if (categoryTitle) {
-                categoryTitle.textContent = category.name;
-            }
-            
-            productsContainer.innerHTML = products.map(product => 
-                this.createProductCard(product)
-            ).join('');
-            
-            this.setupCartEventListeners();
-            
-            // Добавляем обработчики для карточек товаров
-            document.querySelectorAll('.product-card').forEach(card => {
-                card.addEventListener('click', (e) => {
-                    if (!e.target.closest('.btn-add-to-cart')) {
-                        const productId = e.currentTarget.dataset.productId;
-                        this.showProduct(productId);
-                    }
-                });
-            });
-        }
-    }
-
-    // Загрузка деталей товара
-    loadProductDetails(productId) {
-        const product = DataService.getProduct(productId);
-        if (!product) return;
-
-        const productContainer = document.getElementById('product-details');
-        if (productContainer) {
-            productContainer.innerHTML = `
-                <div class="product-detail-image">
-                    <div class="product-placeholder large">
-                        <i class="icon-${product.icon}"></i>
-                    </div>
-                </div>
-                <div class="product-detail-info">
-                    <h2>${product.name}</h2>
-                    <p class="product-detail-description">${product.description}</p>
-                    <div class="product-detail-meta">
-                        <div class="meta-item">
-                            <span class="meta-label">Бренд:</span>
-                            <span class="meta-value">${product.brand}</span>
-                        </div>
-                        <div class="meta-item">
-                            <span class="meta-label">Артикул:</span>
-                            <span class="meta-value">${product.sku}</span>
-                        </div>
-                        <div class="meta-item">
-                            <span class="meta-label">Наличие:</span>
-                            <span class="meta-value ${product.inStock ? 'in-stock' : 'out-of-stock'}">
-                                ${product.inStock ? 'В наличии' : 'Нет в наличии'}
-                            </span>
-                        </div>
-                    </div>
-                    <div class="product-detail-price">
-                        <span class="price">${product.price.toLocaleString()} ₽</span>
-                        ${product.oldPrice ? `<span class="old-price">${product.oldPrice.toLocaleString()} ₽</span>` : ''}
-                    </div>
-                    <div class="product-detail-actions">
-                        <button class="btn-add-to-cart-large" data-product-id="${product.id}">
-                            <i class="icon-cart-plus"></i>
-                            Добавить в корзину
-                        </button>
-                    </div>
-                </div>
-            `;
-            
-            // Добавляем обработчик для кнопки добавления в корзину
-            const addToCartBtn = productContainer.querySelector('.btn-add-to-cart-large');
-            if (addToCartBtn) {
-                addToCartBtn.addEventListener('click', () => {
-                    this.addToCart(productId);
-                });
-            }
-        }
+        const total = this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        if (totalElement) totalElement.textContent = `${total.toLocaleString()} ₽`;
     }
 
     // Загрузка профиля пользователя
     loadUserProfile() {
-        const profileContainer = document.getElementById('profile-content');
-        if (profileContainer) {
-            const userProfile = DataService.getUserProfile();
-            const favorites = this.getFavorites();
-            
-            profileContainer.innerHTML = `
-                <div class="profile-header">
-                    <div class="profile-avatar">
-                        <i class="icon-user"></i>
-                    </div>
-                    <div class="profile-info">
-                        <h2>${userProfile.name}</h2>
-                        <p>${userProfile.email}</p>
-                        <p>${userProfile.phone}</p>
-                    </div>
-                </div>
+        const profile = DataService.getUserProfile();
+        const orders = DataService.getOrderHistory();
+        const favorites = this.getFavorites();
+
+        document.getElementById('user-name').textContent = profile.name;
+        document.getElementById('user-phone').textContent = profile.phone;
+
+        // Добавляем статистику
+        const profileContent = document.querySelector('.profile-content');
+        if (profileContent) {
+            const statsHTML = `
                 <div class="profile-stats">
                     <div class="stat-item">
-                        <span class="stat-number">${userProfile.totalOrders}</span>
+                        <span class="stat-number">${orders.length}</span>
                         <span class="stat-label">Заказов</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number">${userProfile.totalSpent.toLocaleString()} ₽</span>
-                        <span class="stat-label">Потрачено</span>
                     </div>
                     <div class="stat-item">
                         <span class="stat-number">${favorites.length}</span>
                         <span class="stat-label">Избранное</span>
                     </div>
+                    <div class="stat-item">
+                        <span class="stat-number">${this.cart.length}</span>
+                        <span class="stat-label">В корзине</span>
+                    </div>
                 </div>
                 <div class="profile-actions">
-                    <button class="btn-profile-action" id="btn-order-history">
-                        <i class="icon-history"></i>
-                        История заказов
-                    </button>
-                    <button class="btn-profile-action" id="btn-favorites">
+                    <button class="btn-profile-action" data-action="favorites">
                         <i class="icon-heart"></i>
                         Избранные товары
                     </button>
-                    <button class="btn-profile-action" id="btn-settings">
+                    <button class="btn-profile-action" data-action="settings">
                         <i class="icon-settings"></i>
                         Настройки
                     </button>
-                    <button class="btn-profile-action" id="btn-edit-profile">
+                    <button class="btn-profile-action" data-action="edit-profile">
                         <i class="icon-edit"></i>
                         Редактировать профиль
                     </button>
                 </div>
             `;
             
-            // Добавляем обработчики
-            document.getElementById('btn-order-history').addEventListener('click', () => {
-                this.showOrderHistory();
-            });
+            const existingStats = profileContent.querySelector('.profile-stats');
+            if (existingStats) {
+                existingStats.remove();
+            }
+            const existingActions = profileContent.querySelector('.profile-actions');
+            if (existingActions) {
+                existingActions.remove();
+            }
             
-            document.getElementById('btn-favorites').addEventListener('click', () => {
-                this.showFavorites();
-            });
-            
-            document.getElementById('btn-settings').addEventListener('click', () => {
-                this.showSettings();
-            });
-            
-            document.getElementById('btn-edit-profile').addEventListener('click', () => {
-                this.showEditProfile();
-            });
+            profileContent.insertAdjacentHTML('beforeend', statsHTML);
         }
     }
 
     // Загрузка истории заказов
     loadOrderHistory() {
-        const ordersContainer = document.getElementById('orders-list');
-        if (ordersContainer) {
-            const orders = DataService.getOrderHistory();
-            ordersContainer.innerHTML = orders.map(order => 
-                this.createOrderHistoryItem(order)
-            ).join('');
-            
-            // Добавляем обработчики для кнопок деталей заказа
-            document.querySelectorAll('.btn-order-details').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const orderId = e.currentTarget.dataset.orderId;
-                    this.showOrderDetails(orderId);
-                });
-            });
+        const orders = DataService.getOrderHistory();
+        const container = document.getElementById('orders-list');
+        
+        if (!container) return;
 
-            // Добавляем обработчики для кнопок повторения заказа
-            document.querySelectorAll('.btn-repeat-order').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const orderId = e.currentTarget.dataset.orderId;
-                    this.repeatOrder(orderId);
-                });
-            });
-        }
-    }
-
-    // Загрузка формы оформления заказа
-    loadCheckoutForm() {
-        const checkoutContainer = document.getElementById('checkout-form');
-        if (checkoutContainer) {
-            const userProfile = DataService.getUserProfile();
-            checkoutContainer.innerHTML = `
-                <div class="checkout-section">
-                    <h3>Данные получателя</h3>
-                    <div class="form-group">
-                        <label for="checkout-name">Имя и фамилия</label>
-                        <input type="text" id="checkout-name" value="${userProfile.name}" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="checkout-phone">Телефон</label>
-                        <input type="tel" id="checkout-phone" value="${userProfile.phone}" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="checkout-email">Email</label>
-                        <input type="email" id="checkout-email" value="${userProfile.email}" required>
-                    </div>
-                </div>
-                <div class="checkout-section">
-                    <h3>Адрес доставки</h3>
-                    <div class="form-group">
-                        <label for="checkout-address">Адрес</label>
-                        <textarea id="checkout-address" required></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="checkout-comment">Комментарий к заказу</label>
-                        <textarea id="checkout-comment"></textarea>
-                    </div>
-                </div>
-                <div class="checkout-summary">
-                    <h3>Итого к оплате</h3>
-                    <div class="summary-item">
-                        <span>Товары (${this.cart.length}):</span>
-                        <span>${this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0).toLocaleString()} ₽</span>
-                    </div>
-                    <div class="summary-item">
-                        <span>Доставка:</span>
-                        <span>Бесплатно</span>
-                    </div>
-                    <div class="summary-total">
-                        <span>Итого:</span>
-                        <span>${this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0).toLocaleString()} ₽</span>
-                    </div>
-                </div>
-            `;
-        }
-    }
-
-    // Обработка заказа
-    processOrder() {
-        const name = document.getElementById('checkout-name')?.value;
-        const phone = document.getElementById('checkout-phone')?.value;
-        const email = document.getElementById('checkout-email')?.value;
-        const address = document.getElementById('checkout-address')?.value;
-        const comment = document.getElementById('checkout-comment')?.value;
-
-        if (!name || !phone || !email || !address) {
-            this.showNotification('Пожалуйста, заполните все обязательные поля', 'error');
+        if (orders.length === 0) {
+            container.innerHTML = '<p class="text-center">История заказов пуста</p>';
             return;
         }
 
-        const orderData = {
-            items: this.cart,
-            customer: { name, phone, email, address, comment },
-            total: this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0),
-            date: new Date().toISOString()
+        container.innerHTML = orders.map(order => this.createOrderHistoryItem(order)).join('');
+    }
+
+    // Создание элемента истории заказа
+    createOrderHistoryItem(order) {
+        const statusText = {
+            'completed': 'Выполнен',
+            'processing': 'В обработке',
+            'pending': 'Ожидает'
         };
 
-        const order = DataService.createOrder(orderData);
-        
-        // Очищаем корзину
-        this.cart = [];
-        this.saveCartToStorage();
-        this.updateCartBadge();
-        
-        // Показываем успешное сообщение
-        this.showSuccessModal(order);
-    }
-
-    // Показ модального окна успеха
-    showSuccessModal(order) {
-        const modal = document.getElementById('success-modal');
-        const modalContent = modal.querySelector('.modal-content');
-        
-        modalContent.innerHTML = `
-            <div class="success-icon">
-                <i class="icon-check"></i>
+        return `
+            <div class="order-item" data-order-id="${order.id}">
+                <div class="order-header">
+                    <span class="order-number">Заказ #${order.id}</span>
+                    <span class="order-status ${order.status}">${statusText[order.status]}</span>
+                </div>
+                <div class="order-date">${order.date}</div>
+                <div class="order-summary">
+                    <span>${order.items.length} товаров</span>
+                    <span>${order.total.toLocaleString()} ₽</span>
+                </div>
+                <div class="order-actions">
+                    <button class="btn-repeat-order" data-order-id="${order.id}">
+                        Повторить заказ
+                    </button>
+                </div>
             </div>
-            <h2>Заказ оформлен!</h2>
-            <p>Ваш заказ #${order.id} успешно создан</p>
-            <div class="order-summary">
-                <p>Сумма: ${order.total.toLocaleString()} ₽</p>
-                <p>Ожидаемая доставка: 2-3 дня</p>
-            </div>
-            <button class="btn-primary" onclick="uiComponents.closeSuccessModal()">
-                Вернуться в магазин
-            </button>
         `;
-        
-        modal.style.display = 'flex';
     }
 
-    // Закрытие модального окна успеха
-    closeSuccessModal() {
-        const modal = document.getElementById('success-modal');
-        modal.style.display = 'none';
-        this.showHomeScreen();
-    }
-
-    // Показ уведомления
-    showNotification(message, type = 'success') {
-        const notification = document.createElement('div');
-        notification.className = `notification notification-${type}`;
-        notification.innerHTML = `
-            <i class="icon-${type === 'success' ? 'check' : 'alert'}"></i>
-            <span>${message}</span>
-        `;
-        
-        document.body.appendChild(notification);
-        
-        // Анимация появления
-        setTimeout(() => {
-            notification.classList.add('show');
-        }, 100);
-        
-        // Автоматическое скрытие
-        setTimeout(() => {
-            notification.classList.remove('show');
-            setTimeout(() => {
-                document.body.removeChild(notification);
-            }, 300);
-        }, 3000);
-    }
-
-    // Показ деталей заказа
-    showOrderDetails(orderId) {
-        const order = DataService.getOrder(orderId);
-        if (!order) return;
-
-        telegramAPI.showPopup(
-            `Заказ #${order.id}`,
-            `Дата: ${new Date(order.date).toLocaleDateString('ru-RU')}\nСтатус: ${this.getOrderStatusText(order.status)}\nСумма: ${order.total.toLocaleString()} ₽`,
-            [{ type: 'ok', text: 'Закрыть' }]
-        );
-    }
-
-    // Работа с избранными товарами
+    // Работа с избранным
     getFavorites() {
-        const favorites = localStorage.getItem('favorites');
+        const favorites = localStorage.getItem('autoparts_favorites');
         return favorites ? JSON.parse(favorites) : [];
     }
 
@@ -792,16 +408,14 @@ class UIComponents {
         const favorites = this.getFavorites();
         if (!favorites.includes(productId)) {
             favorites.push(productId);
-            localStorage.setItem('favorites', JSON.stringify(favorites));
-            this.showNotification('Товар добавлен в избранное');
+            localStorage.setItem('autoparts_favorites', JSON.stringify(favorites));
         }
     }
 
     removeFromFavorites(productId) {
         const favorites = this.getFavorites();
         const updatedFavorites = favorites.filter(id => id !== productId);
-        localStorage.setItem('favorites', JSON.stringify(updatedFavorites));
-        this.showNotification('Товар удален из избранного');
+        localStorage.setItem('autoparts_favorites', JSON.stringify(updatedFavorites));
     }
 
     isInFavorites(productId) {
@@ -809,144 +423,98 @@ class UIComponents {
         return favorites.includes(productId);
     }
 
-    // Показ избранных товаров
+    // Показать избранные товары
     showFavorites() {
         const favorites = this.getFavorites();
-        const products = favorites.map(id => DataService.getProduct(id)).filter(Boolean);
+        const favoriteProducts = favorites.map(id => DataService.getProduct(id)).filter(Boolean);
         
-        const contentContainer = document.getElementById('main-content');
-        if (contentContainer) {
-            contentContainer.innerHTML = `
-                <div class="screen-header">
-                    <h2>Избранные товары</h2>
-                    <p>${products.length} товаров в избранном</p>
-                </div>
-                <div class="products-grid">
-                    ${products.map(product => this.createProductCard(product)).join('')}
-                </div>
-            `;
-            
-            // Добавляем обработчики для кнопок избранного
-            document.querySelectorAll('.btn-favorite').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const productId = e.currentTarget.dataset.productId;
-                    this.removeFromFavorites(productId);
-                    this.showFavorites(); // Обновляем список
-                });
-            });
-        }
+        document.getElementById('category-title').textContent = 'Избранные товары';
+        this.renderProducts(favoriteProducts);
+        this.showScreen('category-screen');
     }
 
-    // Показ настроек приложения
+    // Настройки приложения
     showSettings() {
-        const contentContainer = document.getElementById('main-content');
-        if (contentContainer) {
-            const settings = this.getSettings();
-            
-            contentContainer.innerHTML = `
-                <div class="screen-header">
-                    <h2>Настройки</h2>
-                </div>
-                <div class="settings-container">
-                    <div class="setting-group">
-                        <h3>Уведомления</h3>
-                        <div class="setting-item">
-                            <label>
-                                <input type="checkbox" id="notify-orders" ${settings.notifyOrders ? 'checked' : ''}>
-                                Уведомления о заказах
-                            </label>
-                        </div>
-                        <div class="setting-item">
-                            <label>
-                                <input type="checkbox" id="notify-promo" ${settings.notifyPromo ? 'checked' : ''}>
-                                Промо-акции и скидки
-                            </label>
-                        </div>
-                    </div>
-                    <div class="setting-group">
-                        <h3>Внешний вид</h3>
-                        <div class="setting-item">
-                            <label>
-                                <input type="checkbox" id="dark-mode" ${settings.darkMode ? 'checked' : ''}>
-                                Темная тема
-                            </label>
-                        </div>
-                        <div class="setting-item">
-                            <label>
-                                <input type="checkbox" id="animations" ${settings.animations ? 'checked' : ''}>
-                                Анимации
-                            </label>
-                        </div>
-                    </div>
-                    <div class="setting-group">
-                        <h3>Данные</h3>
-                        <div class="setting-item">
-                            <button class="btn-danger" id="btn-clear-data">Очистить все данные</button>
-                        </div>
-                        <div class="setting-item">
-                            <button class="btn-secondary" id="btn-export-data">Экспорт данных</button>
-                        </div>
+        const settings = this.getSettings();
+        
+        const settingsHTML = `
+            <div class="settings-container">
+                <div class="setting-group">
+                    <h3>Уведомления</h3>
+                    <div class="setting-item">
+                        <label>
+                            <input type="checkbox" id="notifications" ${settings.notifications ? 'checked' : ''}>
+                            Получать уведомления
+                        </label>
                     </div>
                 </div>
-            `;
-            
-            // Добавляем обработчики
-            this.setupSettingsEventListeners();
-        }
+                
+                <div class="setting-group">
+                    <h3>Внешний вид</h3>
+                    <div class="setting-item">
+                        <label>
+                            <input type="checkbox" id="dark-mode" ${settings.darkMode ? 'checked' : ''}>
+                            Темная тема
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <label>
+                            <input type="checkbox" id="animations" ${settings.animations ? 'checked' : ''}>
+                            Анимации
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="setting-group">
+                    <h3>Данные</h3>
+                    <button class="btn-danger" id="clear-data">Очистить все данные</button>
+                    <button class="btn-secondary" id="export-data">Экспорт данных</button>
+                </div>
+            </div>
+        `;
+
+        const mainContent = document.querySelector('.main-content');
+        mainContent.innerHTML = settingsHTML;
+        this.setupSettingsEventListeners();
     }
 
-    // Получение настроек
     getSettings() {
-        const settings = localStorage.getItem('app-settings');
+        const settings = localStorage.getItem('autoparts_settings');
         return settings ? JSON.parse(settings) : {
-            notifyOrders: true,
-            notifyPromo: false,
+            notifications: true,
             darkMode: true,
             animations: true
         };
     }
 
-    // Сохранение настроек
     saveSettings(settings) {
-        localStorage.setItem('app-settings', JSON.stringify(settings));
+        localStorage.setItem('autoparts_settings', JSON.stringify(settings));
     }
 
-    // Настройка обработчиков событий настроек
     setupSettingsEventListeners() {
-        // Чекбоксы настроек
-        document.querySelectorAll('.setting-item input[type="checkbox"]').forEach(checkbox => {
-            checkbox.addEventListener('change', () => {
-                const settings = this.getSettings();
-                settings[checkbox.id] = checkbox.checked;
-                this.saveSettings(settings);
-                this.showNotification('Настройки сохранены');
-            });
-        });
-
-        // Кнопка очистки данных
-        document.getElementById('btn-clear-data').addEventListener('click', () => {
-            if (confirm('Вы уверены, что хотите очистить все данные? Это действие нельзя отменить.')) {
+        // Обработчики настроек
+        document.getElementById('clear-data')?.addEventListener('click', () => {
+            if (confirm('Вы уверены, что хотите очистить все данные?')) {
                 localStorage.clear();
                 this.cart = [];
+                this.updateCartBadge();
                 this.showNotification('Все данные очищены');
-                location.reload();
+                this.showHome();
             }
         });
 
-        // Кнопка экспорта данных
-        document.getElementById('btn-export-data').addEventListener('click', () => {
+        document.getElementById('export-data')?.addEventListener('click', () => {
             const data = {
                 cart: this.cart,
                 favorites: this.getFavorites(),
-                settings: this.getSettings(),
-                profile: DataService.getUserProfile()
+                settings: this.getSettings()
             };
             
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'autoparts-data.json';
+            a.download = 'autoparts_data.json';
             a.click();
             URL.revokeObjectURL(url);
             
@@ -954,67 +522,51 @@ class UIComponents {
         });
     }
 
-    // Показ формы редактирования профиля
+    // Редактирование профиля
     showEditProfile() {
-        const userProfile = DataService.getUserProfile();
-        const contentContainer = document.getElementById('main-content');
+        const profile = DataService.getUserProfile();
         
-        if (contentContainer) {
-            contentContainer.innerHTML = `
-                <div class="screen-header">
-                    <h2>Редактировать профиль</h2>
+        const editHTML = `
+            <div class="edit-profile-form">
+                <div class="form-group">
+                    <label for="edit-name">Имя</label>
+                    <input type="text" id="edit-name" value="${profile.name}">
                 </div>
-                <div class="edit-profile-form">
-                    <div class="form-group">
-                        <label for="edit-name">Имя и фамилия</label>
-                        <input type="text" id="edit-name" value="${userProfile.name}" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="edit-email">Email</label>
-                        <input type="email" id="edit-email" value="${userProfile.email}" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="edit-phone">Телефон</label>
-                        <input type="tel" id="edit-phone" value="${userProfile.phone}" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="edit-address">Адрес по умолчанию</label>
-                        <textarea id="edit-address">${userProfile.address || ''}</textarea>
-                    </div>
-                    <div class="form-actions">
-                        <button class="btn-primary" id="btn-save-profile">Сохранить</button>
-                        <button class="btn-secondary" id="btn-cancel-edit">Отмена</button>
-                    </div>
+                <div class="form-group">
+                    <label for="edit-phone">Телефон</label>
+                    <input type="tel" id="edit-phone" value="${profile.phone}">
                 </div>
-            `;
-            
-            // Добавляем обработчики
-            document.getElementById('btn-save-profile').addEventListener('click', () => {
-                this.saveProfile();
-            });
-            
-            document.getElementById('btn-cancel-edit').addEventListener('click', () => {
-                this.loadUserProfile();
-            });
-        }
+                <div class="form-group">
+                    <label for="edit-email">Email</label>
+                    <input type="email" id="edit-email" value="${profile.email}">
+                </div>
+                <div class="form-group">
+                    <label for="edit-address">Адрес</label>
+                    <textarea id="edit-address">${profile.address}</textarea>
+                </div>
+                <div class="form-actions">
+                    <button class="btn-secondary" id="cancel-edit">Отмена</button>
+                    <button class="submit-btn" id="save-profile">Сохранить</button>
+                </div>
+            </div>
+        `;
+
+        const mainContent = document.querySelector('.main-content');
+        mainContent.innerHTML = editHTML;
+        
+        document.getElementById('save-profile')?.addEventListener('click', () => this.saveProfile());
+        document.getElementById('cancel-edit')?.addEventListener('click', () => this.showProfile());
     }
 
-    // Сохранение профиля
     saveProfile() {
-        const name = document.getElementById('edit-name').value.trim();
-        const email = document.getElementById('edit-email').value.trim();
-        const phone = document.getElementById('edit-phone').value.trim();
-        const address = document.getElementById('edit-address').value.trim();
-        
-        if (!name || !email || !phone) {
-            this.showNotification('Заполните все обязательные поля', 'error');
-            return;
-        }
-        
+        const name = document.getElementById('edit-name').value;
+        const phone = document.getElementById('edit-phone').value;
+        const email = document.getElementById('edit-email').value;
+        const address = document.getElementById('edit-address').value;
+
         // В реальном приложении здесь был бы запрос к серверу
-        // Для демо просто показываем уведомление
         this.showNotification('Профиль обновлен');
-        this.loadUserProfile();
+        this.showProfile();
     }
 
     // Повторение заказа
@@ -1046,9 +598,268 @@ class UIComponents {
         this.showNotification(`Заказ #${orderId} добавлен в корзину`);
         this.showCart();
     }
+
+    // Настройка обработчиков событий
+    setupEventListeners() {
+        // Навигация
+        document.addEventListener('click', (e) => {
+            // Категории
+            if (e.target.closest('.category-card')) {
+                const card = e.target.closest('.category-card');
+                const categoryId = card.dataset.category;
+                this.showCategory(categoryId);
+            }
+
+            // Товары
+            if (e.target.closest('.product-card')) {
+                const card = e.target.closest('.product-card');
+                const productId = card.dataset.productId;
+                this.showProduct(productId);
+            }
+
+            // Кнопки добавления в корзину
+            if (e.target.closest('.btn-add-to-cart')) {
+                const button = e.target.closest('.btn-add-to-cart');
+                const productId = button.dataset.productId;
+                this.addToCart(productId);
+            }
+
+            // Кнопки навигации
+            if (e.target.closest('#cart-btn')) {
+                this.showCart();
+            }
+
+            if (e.target.closest('#profile-btn')) {
+                this.showProfile();
+            }
+
+            if (e.target.closest('#search-btn')) {
+                this.toggleSearch();
+            }
+
+            if (e.target.closest('#search-close')) {
+                this.toggleSearch();
+            }
+
+            // Кнопка назад
+            if (e.target.closest('.back-btn')) {
+                this.goBack();
+            }
+
+            // Кнопка оформления заказа
+            if (e.target.closest('#checkout-btn')) {
+                this.showCheckout();
+            }
+
+            // Форма оформления заказа
+            if (e.target.closest('#checkout-form')) {
+                e.preventDefault();
+                this.processOrder();
+            }
+
+            // Меню профиля
+            if (e.target.closest('.profile-menu-item')) {
+                const item = e.target.closest('.profile-menu-item');
+                const action = item.dataset.action;
+                
+                switch (action) {
+                    case 'orders':
+                        this.showOrderHistory();
+                        break;
+                    case 'favorites':
+                        this.showFavorites();
+                        break;
+                    case 'settings':
+                        this.showSettings();
+                        break;
+                }
+            }
+
+            // Действия профиля
+            if (e.target.closest('.btn-profile-action')) {
+                const button = e.target.closest('.btn-profile-action');
+                const action = button.dataset.action;
+                
+                switch (action) {
+                    case 'favorites':
+                        this.showFavorites();
+                        break;
+                    case 'settings':
+                        this.showSettings();
+                        break;
+                    case 'edit-profile':
+                        this.showEditProfile();
+                        break;
+                }
+            }
+
+            // Кнопки избранного
+            if (e.target.closest('.btn-favorite')) {
+                const button = e.target.closest('.btn-favorite');
+                const productId = button.dataset.productId;
+                
+                if (this.isInFavorites(productId)) {
+                    this.removeFromFavorites(productId);
+                    button.classList.remove('active');
+                } else {
+                    this.addToFavorites(productId);
+                    button.classList.add('active');
+                }
+            }
+
+            // Кнопки количества
+            if (e.target.closest('.quantity-btn')) {
+                const button = e.target.closest('.quantity-btn');
+                const action = button.dataset.action;
+                const productId = button.dataset.productId;
+                
+                if (action === 'increase') {
+                    this.addToCart(productId);
+                } else if (action === 'decrease') {
+                    const item = this.cart.find(item => item.id === productId);
+                    if (item) {
+                        this.updateQuantity(productId, item.quantity - 1);
+                    }
+                }
+            }
+
+            // Удаление из корзины
+            if (e.target.closest('.remove-item-btn')) {
+                const button = e.target.closest('.remove-item-btn');
+                const productId = button.dataset.productId;
+                this.removeFromCart(productId);
+            }
+
+            // Повторение заказа
+            if (e.target.closest('.btn-repeat-order')) {
+                const button = e.target.closest('.btn-repeat-order');
+                const orderId = button.dataset.orderId;
+                this.repeatOrder(orderId);
+            }
+
+            // Закрытие модального окна
+            if (e.target.closest('#modal-close')) {
+                this.hideModal();
+            }
+        });
+
+        // Поиск
+        const searchInput = document.getElementById('search-input');
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                this.handleSearch(e.target.value);
+            });
+        }
+
+        // Кнопка назад Telegram
+        document.addEventListener('telegramBackButton', () => {
+            this.goBack();
+        });
+    }
+
+    // Переключение поиска
+    toggleSearch() {
+        const searchBar = document.getElementById('search-bar');
+        const searchInput = document.getElementById('search-input');
+        
+        if (searchBar.style.display === 'none') {
+            searchBar.style.display = 'flex';
+            searchInput.focus();
+        } else {
+            searchBar.style.display = 'none';
+            searchInput.value = '';
+            this.handleSearch('');
+        }
+    }
+
+    // Обработка поиска
+    handleSearch(query) {
+        if (query.trim() === '') {
+            this.showHome();
+            return;
+        }
+
+        const results = DataService.searchProducts(query);
+        document.getElementById('category-title').textContent = `Поиск: ${query}`;
+        this.renderProducts(results);
+        this.showScreen('category-screen');
+    }
+
+    // Навигация назад
+    goBack() {
+        if (this.screenHistory.length > 1) {
+            this.screenHistory.pop(); // Убираем текущий экран
+            const previousScreen = this.screenHistory[this.screenHistory.length - 1];
+            
+            switch (previousScreen) {
+                case 'home-screen':
+                    this.showHome();
+                    break;
+                case 'category-screen':
+                    // Возвращаемся к категориям
+                    this.showHome();
+                    break;
+                case 'cart-screen':
+                    this.showCart();
+                    break;
+                case 'profile-screen':
+                    this.showProfile();
+                    break;
+                default:
+                    this.showHome();
+            }
+        } else {
+            this.showHome();
+        }
+    }
+
+    // Обработка заказа
+    processOrder() {
+        const form = document.getElementById('checkout-form');
+        const formData = new FormData(form);
+        
+        const orderData = {
+            customer: {
+                name: formData.get('name') || document.getElementById('name').value,
+                phone: formData.get('phone') || document.getElementById('phone').value,
+                address: formData.get('address') || document.getElementById('address').value,
+                delivery: formData.get('delivery') || document.getElementById('delivery').value
+            },
+            items: this.cart,
+            total: this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+        };
+
+        // Создаем заказ
+        const order = DataService.createOrder(orderData);
+        
+        // Очищаем корзину
+        this.cart = [];
+        this.saveCartToStorage();
+        this.updateCartBadge();
+        
+        // Показываем успешное сообщение
+        this.showSuccessModal(order);
+    }
+
+    // Показать модальное окно успеха
+    showSuccessModal(order) {
+        const modal = document.getElementById('success-modal');
+        if (modal) {
+            modal.style.display = 'flex';
+        }
+    }
+
+    // Скрыть модальное окно
+    hideModal() {
+        const modal = document.getElementById('success-modal');
+        if (modal) {
+            modal.style.display = 'none';
+            this.showHome();
+        }
+    }
 }
 
-// Создание глобального экземпляра
+// Создаем глобальный экземпляр
 const uiComponents = new UIComponents();
 
 // Экспорт для использования в других модулях

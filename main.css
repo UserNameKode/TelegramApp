@@ -101,11 +101,11 @@ body {
     cursor: pointer;
     transition: all 0.3s ease;
     position: relative;
-    min-width: 44px;
-    height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
+    min-width: 40px;
+    height: 40px;
 }
 
 .nav-btn:hover {
@@ -128,20 +128,22 @@ body {
     border-radius: 50%;
     width: 20px;
     height: 20px;
-    font-size: 0.75rem;
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 0.8rem;
     font-weight: 600;
+    border: 2px solid var(--background-dark);
 }
 
-/* Поисковая строка */
+/* Поиск */
 .search-bar {
     background: var(--surface-color);
-    padding: var(--spacing-md);
     border-bottom: 1px solid var(--border-color);
+    padding: var(--spacing-md);
     display: flex;
     gap: var(--spacing-sm);
+    align-items: center;
 }
 
 .search-bar input {
@@ -152,32 +154,39 @@ body {
     padding: var(--spacing-sm) var(--spacing-md);
     color: var(--text-primary);
     font-size: 1rem;
+    outline: none;
+    transition: all 0.3s ease;
 }
 
 .search-bar input:focus {
-    outline: none;
     border-color: var(--primary-color);
     box-shadow: var(--shadow-light);
 }
 
 .search-close {
-    background: var(--accent-color);
-    border: none;
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
     border-radius: var(--border-radius-small);
-    padding: var(--spacing-sm) var(--spacing-md);
-    color: white;
+    padding: var(--spacing-sm);
+    color: var(--text-primary);
     cursor: pointer;
-    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.search-close:hover {
+    background: var(--background-light);
+    border-color: var(--error-color);
+    color: var(--error-color);
 }
 
 /* Основной контент */
 .main-content {
-    padding: var(--spacing-md);
+    padding: var(--spacing-lg);
     max-width: 1200px;
     margin: 0 auto;
+    min-height: calc(100vh - 120px);
 }
 
-/* Экраны */
 .screen {
     display: none;
     animation: fadeIn 0.3s ease;
@@ -204,11 +213,13 @@ body {
     color: var(--text-primary);
     cursor: pointer;
     transition: all 0.3s ease;
+    font-size: 0.9rem;
 }
 
 .back-btn:hover {
     background: var(--background-light);
     border-color: var(--primary-color);
+    transform: translateX(-4px);
 }
 
 .screen-header h2 {
@@ -226,13 +237,14 @@ body {
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius);
     padding: var(--spacing-xl);
-    margin-bottom: var(--spacing-xl);
     text-align: center;
+    margin-bottom: var(--spacing-xl);
     box-shadow: var(--shadow-medium);
 }
 
 .welcome-banner h2 {
-    font-size: 1.8rem;
+    font-size: 2rem;
+    font-weight: 700;
     margin-bottom: var(--spacing-md);
     background: var(--gradient-primary);
     -webkit-background-clip: text;
@@ -282,18 +294,18 @@ body {
 
 .category-card:hover {
     transform: translateY(-8px);
-    border-color: var(--primary-color);
     box-shadow: var(--shadow-heavy);
+    border-color: var(--primary-color);
 }
 
 .category-icon {
     font-size: 3rem;
     margin-bottom: var(--spacing-md);
-    display: block;
 }
 
 .category-card h3 {
     font-size: 1.3rem;
+    font-weight: 600;
     margin-bottom: var(--spacing-sm);
     color: var(--text-primary);
 }
@@ -325,7 +337,7 @@ body {
     }
     
     .main-content {
-        padding: var(--spacing-sm);
+        padding: var(--spacing-md);
     }
     
     .welcome-banner {

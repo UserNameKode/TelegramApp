@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Проверка файлов MiniApp</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        .check-item {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .success {
+            background: #4CAF50;
+        }
+        .error {
+            background: #f44336;
+        }
+        .warning {
+            background: #FF9800;
+        }
+        .status {
+            font-weight: bold;
+        }
+        .summary {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 18px;
+            text-align: center;
+        }
+        .summary.success {
+            background: #4CAF50;
+        }
+        .summary.error {
+            background: #f44336;
+        }
+        .summary.warning {
+            background: #FF9800;
+        }
+    </style>
+</head>
+<body>
+    <h1>Проверка файлов Telegram MiniApp</h1>
+    
+    <div id="results"></div>
+    
+    <div id="summary" class="summary"></div>
+
+    <script>
+        const requiredFiles = [
+            'index.html',
+            'main.css',
+            'components.css',
+            'animations.css',
+            'data.js',
+            'telegram-api.js',
+            'components.js',
+            'optimization.js',
+            'app.js'
+        ];
+
+        const resultsDiv = document.getElementById('results');
+        const summaryDiv = document.getElementById('summary');
+        
+        let successCount = 0;
+        let errorCount = 0;
+        let warningCount = 0;
+
+        async function checkFile(filename) {
+            try {
+                const response = await fetch(filename);
+                if (response.ok) {
+                    return 'success';
+                } else if (response.status === 404) {
+                    return 'error';
+                } else {
+                    return 'warning';
+                }
+            } catch (error) {
+                return 'error';
+            }
+        }
+
+        function createCheckItem(filename, status) {
+            const item = document.createElement('div');
+            item.className = `check-item ${status}`;
+            
+            let statusText = '';
+            let statusClass = '';
+            
+            switch(status) {
+                case 'success':
+                    statusText = '✅ Найден';
+                    statusClass = 'success';
+                    successCount++;
+                    break;
+                case 'error':
+                    statusText = '❌ Не найден';
+                    statusClass = 'error';
+                    errorCount++;
+                    break;
+                case 'warning':
+                    statusText = '⚠️ Ошибка загрузки';
+                    statusClass = 'warning';
+                    warningCount++;
+                    break;
+            }
+            
+            item.innerHTML = `
+                <span>${filename}</span>
+                <span class="status ${statusClass}">${statusText}</span>
+            `;
+            
+            return item;
+        }
+
+        function updateSummary() {
+            let summaryText = '';
+            let summaryClass = '';
+            
+            if (errorCount === 0 && warningCount === 0) {
+                summaryText = `✅ Все файлы найдены (${successCount}/${requiredFiles.length})`;
+                summaryClass = 'success';
+            } else if (errorCount > 0) {
+                summaryText = `❌ Проблемы с файлами: ${errorCount} не найдено, ${warningCount} с ошибками`;
+                summaryClass = 'error';
+            } else {
+                summaryText = `⚠️ Предупреждения: ${warningCount} файлов с ошибками загрузки`;
+                summaryClass = 'warning';
+            }
+            
+            summaryDiv.textContent = summaryText;
+            summaryDiv.className = `summary ${summaryClass}`;
+        }
+
+        async function checkAllFiles() {
+            for (const filename of requiredFiles) {
+                const status = await checkFile(filename);
+                const item = createCheckItem(filename, status);
+                resultsDiv.appendChild(item);
+            }
+            
+            updateSummary();
+        }
+
+        // Запускаем проверку
+        checkAllFiles();
+    </script>
+</body>
+</html> 
