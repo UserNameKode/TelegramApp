@@ -38,14 +38,14 @@
                     <h1>АвтоЗапчасти</h1>
                 </div>
                 <div class="nav-actions">
-                    <button id="search-btn" class="nav-btn">
+                    <button id="search-btn" class="nav-btn" data-screen="search">
                         <span class="icon">🔍</span>
                     </button>
-                    <button id="cart-btn" class="nav-btn">
+                    <button id="cart-btn" class="nav-btn" data-screen="cart">
                         <span class="icon">🛒</span>
                         <span id="cart-count" class="cart-count">0</span>
                     </button>
-                    <button id="profile-btn" class="nav-btn">
+                    <button id="profile-btn" class="nav-btn" data-screen="profile">
                         <span class="icon">👤</span>
                     </button>
                 </div>
@@ -111,19 +111,19 @@
                 <div class="quick-actions">
                     <h3>⚡ Быстрые действия</h3>
                     <div class="actions-grid">
-                        <button class="action-btn" onclick="uiComponents.showScreen('cart')">
+                        <button class="action-btn" data-action="cart">
                             <span class="action-icon">🛒</span>
                             <span>Корзина</span>
                         </button>
-                        <button class="action-btn" onclick="uiComponents.showScreen('profile')">
+                        <button class="action-btn" data-action="profile">
                             <span class="action-icon">👤</span>
                             <span>Профиль</span>
                         </button>
-                        <button class="action-btn" onclick="uiComponents.showScreen('orders')">
+                        <button class="action-btn" data-action="orders">
                             <span class="action-icon">📋</span>
                             <span>Заказы</span>
                         </button>
-                        <button class="action-btn" onclick="document.getElementById('search-btn').click()">
+                        <button class="action-btn" data-action="search">
                             <span class="action-icon">🔍</span>
                             <span>Поиск</span>
                         </button>
@@ -134,7 +134,7 @@
             <!-- Category Products Screen -->
             <div id="category-screen" class="screen">
                 <div class="screen-header">
-                    <button class="back-btn">← Назад</button>
+                    <button class="btn-back">← Назад</button>
                     <h2 id="category-title">Категория</h2>
                 </div>
                 <div id="products-grid" class="products-grid"></div>
@@ -143,7 +143,7 @@
             <!-- Product Detail Screen -->
             <div id="product-screen" class="screen">
                 <div class="screen-header">
-                    <button class="back-btn">← Назад</button>
+                    <button class="btn-back">← Назад</button>
                     <h2>Товар</h2>
                 </div>
                 <div id="product-detail" class="product-detail"></div>
@@ -152,7 +152,7 @@
             <!-- Cart Screen -->
             <div id="cart-screen" class="screen">
                 <div class="screen-header">
-                    <button class="back-btn">← Назад</button>
+                    <button class="btn-back">← Назад</button>
                     <h2>Корзина</h2>
                 </div>
                 <div id="cart-items" class="cart-items"></div>
@@ -168,7 +168,7 @@
             <!-- Checkout Screen -->
             <div id="checkout-screen" class="screen">
                 <div class="screen-header">
-                    <button class="back-btn">← Назад</button>
+                    <button class="btn-back">← Назад</button>
                     <h2>Оформление заказа</h2>
                 </div>
                 <form id="checkout-form" class="checkout-form">
@@ -199,7 +199,7 @@
             <!-- Profile Screen -->
             <div id="profile-screen" class="screen">
                 <div class="screen-header">
-                    <button class="back-btn">← Назад</button>
+                    <button class="btn-back">← Назад</button>
                     <h2>Профиль</h2>
                 </div>
                 <div class="profile-content">
@@ -228,7 +228,7 @@
             <!-- Orders History Screen -->
             <div id="orders-screen" class="screen">
                 <div class="screen-header">
-                    <button class="back-btn">← Назад</button>
+                    <button class="btn-back">← Назад</button>
                     <h2>История заказов</h2>
                 </div>
                 <div id="orders-list" class="orders-list"></div>

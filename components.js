@@ -68,9 +68,7 @@ class UIComponents {
         const categories = window.categories || [];
         categoriesContainer.innerHTML = categories.map(category => `
             <div class="category-card" data-category="${category.id}">
-                <div class="category-icon">
-                    <i class="icon-${category.icon}"></i>
-                </div>
+                <div class="category-icon">${category.icon}</div>
                 <h3>${category.name}</h3>
                 <p>${category.description}</p>
             </div>
@@ -81,10 +79,15 @@ class UIComponents {
         const productsContainer = document.querySelector('.products-grid');
         if (!productsContainer) return;
 
-        let products = window.products || [];
+        let products = [];
         
         if (categoryId) {
-            products = products.filter(product => product.categoryId === categoryId);
+            products = window.products[categoryId] || [];
+        } else {
+            // Показываем все товары из всех категорий
+            Object.values(window.products || {}).forEach(categoryProducts => {
+                products = products.concat(categoryProducts);
+            });
         }
 
         productsContainer.innerHTML = products.map(product => this.createProductCard(product)).join('');
@@ -732,6 +735,29 @@ class UIComponents {
             if (e.target.closest('.btn-back')) {
                 console.log('Back button clicked');
                 this.showHome();
+                return;
+            }
+            
+            // Быстрые действия
+            if (e.target.closest('.action-btn')) {
+                const button = e.target.closest('.action-btn');
+                const action = button.dataset.action;
+                console.log('Action button clicked:', action);
+                
+                switch (action) {
+                    case 'cart':
+                        this.showCart();
+                        break;
+                    case 'profile':
+                        this.showProfile();
+                        break;
+                    case 'orders':
+                        this.showOrders();
+                        break;
+                    case 'search':
+                        document.getElementById('search-btn').click();
+                        break;
+                }
                 return;
             }
         });

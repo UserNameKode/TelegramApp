@@ -289,6 +289,10 @@ const DataService = {
 
 // Экспорт для использования в других модулях
 window.DataService = DataService;
+window.categories = categories;
+window.products = products;
+window.userProfile = userProfile;
+window.orderHistory = orderHistory;
 
 // Убеждаемся, что DataService доступен глобально
 if (typeof window !== 'undefined') {
