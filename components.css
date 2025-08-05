@@ -159,7 +159,7 @@
     background: var(--gradient-surface);
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius);
-    padding: var(--spacing-lg);
+    padding: var(--spacing-xl);
     margin-bottom: var(--spacing-lg);
 }
 
@@ -167,7 +167,7 @@
     width: 100%;
     height: 300px;
     background: var(--background-light);
-    border-radius: var(--border-radius-small);
+    border-radius: var(--border-radius);
     margin-bottom: var(--spacing-lg);
     display: flex;
     align-items: center;
@@ -175,18 +175,17 @@
     font-size: 4rem;
     color: var(--text-secondary);
     position: relative;
-    overflow: hidden;
 }
 
 .product-detail-info h3 {
-    font-size: 1.5rem;
-    font-weight: 600;
+    font-size: 1.8rem;
     margin-bottom: var(--spacing-md);
     color: var(--text-primary);
 }
 
 .product-detail-description {
     color: var(--text-secondary);
+    font-size: 1rem;
     line-height: 1.6;
     margin-bottom: var(--spacing-lg);
 }
@@ -194,15 +193,14 @@
 .product-specs {
     background: var(--background-light);
     border-radius: var(--border-radius-small);
-    padding: var(--spacing-md);
+    padding: var(--spacing-lg);
     margin-bottom: var(--spacing-lg);
 }
 
 .product-specs h4 {
-    font-size: 1.1rem;
-    font-weight: 600;
+    color: var(--primary-color);
     margin-bottom: var(--spacing-md);
-    color: var(--text-primary);
+    font-size: 1.1rem;
 }
 
 .spec-item {
@@ -218,12 +216,12 @@
 
 .spec-label {
     color: var(--text-secondary);
-    font-size: 0.9rem;
+    font-weight: 500;
 }
 
 .spec-value {
     color: var(--text-primary);
-    font-weight: 500;
+    font-weight: 600;
 }
 
 .product-detail-actions {
@@ -242,23 +240,22 @@
 }
 
 .quantity-btn {
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-small);
     width: 32px;
     height: 32px;
-    border: 1px solid var(--border-color);
-    background: var(--surface-color);
-    color: var(--text-primary);
-    border-radius: var(--border-radius-small);
-    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
+    color: var(--text-primary);
     transition: all 0.3s ease;
 }
 
 .quantity-btn:hover {
     background: var(--primary-color);
     border-color: var(--primary-color);
-    color: white;
 }
 
 .quantity-display {
@@ -277,7 +274,7 @@
     background: var(--gradient-surface);
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius);
-    padding: var(--spacing-md);
+    padding: var(--spacing-lg);
     margin-bottom: var(--spacing-md);
     display: flex;
     gap: var(--spacing-md);
@@ -327,13 +324,13 @@
     padding: var(--spacing-sm);
     color: white;
     cursor: pointer;
-    transition: all 0.3s ease;
     font-size: 0.9rem;
+    transition: all 0.3s ease;
 }
 
 .remove-item-btn:hover {
-    transform: scale(1.1);
-    box-shadow: var(--shadow-medium);
+    background: #ff3742;
+    transform: scale(1.05);
 }
 
 .cart-summary {
@@ -342,18 +339,16 @@
     border-radius: var(--border-radius);
     padding: var(--spacing-lg);
     position: sticky;
-    bottom: 0;
-    backdrop-filter: blur(20px);
+    bottom: var(--spacing-md);
 }
 
 .total {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: var(--spacing-lg);
     font-size: 1.2rem;
     font-weight: 600;
-    margin-bottom: var(--spacing-md);
-    color: var(--text-primary);
 }
 
 .checkout-btn {
@@ -371,14 +366,13 @@
 
 .checkout-btn:hover {
     transform: translateY(-2px);
-    box-shadow: var(--shadow-heavy);
+    box-shadow: var(--shadow-medium);
 }
 
 .checkout-btn:disabled {
-    background: var(--text-muted);
+    opacity: 0.5;
     cursor: not-allowed;
     transform: none;
-    box-shadow: none;
 }
 
 /* Форма оформления заказа */
@@ -386,8 +380,7 @@
     background: var(--gradient-surface);
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius);
-    padding: var(--spacing-lg);
-    margin-bottom: var(--spacing-lg);
+    padding: var(--spacing-xl);
 }
 
 .form-group {
@@ -402,8 +395,8 @@
 }
 
 .form-group input,
-.form-group select,
-.form-group textarea {
+.form-group textarea,
+.form-group select {
     width: 100%;
     background: var(--background-light);
     border: 1px solid var(--border-color);
@@ -415,8 +408,8 @@
 }
 
 .form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
+.form-group textarea:focus,
+.form-group select:focus {
     outline: none;
     border-color: var(--primary-color);
     box-shadow: var(--shadow-light);
@@ -442,23 +435,21 @@
 
 .submit-btn:hover {
     transform: translateY(-2px);
-    box-shadow: var(--shadow-heavy);
+    box-shadow: var(--shadow-medium);
 }
 
 .submit-btn:disabled {
-    background: var(--text-muted);
+    opacity: 0.5;
     cursor: not-allowed;
     transform: none;
-    box-shadow: none;
 }
 
-/* Профиль */
+/* Профиль пользователя */
 .profile-content {
     background: var(--gradient-surface);
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius);
-    padding: var(--spacing-lg);
-    margin-bottom: var(--spacing-lg);
+    padding: var(--spacing-xl);
 }
 
 .profile-info {
@@ -476,14 +467,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2rem;
+    font-size: 2.5rem;
     margin: 0 auto var(--spacing-md);
-    color: white;
 }
 
 .profile-info h3 {
     font-size: 1.3rem;
-    font-weight: 600;
     margin-bottom: var(--spacing-sm);
     color: var(--text-primary);
 }
@@ -503,19 +492,19 @@
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius-small);
     padding: var(--spacing-md);
-    color: var(--text-primary);
-    cursor: pointer;
-    transition: all 0.3s ease;
     display: flex;
     align-items: center;
     gap: var(--spacing-md);
-    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: var(--text-primary);
+    text-decoration: none;
 }
 
 .profile-menu-item:hover {
     background: var(--surface-color);
     border-color: var(--primary-color);
-    transform: translateX(4px);
+    transform: translateX(8px);
 }
 
 .profile-menu-item .icon {
@@ -549,13 +538,11 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: var(--spacing-md);
-    padding-bottom: var(--spacing-md);
-    border-bottom: 1px solid var(--border-color);
 }
 
 .order-number {
     font-weight: 600;
-    color: var(--text-primary);
+    color: var(--primary-color);
 }
 
 .order-date {
@@ -564,7 +551,7 @@
 }
 
 .order-status {
-    padding: var(--spacing-sm) var(--spacing-md);
+    padding: var(--spacing-xs) var(--spacing-sm);
     border-radius: var(--border-radius-small);
     font-size: 0.8rem;
     font-weight: 600;
@@ -606,7 +593,7 @@
     align-items: center;
     justify-content: center;
     z-index: 1000;
-    animation: modalSlideIn 0.3s ease;
+    backdrop-filter: blur(10px);
 }
 
 .modal-content {
@@ -623,7 +610,7 @@
 @keyframes modalSlideIn {
     from {
         opacity: 0;
-        transform: scale(0.8) translateY(-20px);
+        transform: scale(0.8) translateY(-50px);
     }
     to {
         opacity: 1;
@@ -638,13 +625,13 @@
 }
 
 @keyframes successPulse {
-    0%, 100% { transform: scale(1); }
+    0% { transform: scale(0); }
     50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
 }
 
 .modal-content h3 {
     font-size: 1.5rem;
-    font-weight: 600;
     margin-bottom: var(--spacing-md);
     color: var(--text-primary);
 }

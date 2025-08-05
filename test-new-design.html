@@ -3,13 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>АвтоЗапчасти - Telegram MiniApp</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <title>Новый дизайн АвтоЗапчасти</title>
     <link rel="stylesheet" href="main.css">
     <link rel="stylesheet" href="components.css">
     <link rel="stylesheet" href="animations.css">
+    <style>
+        .test-info {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.9);
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 12px;
+            z-index: 10000;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .design-features {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.9);
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 11px;
+            z-index: 10000;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            max-width: 250px;
+        }
+        .feature-item {
+            margin: 5px 0;
+            padding: 3px 0;
+        }
+        .feature-item::before {
+            content: '✨ ';
+            color: #667eea;
+        }
+    </style>
 </head>
 <body>
+    <div class="test-info">
+        <div style="font-weight: 600; margin-bottom: 5px;">Новый дизайн</div>
+        <div id="test-status">Загрузка...</div>
+    </div>
+
+    <div class="design-features">
+        <div style="font-weight: 600; margin-bottom: 8px; color: #667eea;">Новые возможности:</div>
+        <div class="feature-item">Современные градиенты</div>
+        <div class="feature-item">Glass morphism эффекты</div>
+        <div class="feature-item">Плавные анимации</div>
+        <div class="feature-item">Улучшенная типографика</div>
+        <div class="feature-item">Адаптивный дизайн</div>
+        <div class="feature-item">HiTech элементы</div>
+    </div>
+
     <!-- Loading Screen -->
     <div id="loading-screen" class="loading-screen">
         <div class="loading-container">
@@ -104,7 +155,7 @@
             <div id="product-screen" class="screen">
                 <div class="screen-header">
                     <button class="back-btn">← Назад</button>
-                    <h2>Товар</h2>
+                    <h2 id="product-title">Товар</h2>
                 </div>
                 <div id="product-detail" class="product-detail"></div>
             </div>
@@ -212,5 +263,54 @@
     <script src="components.js"></script>
     <script src="optimization.js"></script>
     <script src="app.js"></script>
+    
+    <script>
+        // Тестовый скрипт для проверки нового дизайна
+        window.addEventListener('load', () => {
+            const testStatus = document.getElementById('test-status');
+            
+            // Проверяем загрузку модулей
+            const modules = {
+                'DataService': window.DataService,
+                'telegramAPI': window.telegramAPI,
+                'uiComponents': window.uiComponents,
+                'performanceOptimizer': window.performanceOptimizer,
+                'app': window.app
+            };
+            
+            let loadedModules = 0;
+            const totalModules = Object.keys(modules).length;
+            
+            for (const [name, module] of Object.entries(modules)) {
+                if (module) {
+                    loadedModules++;
+                    console.log(`✅ ${name} загружен`);
+                } else {
+                    console.error(`❌ ${name} не загружен`);
+                }
+            }
+            
+            testStatus.textContent = `Модули: ${loadedModules}/${totalModules}`;
+            
+            // Проверяем через 3 секунды
+            setTimeout(() => {
+                if (window.app && !window.app.isLoading) {
+                    testStatus.textContent = `🎨 Новый дизайн готов!`;
+                    testStatus.style.color = '#43e97b';
+                } else {
+                    testStatus.textContent = `⚠️ Загрузка...`;
+                    testStatus.style.color = '#fa709a';
+                }
+            }, 3000);
+
+            // Добавляем интерактивность для демонстрации
+            document.addEventListener('click', (e) => {
+                if (e.target.closest('.category-card')) {
+                    const category = e.target.closest('.category-card').dataset.category;
+                    console.log(`🎯 Клик по категории: ${category}`);
+                }
+            });
+        });
+    </script>
 </body>
 </html> 
