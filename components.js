@@ -202,9 +202,12 @@ class UIComponents {
         return `
             <div class="product-card" data-product-id="${product.id}">
                 <div class="product-image">
-                    <div class="product-placeholder">
-                        <i class="icon-${product.icon}"></i>
-                    </div>
+                    ${product.image ? 
+                        `<img src="${product.image}" alt="${product.name}" loading="lazy">` :
+                        `<div class="product-placeholder">
+                            <i class="icon-${product.icon}"></i>
+                        </div>`
+                    }
                     <button class="btn-favorite ${isFavorite ? 'active' : ''}" data-product-id="${product.id}">
                         <i class="icon-heart"></i>
                     </button>
@@ -608,64 +611,88 @@ class UIComponents {
     setupEventListeners() {
         // Навигация
         document.addEventListener('click', (e) => {
+            console.log('Click event:', e.target);
+            
             // Категории
             if (e.target.closest('.category-card')) {
                 const card = e.target.closest('.category-card');
                 const categoryId = card.dataset.category;
+                console.log('Category clicked:', categoryId);
                 this.showCategory(categoryId);
+                return;
             }
 
             // Товары
             if (e.target.closest('.product-card')) {
                 const card = e.target.closest('.product-card');
                 const productId = card.dataset.productId;
+                console.log('Product clicked:', productId);
                 this.showProduct(productId);
+                return;
             }
 
             // Кнопки добавления в корзину
             if (e.target.closest('.btn-add-to-cart')) {
+                e.stopPropagation();
                 const button = e.target.closest('.btn-add-to-cart');
                 const productId = button.dataset.productId;
+                console.log('Add to cart clicked:', productId);
                 this.addToCart(productId);
+                return;
             }
 
             // Кнопки навигации
             if (e.target.closest('#cart-btn')) {
+                console.log('Cart button clicked');
                 this.showCart();
+                return;
             }
 
             if (e.target.closest('#profile-btn')) {
+                console.log('Profile button clicked');
                 this.showProfile();
+                return;
             }
 
             if (e.target.closest('#search-btn')) {
+                console.log('Search button clicked');
                 this.toggleSearch();
+                return;
             }
 
             if (e.target.closest('#search-close')) {
+                console.log('Search close clicked');
                 this.toggleSearch();
+                return;
             }
 
             // Кнопка назад
             if (e.target.closest('.back-btn')) {
+                console.log('Back button clicked');
                 this.goBack();
+                return;
             }
 
             // Кнопка оформления заказа
             if (e.target.closest('#checkout-btn')) {
+                console.log('Checkout button clicked');
                 this.showCheckout();
+                return;
             }
 
             // Форма оформления заказа
             if (e.target.closest('#checkout-form')) {
                 e.preventDefault();
+                console.log('Checkout form submitted');
                 this.processOrder();
+                return;
             }
 
             // Меню профиля
             if (e.target.closest('.profile-menu-item')) {
                 const item = e.target.closest('.profile-menu-item');
                 const action = item.dataset.action;
+                console.log('Profile menu item clicked:', action);
                 
                 switch (action) {
                     case 'orders':
@@ -678,12 +705,14 @@ class UIComponents {
                         this.showSettings();
                         break;
                 }
+                return;
             }
 
             // Действия профиля
             if (e.target.closest('.btn-profile-action')) {
                 const button = e.target.closest('.btn-profile-action');
                 const action = button.dataset.action;
+                console.log('Profile action clicked:', action);
                 
                 switch (action) {
                     case 'favorites':
@@ -696,6 +725,7 @@ class UIComponents {
                         this.showEditProfile();
                         break;
                 }
+                return;
             }
 
             // Кнопки избранного

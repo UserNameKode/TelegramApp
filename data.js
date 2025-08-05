@@ -38,7 +38,8 @@ const products = {
             price: 850,
             brand: 'Bosch',
             inStock: true,
-            icon: 'filter'
+            icon: 'filter',
+            image: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=300&h=300&fit=crop&crop=center'
         },
         {
             id: 'engine_002',
@@ -47,7 +48,8 @@ const products = {
             price: 650,
             brand: 'Mann',
             inStock: true,
-            icon: 'filter'
+            icon: 'filter',
+            image: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=300&h=300&fit=crop&crop=center'
         },
         {
             id: 'engine_003',
@@ -56,7 +58,8 @@ const products = {
             price: 3200,
             brand: 'Gates',
             inStock: true,
-            icon: 'belt'
+            icon: 'belt',
+            image: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=300&h=300&fit=crop&crop=center'
         }
     ],
     brakes: [
@@ -67,7 +70,8 @@ const products = {
             price: 2800,
             brand: 'Brembo',
             inStock: true,
-            icon: 'brake'
+            icon: 'brake',
+            image: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=300&h=300&fit=crop&crop=center'
         },
         {
             id: 'brakes_002',
@@ -76,7 +80,8 @@ const products = {
             price: 4500,
             brand: 'Brembo',
             inStock: true,
-            icon: 'disc'
+            icon: 'disc',
+            image: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=300&h=300&fit=crop&crop=center'
         }
     ],
     suspension: [

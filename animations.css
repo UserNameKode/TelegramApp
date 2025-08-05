@@ -26,20 +26,36 @@
     position: relative;
 }
 
-/* Анимация сборки двигателя */
+/* Анимация сборки двигателя с 3D эффектами */
 .engine-assembly {
     position: relative;
     width: 200px;
     height: 200px;
     margin: 0 auto var(--spacing-xl);
+    perspective: 1200px;
+    transform-style: preserve-3d;
 }
 
 .part {
     position: absolute;
-    border-radius: 50%;
+    border-radius: 12px;
     background: var(--primary-gradient);
     box-shadow: var(--shadow-medium);
     animation: partFloat 3s ease-in-out infinite;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    transform-style: preserve-3d;
+}
+
+.part::before {
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    right: 4px;
+    bottom: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    transform: translateZ(1px);
 }
 
 .part-1 {
@@ -49,6 +65,7 @@
     left: 60px;
     animation-delay: 0s;
     background: var(--primary-gradient);
+    transform: translateZ(0px);
 }
 
 .part-2 {
@@ -58,6 +75,7 @@
     left: 20px;
     animation-delay: 0.5s;
     background: var(--secondary-gradient);
+    transform: translateZ(20px);
 }
 
 .part-3 {
@@ -67,6 +85,7 @@
     right: 20px;
     animation-delay: 1s;
     background: var(--accent-gradient);
+    transform: translateZ(40px);
 }
 
 .part-4 {
@@ -76,23 +95,24 @@
     right: 60px;
     animation-delay: 1.5s;
     background: var(--success-gradient);
+    transform: translateZ(60px);
 }
 
 @keyframes partFloat {
     0%, 100% {
-        transform: translateY(0px) rotate(0deg);
-        opacity: 0.7;
+        transform: translateY(0px) rotateY(0deg) translateZ(0px);
+        opacity: 0.8;
     }
     25% {
-        transform: translateY(-10px) rotate(90deg);
+        transform: translateY(-15px) rotateY(90deg) translateZ(30px);
         opacity: 1;
     }
     50% {
-        transform: translateY(-5px) rotate(180deg);
+        transform: translateY(-5px) rotateY(180deg) translateZ(60px);
         opacity: 0.9;
     }
     75% {
-        transform: translateY(-15px) rotate(270deg);
+        transform: translateY(-20px) rotateY(270deg) translateZ(30px);
         opacity: 1;
     }
 }
