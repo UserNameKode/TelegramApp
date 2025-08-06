@@ -120,7 +120,7 @@ class Cart {
                     <div class="empty-cart-icon">🛒</div>
                     <h3>Корзина пуста</h3>
                     <p>Добавьте товары из каталога</p>
-                    <button class="btn btn-primary" onclick="window.uiComponents.showHome()">
+                    <button class="btn btn-primary" onclick="window.app.showScreen('home')">
                         Перейти к покупкам
                     </button>
                 </div>
@@ -163,7 +163,7 @@ class Cart {
                     <span>Итого:</span>
                     <span class="total-price">${this.calculateTotal()} ₽</span>
                 </div>
-                <button class="btn btn-primary btn-lg checkout-btn" onclick="window.uiComponents.showCheckout()">
+                <button class="btn btn-primary btn-lg checkout-btn" onclick="window.app.showScreen('checkout')">
                     Оформить заказ
                 </button>
             </div>

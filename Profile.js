@@ -33,7 +33,7 @@ class Profile {
         this.userData = { ...this.userData, ...data };
         this.saveUserData();
         this.render();
-        window.uiComponents.showNotification('Профиль обновлен', 'success');
+        window.app.showNotification('Профиль обновлен', 'success');
     }
 
     addAddress(address) {
@@ -179,7 +179,7 @@ class Profile {
                 <div class="empty-orders">
                     <div class="empty-icon">📦</div>
                     <p>У вас пока нет заказов</p>
-                    <button class="btn btn-primary" onclick="window.uiComponents.showHome()">
+                    <button class="btn btn-primary" onclick="window.app.showScreen('home')">
                         Начать покупки
                     </button>
                 </div>
@@ -238,7 +238,7 @@ class Profile {
             order.items.forEach(item => {
                 window.cart.addItem(item, item.quantity);
             });
-            window.uiComponents.showCart();
+            window.app.showScreen('cart');
         }
     }
 
