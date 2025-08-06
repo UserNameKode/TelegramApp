@@ -220,7 +220,178 @@ class AutoPartsApp {
         this.setupHomeEventListeners();
     }
 
+    performSearch() {
+        const searchInput = document.getElementById('search-input');
+        const query = searchInput.value.trim().toLowerCase();
+        
+        if (query.length < 2) {
+            this.renderHome(); // Возвращаем к исходному состоянию
+            return;
+        }
+
+        const searchResults = DataService.searchProducts(query);
+        this.renderSearchResults(searchResults, query);
+    }
+
+    renderSearchResults(results, query) {
+        const homeScreen = document.getElementById('home-screen');
+        homeScreen.innerHTML = `
+            <div class="search-results">
+                <div class="search-header">
+                    <button class="btn-back" onclick="window.app.renderHome()">← Назад</button>
+                    <h2>Результаты поиска: "${query}"</h2>
+                    <p class="search-count">Найдено ${results.length} товаров</p>
+                </div>
+                
+                <div class="search-input-container">
+                    <input type="text" id="search-input" placeholder="Поиск по артикулу, названию или VIN..." value="${query}">
+                    <button class="search-btn" id="search-btn">🔍</button>
+                </div>
+
+                ${results.length > 0 ? `
+                    <div class="products search-products">
+                        ${results.map(product => {
+                            const brand = DataService.getCarBrand(product.brandId);
+                            return `
+                                <div class="card product-card" data-product-id="${product.id}">
+                                    <div class="product-badge">⭐ ${product.rating}</div>
+                                    <img src="${product.image}" alt="${product.title}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjEyMCIgdmlld0JveD0iMCAwIDIwMCAxMjAiIGZpbGw9Im5vbmUiPjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMTIwIiBmaWxsPSIjMzM0MTU1Ii8+PHRleHQgeD0iMTAwIiB5PSI2MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzk0QTNCOCIgZm9udC1zaXplPSIxNCI+Tm8gSW1hZ2U8L3RleHQ+PC9zdmc+Cg=='">
+                                    <div class="product-info">
+                                        <h4>${product.title}</h4>
+                                        <p class="product-brand">${brand?.name}</p>
+                                        <p class="product-article">Артикул: ${product.article}</p>
+                                        <p class="product-price">${product.price.toLocaleString()} ₽</p>
+                                        <div class="product-actions">
+                                            <button class="btn-favorite ${DataService.userData.favorites.includes(product.id) ? 'active' : ''}" data-product-id="${product.id}">♡</button>
+                                            <button class="btn-add" data-product-id="${product.id}">В корзину</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                ` : `
+                    <div class="no-results">
+                        <div class="no-results-icon">🔍</div>
+                        <h3>Ничего не найдено</h3>
+                        <p>Попробуйте изменить поисковой запрос или проверьте правильность написания.</p>
+                        <button class="btn-back-search" onclick="window.app.renderHome()">Вернуться к каталогу</button>
+                    </div>
+                `}
+            </div>
+        `;
+
+        this.setupSearchEventListeners();
+    }
+
+    setupSearchEventListeners() {
+        const searchInput = document.getElementById('search-input');
+        const searchBtn = document.getElementById('search-btn');
+
+        if (searchInput) {
+            searchInput.addEventListener('input', () => {
+                this.performSearch();
+            });
+        }
+
+        if (searchBtn) {
+            searchBtn.addEventListener('click', () => {
+                this.performSearch();
+            });
+        }
+
+        // Обработчики для товаров в результатах поиска
+        this.setupProductEventListeners();
+    }
+
+    applyFilter(filter) {
+        let filteredProducts = DataService.getProducts();
+        
+        switch(filter) {
+            case 'inStock':
+                filteredProducts = filteredProducts.filter(p => p.inStock);
+                break;
+            case 'popular':
+                filteredProducts = filteredProducts.filter(p => p.rating >= 4.5);
+                break;
+            case 'all':
+            default:
+                // Показываем все товары
+                break;
+        }
+
+        this.renderFilteredProducts(filteredProducts, filter);
+    }
+
+    renderFilteredProducts(products, filterType) {
+        const productsContainer = document.querySelector('.products');
+        if (!productsContainer) return;
+
+        const filterTitle = {
+            'all': 'Все товары',
+            'inStock': 'Товары в наличии', 
+            'popular': 'Популярные товары'
+        };
+
+        productsContainer.innerHTML = products.slice(0, 12).map(product => `
+            <div class="card product-card" data-product-id="${product.id}">
+                <div class="product-badge">⭐ ${product.rating}</div>
+                <img src="${product.image}" alt="${product.title}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjEyMCIgdmlld0JveD0iMCAwIDIwMCAxMjAiIGZpbGw9Im5vbmUiPjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMTIwIiBmaWxsPSIjMzM0MTU1Ii8+PHRleHQgeD0iMTAwIiB5PSI2MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzk0QTNCOCIgZm9udC1zaXplPSIxNCI+Tm8gSW1hZ2U8L3RleHQ+PC9zdmc+Cg=='">
+                <div class="product-info">
+                    <h4>${product.title}</h4>
+                    <p class="product-brand">${DataService.getCarBrand(product.brandId)?.name}</p>
+                    <p class="product-price">${product.price.toLocaleString()} ₽</p>
+                    <div class="product-actions">
+                        <button class="btn-favorite ${DataService.userData.favorites.includes(product.id) ? 'active' : ''}" data-product-id="${product.id}">♡</button>
+                        <button class="btn-add" data-product-id="${product.id}">В корзину</button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+
+        // Обновляем заголовок секции
+        const sectionHeader = document.querySelector('.products').previousElementSibling;
+        if (sectionHeader && sectionHeader.classList.contains('section-header')) {
+            sectionHeader.querySelector('h3').textContent = filterTitle[filterType] || 'Товары';
+            const subtitle = sectionHeader.querySelector('.section-subtitle');
+            if (subtitle) {
+                subtitle.textContent = `Показано ${products.length} товаров`;
+            }
+        }
+
+        this.setupProductEventListeners();
+    }
+
     setupHomeEventListeners() {
+        // Поиск
+        const searchInput = document.getElementById('search-input');
+        const searchBtn = document.getElementById('search-btn');
+
+        if (searchInput) {
+            searchInput.addEventListener('input', () => {
+                this.performSearch();
+            });
+        }
+
+        if (searchBtn) {
+            searchBtn.addEventListener('click', () => {
+                this.performSearch();
+            });
+        }
+
+        // Фильтры
+        document.querySelectorAll('.filter-chip').forEach(chip => {
+            chip.addEventListener('click', (e) => {
+                // Убираем активный класс со всех чипов
+                document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+                // Добавляем активный класс к нажатому
+                e.target.classList.add('active');
+                
+                const filter = e.target.getAttribute('data-filter');
+                this.applyFilter(filter);
+            });
+        });
+
         // Марки автомобилей
         document.querySelectorAll('.brand-card').forEach(card => {
             card.addEventListener('click', (e) => {
