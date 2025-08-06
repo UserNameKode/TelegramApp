@@ -10,27 +10,44 @@
   <!-- Loader Screen -->
   <div id="loading-screen">
     <svg class="spinner" width="80" height="80" viewBox="0 0 100 100">
-      <g transform="translate(50, 50)">
-        <!-- Основная шестерня -->
-        <g class="gear-main">
-          <!-- Центральный круг -->
-          <circle r="20" fill="#3B82F6" stroke="#2563EB" stroke-width="2"/>
-          <!-- Зубья шестерни -->
-          <g class="gear-teeth">
-            <rect x="-2" y="-30" width="4" height="10" fill="#2563EB" rx="2"/>
-            <rect x="-2" y="20" width="4" height="10" fill="#2563EB" rx="2"/>
-            <rect x="-30" y="-2" width="10" height="4" fill="#2563EB" rx="2"/>
-            <rect x="20" y="-2" width="10" height="4" fill="#2563EB" rx="2"/>
-            <!-- Диагональные зубья -->
-            <rect x="-21.2" y="-21.2" width="8" height="4" fill="#2563EB" rx="2" transform="rotate(45)"/>
-            <rect x="13.2" y="-21.2" width="8" height="4" fill="#2563EB" rx="2" transform="rotate(45)"/>
-            <rect x="-21.2" y="13.2" width="8" height="4" fill="#2563EB" rx="2" transform="rotate(45)"/>
-            <rect x="13.2" y="13.2" width="8" height="4" fill="#2563EB" rx="2" transform="rotate(45)"/>
-          </g>
-          <!-- Отверстие в центре -->
-          <circle r="8" fill="#0F172A" stroke="#1E293B" stroke-width="1"/>
-          <!-- Блики для объёма -->
-          <circle r="15" fill="none" stroke="rgba(59, 130, 246, 0.3)" stroke-width="1" stroke-dasharray="20 10"/>
+      <g class="gear-main" transform="translate(50, 50)">
+        <!-- Автомобильная шестерня -->
+        <!-- Внешние зубья (8 штук) -->
+        <g class="gear-teeth">
+          <polygon points="0,-35 5,-25 -5,-25" fill="#3B82F6"/>
+          <polygon points="25,-25 35,0 25,5" fill="#3B82F6" transform="rotate(45)"/>
+          <polygon points="35,0 25,5 25,-5" fill="#3B82F6" transform="rotate(90)"/>
+          <polygon points="25,25 0,35 -5,25" fill="#3B82F6" transform="rotate(135)"/>
+          <polygon points="0,35 -5,25 5,25" fill="#3B82F6" transform="rotate(180)"/>
+          <polygon points="-25,25 -35,0 -25,-5" fill="#3B82F6" transform="rotate(225)"/>
+          <polygon points="-35,0 -25,-5 -25,5" fill="#3B82F6" transform="rotate(270)"/>
+          <polygon points="-25,-25 0,-35 5,-25" fill="#3B82F6" transform="rotate(315)"/>
+        </g>
+        
+        <!-- Основной корпус шестерни -->
+        <circle r="25" fill="#2563EB" stroke="#1d4ed8" stroke-width="2"/>
+        
+        <!-- Внутренние канавки -->
+        <circle r="20" fill="none" stroke="#1E293B" stroke-width="1"/>
+        <circle r="15" fill="none" stroke="#1E293B" stroke-width="1"/>
+        
+        <!-- Центральное отверстие -->
+        <circle r="10" fill="#0F172A" stroke="#374151" stroke-width="2"/>
+        
+        <!-- Дополнительные детали для реализма -->
+        <circle r="7" fill="#1E293B"/>
+        <circle r="4" fill="#0F172A"/>
+        
+        <!-- Болты по кругу -->
+        <g class="bolts">
+          <circle cx="0" cy="-18" r="2" fill="#374151"/>
+          <circle cx="13" cy="-13" r="2" fill="#374151"/>
+          <circle cx="18" cy="0" r="2" fill="#374151"/>
+          <circle cx="13" cy="13" r="2" fill="#374151"/>
+          <circle cx="0" cy="18" r="2" fill="#374151"/>
+          <circle cx="-13" cy="13" r="2" fill="#374151"/>
+          <circle cx="-18" cy="0" r="2" fill="#374151"/>
+          <circle cx="-13" cy="-13" r="2" fill="#374151"/>
         </g>
       </g>
     </svg>

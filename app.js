@@ -105,9 +105,30 @@ class AutoPartsApp {
                         <circle cx="150" cy="75" r="12" fill="#1f2937" stroke="#374151" stroke-width="2"/>
                         <circle cx="50" cy="75" r="8" fill="#6b7280"/>
                         <circle cx="150" cy="75" r="8" fill="#6b7280"/>
-                        <!-- Фары (анимированные) -->
-                        <circle class="headlight left" cx="25" cy="55" r="5" fill="#FBBF24"/>
-                        <circle class="headlight right" cx="175" cy="55" r="5" fill="#FBBF24"/>
+                        <!-- Улучшенные фары с эффектом света -->
+                        <defs>
+                            <radialGradient id="headlightGlow" cx="50%" cy="50%" r="50%">
+                                <stop offset="0%" style="stop-color:#FBBF24;stop-opacity:1" />
+                                <stop offset="70%" style="stop-color:#F59E0B;stop-opacity:0.8" />
+                                <stop offset="100%" style="stop-color:#D97706;stop-opacity:0.3" />
+                            </radialGradient>
+                            <filter id="glow">
+                                <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                                <feMerge> 
+                                    <feMergeNode in="coloredBlur"/>
+                                    <feMergeNode in="SourceGraphic"/>
+                                </feMerge>
+                            </filter>
+                        </defs>
+                        <!-- Свет от фар -->
+                        <ellipse class="light-beam left" cx="15" cy="55" rx="20" ry="8" fill="url(#headlightGlow)" opacity="0.4" transform="rotate(-10 15 55)"/>
+                        <ellipse class="light-beam right" cx="185" cy="55" rx="20" ry="8" fill="url(#headlightGlow)" opacity="0.4" transform="rotate(10 185 55)"/>
+                        <!-- Фары -->
+                        <circle class="headlight left" cx="25" cy="55" r="6" fill="#FBBF24" filter="url(#glow)"/>
+                        <circle class="headlight right" cx="175" cy="55" r="6" fill="#FBBF24" filter="url(#glow)"/>
+                        <!-- Внутренний свет фар -->
+                        <circle class="inner-light left" cx="25" cy="55" r="3" fill="#FEF3C7"/>
+                        <circle class="inner-light right" cx="175" cy="55" r="3" fill="#FEF3C7"/>
                         <!-- Решетка радиатора -->
                         <rect x="175" y="50" width="5" height="15" fill="#374151"/>
                     </svg>
@@ -115,11 +136,6 @@ class AutoPartsApp {
                 <div class="hero-content">
                     <h1>Запчасти для любого автомобиля</h1>
                     <p>В наличии и под заказ • Оригинальные и аналоги • Быстрая доставка</p>
-                </div>
-                <div class="bonus-indicator">
-                    <span class="bonus-level" style="color: ${userLevel.color}">
-                        ${userLevel.name} • ${DataService.userData.bonusPoints} баллов
-                    </span>
                 </div>
             </div>
 
@@ -285,6 +301,195 @@ class AutoPartsApp {
             const results = DataService.searchProducts(query);
             this.renderSearchResults(query, results);
         }
+    }
+
+    renderBrandProducts(brandId) {
+        const homeScreen = document.getElementById('home-screen');
+        const brand = DataService.getCarBrand(brandId);
+        const products = DataService.getProducts(brandId);
+
+        homeScreen.innerHTML = `
+            <div class="breadcrumb">
+                <button class="btn-back" onclick="window.app.renderHome()">← Главная</button>
+                <span class="breadcrumb-separator">/</span>
+                <span>${brand.name}</span>
+            </div>
+            
+            <div class="brand-header">
+                <img src="${brand.logo}" alt="${brand.name}" class="brand-logo-large">
+                <div>
+                    <h2>${brand.name}</h2>
+                    <p>Найдено ${products.length} товаров</p>
+                </div>
+            </div>
+
+            <div class="categories">
+                ${DataService.getCategories().map(category => {
+                    const categoryProducts = DataService.getProducts(brandId, category.id);
+                    return `
+                        <div class="card category-card ${categoryProducts.length === 0 ? 'disabled' : ''}" 
+                             ${categoryProducts.length > 0 ? `onclick="window.app.renderBrandCategoryProducts('${brandId}', '${category.id}')"` : ''}>
+                            <div class="category-icon">${category.icon}</div>
+                            <h4>${category.title}</h4>
+                            <p class="category-count">${categoryProducts.length} товаров</p>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+
+            <h3>Все товары ${brand.name}</h3>
+            <div class="products">
+                ${products.map(product => `
+                    <div class="card product-card" data-product-id="${product.id}">
+                        <div class="product-badge">⭐ ${product.rating}</div>
+                        <img src="${product.image}" alt="${product.title}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjEyMCIgdmlld0JveD0iMCAwIDIwMCAxMjAiIGZpbGw9Im5vbmUiPjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMTIwIiBmaWxsPSIjMzM0MTU1Ii8+PHRleHQgeD0iMTAwIiB5PSI2MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzk0QTNCOCIgZm9udC1zaXplPSIxNCI+Tm8gSW1hZ2U8L3RleHQ+PC9zdmc+Cg=='">
+                        <div class="product-info">
+                            <h4>${product.title}</h4>
+                            <p class="product-brand">${brand.name}</p>
+                            <p class="product-price">${product.price} ₽</p>
+                            <div class="product-actions">
+                                <button class="btn-favorite ${DataService.userData.favorites.includes(product.id) ? 'active' : ''}" data-product-id="${product.id}">♡</button>
+                                <button class="btn-add" data-product-id="${product.id}">В корзину</button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+
+        this.setupProductEventListeners();
+    }
+
+    renderCategoryProducts(categoryId) {
+        const homeScreen = document.getElementById('home-screen');
+        const category = DataService.getCategory(categoryId);
+        const products = DataService.getProducts(null, categoryId);
+
+        homeScreen.innerHTML = `
+            <div class="breadcrumb">
+                <button class="btn-back" onclick="window.app.renderHome()">← Главная</button>
+                <span class="breadcrumb-separator">/</span>
+                <span>${category.title}</span>
+            </div>
+            
+            <div class="category-header">
+                <div class="category-icon-large">${category.icon}</div>
+                <div>
+                    <h2>${category.title}</h2>
+                    <p>${category.description}</p>
+                    <span class="product-count">Найдено ${products.length} товаров</span>
+                </div>
+            </div>
+
+            <div class="products">
+                ${products.map(product => `
+                    <div class="card product-card" data-product-id="${product.id}">
+                        <div class="product-badge">⭐ ${product.rating}</div>
+                        <img src="${product.image}" alt="${product.title}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjEyMCIgdmlld0JveD0iMCAwIDIwMCAxMjAiIGZpbGw9Im5vbmUiPjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMTIwIiBmaWxsPSIjMzM0MTU1Ci8+PHRleHQgeD0iMTAwIiB5PSI2MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzk0QTNCOCIgZm9udC1zaXplPSIxNCI+Tm8gSW1hZ2U8L3RleHQ+PC9zdmc+Cg=='">
+                        <div class="product-info">
+                            <h4>${product.title}</h4>
+                            <p class="product-brand">${DataService.getCarBrand(product.brandId)?.name}</p>
+                            <p class="product-price">${product.price} ₽</p>
+                            <div class="product-actions">
+                                <button class="btn-favorite ${DataService.userData.favorites.includes(product.id) ? 'active' : ''}" data-product-id="${product.id}">♡</button>
+                                <button class="btn-add" data-product-id="${product.id}">В корзину</button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+
+        this.setupProductEventListeners();
+    }
+
+    renderAllBrands() {
+        const homeScreen = document.getElementById('home-screen');
+        const allBrands = DataService.getCarBrands();
+
+        homeScreen.innerHTML = `
+            <div class="breadcrumb">
+                <button class="btn-back" onclick="window.app.renderHome()">← Главная</button>
+                <span class="breadcrumb-separator">/</span>
+                <span>Все марки</span>
+            </div>
+            
+            <h2>Все марки автомобилей</h2>
+            
+            <div class="car-brands-all">
+                ${allBrands.map(brand => {
+                    const brandProducts = DataService.getProducts(brand.id);
+                    return `
+                        <div class="brand-card-large" data-brand="${brand.id}">
+                            <div class="brand-logo">
+                                <img src="${brand.logo}" alt="${brand.name}">
+                            </div>
+                            <div class="brand-info">
+                                <h4>${brand.name}</h4>
+                                <p>${brandProducts.length} товаров</p>
+                            </div>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        `;
+
+        // Добавляем обработчики
+        document.querySelectorAll('.brand-card-large').forEach(card => {
+            card.addEventListener('click', (e) => {
+                const brandId = e.currentTarget.getAttribute('data-brand');
+                this.renderBrandProducts(brandId);
+            });
+        });
+    }
+
+    setupProductEventListeners() {
+        // Кнопки "В корзину"
+        document.querySelectorAll('.btn-add[data-product-id]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const productId = e.target.getAttribute('data-product-id');
+                const product = DataService.getProduct(productId);
+                if (product) {
+                    this.cart.addItem(product);
+                    
+                    btn.textContent = 'Добавлено!';
+                    btn.style.background = '#059669';
+                    setTimeout(() => {
+                        btn.textContent = 'В корзину';
+                        btn.style.background = '#10B981';
+                    }, 1000);
+                }
+            });
+        });
+
+        // Кнопки избранного
+        document.querySelectorAll('.btn-favorite').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const productId = e.target.getAttribute('data-product-id');
+                if (DataService.userData.favorites.includes(productId)) {
+                    DataService.removeFromFavorites(productId);
+                    btn.classList.remove('active');
+                    btn.textContent = '♡';
+                } else {
+                    DataService.addToFavorites(productId);
+                    btn.classList.add('active');
+                    btn.textContent = '♥';
+                }
+            });
+        });
+
+        // Клик по товару для просмотра деталей
+        document.querySelectorAll('.product-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                if (!e.target.classList.contains('btn-add') && !e.target.classList.contains('btn-favorite')) {
+                    const productId = card.getAttribute('data-product-id');
+                    DataService.addToViewHistory(productId);
+                    this.showProductDetails(productId);
+                }
+            });
+        });
     }
 
     renderProducts(categoryId) {
