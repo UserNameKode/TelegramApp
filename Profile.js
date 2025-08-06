@@ -6,7 +6,7 @@ class Profile {
 
     loadUserData() {
         const stored = localStorage.getItem('userData');
-        return stored ? JSON.parse(stored) : {
+        const defaultData = {
             firstName: '',
             phone: '',
             email: '',
@@ -21,6 +21,18 @@ class Profile {
                 news: false
             }
         };
+        
+        if (stored) {
+            const userData = { ...defaultData, ...JSON.parse(stored) };
+            // Синхронизируем с DataService
+            if (DataService && DataService.userData) {
+                userData.favorites = DataService.userData.favorites || [];
+                userData.bonusPoints = DataService.userData.bonusPoints || 2500;
+                userData.totalSpent = DataService.userData.totalSpent || 45000;
+            }
+            return userData;
+        }
+        return defaultData;
     }
 
     saveUserData() {
@@ -184,7 +196,10 @@ class Profile {
                 `;
 
             case 'favorites':
-                const favoriteProducts = this.userData.favorites.map(id => DataService.getProduct(id)).filter(Boolean);
+                // Получаем актуальные избранные из DataService
+                const currentFavorites = DataService.userData.favorites || [];
+                this.userData.favorites = currentFavorites;
+                const favoriteProducts = currentFavorites.map(id => DataService.getProduct(id)).filter(Boolean);
                 return `
                     <div class="profile-section glass-card">
                         <h3>Избранные товары</h3>

@@ -55,7 +55,11 @@ class Cart {
     }
 
     calculateTotal() {
-        return this.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        return this.items.reduce((sum, item) => {
+            const price = parseFloat(item.price) || 0;
+            const quantity = parseInt(item.quantity) || 0;
+            return sum + (price * quantity);
+        }, 0);
     }
 
     render() {
@@ -106,12 +110,12 @@ class Cart {
             
             <div class="cart-summary glass-card">
                 <div class="summary-row">
-                    <span>Товары (${this.items.reduce((sum, item) => sum + item.quantity, 0)} шт.)</span>
-                    <span class="summary-price">${this.calculateTotal()} ₽</span>
+                    <span>Товары (${this.items.reduce((sum, item) => sum + (parseInt(item.quantity) || 0), 0)} шт.)</span>
+                    <span class="summary-price">${this.calculateTotal().toLocaleString()} ₽</span>
                 </div>
                 <div class="summary-row total">
                     <span>Итого к оплате</span>
-                    <span class="summary-price total-price">${this.calculateTotal()} ₽</span>
+                    <span class="summary-price total-price">${this.calculateTotal().toLocaleString()} ₽</span>
                 </div>
                 <button class="btn-checkout" data-screen="checkout">
                     Оформить заказ

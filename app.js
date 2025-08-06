@@ -95,42 +95,92 @@ class AutoPartsApp {
             <!-- Автомобильная шапка -->
             <div class="hero-banner">
                 <div class="car-animation">
-                    <svg class="car-icon" viewBox="0 0 200 100">
-                        <!-- Кузов автомобиля -->
-                        <path d="M20 60 L40 40 L160 40 L180 60 L180 70 L20 70 Z" fill="#2563EB" stroke="#1d4ed8" stroke-width="2"/>
-                        <!-- Окна -->
-                        <path d="M45 45 L155 45 L170 60 L35 60 Z" fill="#87CEEB" opacity="0.7"/>
-                        <!-- Колеса -->
-                        <circle cx="50" cy="75" r="12" fill="#1f2937" stroke="#374151" stroke-width="2"/>
-                        <circle cx="150" cy="75" r="12" fill="#1f2937" stroke="#374151" stroke-width="2"/>
-                        <circle cx="50" cy="75" r="8" fill="#6b7280"/>
-                        <circle cx="150" cy="75" r="8" fill="#6b7280"/>
-                        <!-- Улучшенные фары с эффектом света -->
+                    <svg class="car-icon" viewBox="0 0 280 120">
                         <defs>
-                            <radialGradient id="headlightGlow" cx="50%" cy="50%" r="50%">
-                                <stop offset="0%" style="stop-color:#FBBF24;stop-opacity:1" />
-                                <stop offset="70%" style="stop-color:#F59E0B;stop-opacity:0.8" />
-                                <stop offset="100%" style="stop-color:#D97706;stop-opacity:0.3" />
+                            <!-- Градиенты для фар -->
+                            <radialGradient id="headlightGlow" cx="50%" cy="50%" r="60%">
+                                <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:1" />
+                                <stop offset="30%" style="stop-color:#FBBF24;stop-opacity:0.9" />
+                                <stop offset="70%" style="stop-color:#F59E0B;stop-opacity:0.6" />
+                                <stop offset="100%" style="stop-color:#D97706;stop-opacity:0.2" />
                             </radialGradient>
-                            <filter id="glow">
-                                <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                            
+                            <!-- Свечение фар -->
+                            <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                                <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
                                 <feMerge> 
                                     <feMergeNode in="coloredBlur"/>
                                     <feMergeNode in="SourceGraphic"/>
                                 </feMerge>
                             </filter>
                         </defs>
+                        
+                        <!-- ПЕРЕДНЯЯ ЧАСТЬ BMW -->
+                        
+                        <!-- Капот -->
+                        <path d="M40 35 L240 35 L235 55 L45 55 Z" fill="#C0C0C0" stroke="#A0A0A0" stroke-width="1"/>
+                        
+                        <!-- Решетка радиатора BMW (знаменитые "ноздри") -->
+                        <g class="bmw-grille">
+                            <!-- Левая ноздря -->
+                            <path d="M120 45 Q125 40 130 45 Q125 55 120 50 Z" fill="#1A1A1A" stroke="#333" stroke-width="1"/>
+                            <!-- Правая ноздря -->
+                            <path d="M150 45 Q155 40 160 45 Q155 55 150 50 Z" fill="#1A1A1A" stroke="#333" stroke-width="1"/>
+                            <!-- Центральная планка -->
+                            <rect x="130" y="42" width="20" height="12" fill="#333" stroke="#555" stroke-width="1"/>
+                            <!-- Хромированная рамка -->
+                            <path d="M115 40 Q140 35 165 40 Q160 60 140 58 Q120 60 115 40" fill="none" stroke="#E5E5E5" stroke-width="2"/>
+                        </g>
+                        
+                        <!-- Фары BMW (характерная форма "ангельские глазки") -->
+                        <g class="bmw-headlights">
+                            <!-- Левая фара -->
+                            <g class="left-headlight">
+                                <!-- Корпус фары -->
+                                <ellipse cx="70" cy="48" rx="25" ry="12" fill="#E5E5E5" stroke="#C0C0C0" stroke-width="2"/>
+                                <!-- Основной свет -->
+                                <ellipse class="main-beam" cx="75" cy="48" rx="15" ry="8" fill="url(#headlightGlow)" filter="url(#glow)"/>
+                                <!-- Ангельские глазки (характерные кольца BMW) -->
+                                <circle class="angel-eye" cx="70" cy="48" r="10" fill="none" stroke="#FBBF24" stroke-width="2" opacity="0.8"/>
+                                <circle class="angel-eye-inner" cx="70" cy="48" r="6" fill="none" stroke="#FFFFFF" stroke-width="1" opacity="0.6"/>
+                                <!-- Отражатель -->
+                                <ellipse cx="65" cy="45" rx="8" ry="4" fill="#F0F0F0" opacity="0.7"/>
+                            </g>
+                            
+                            <!-- Правая фара -->
+                            <g class="right-headlight">
+                                <!-- Корпус фары -->
+                                <ellipse cx="210" cy="48" rx="25" ry="12" fill="#E5E5E5" stroke="#C0C0C0" stroke-width="2"/>
+                                <!-- Основной свет -->
+                                <ellipse class="main-beam" cx="205" cy="48" rx="15" ry="8" fill="url(#headlightGlow)" filter="url(#glow)"/>
+                                <!-- Ангельские глазки -->
+                                <circle class="angel-eye" cx="210" cy="48" r="10" fill="none" stroke="#FBBF24" stroke-width="2" opacity="0.8"/>
+                                <circle class="angel-eye-inner" cx="210" cy="48" r="6" fill="none" stroke="#FFFFFF" stroke-width="1" opacity="0.6"/>
+                                <!-- Отражатель -->
+                                <ellipse cx="215" cy="45" rx="8" ry="4" fill="#F0F0F0" opacity="0.7"/>
+                            </g>
+                        </g>
+                        
+                        <!-- Нижний бампер -->
+                        <path d="M50 55 L230 55 L225 70 L55 70 Z" fill="#D0D0D0" stroke="#B0B0B0" stroke-width="1"/>
+                        
+                        <!-- Воздухозаборник в бампере -->
+                        <rect x="110" y="58" width="60" height="8" fill="#2A2A2A" stroke="#444" stroke-width="1"/>
+                        
+                        <!-- Противотуманные фары -->
+                        <circle cx="80" cy="62" r="6" fill="#E0E0E0" stroke="#C0C0C0" stroke-width="1"/>
+                        <circle cx="200" cy="62" r="6" fill="#E0E0E0" stroke="#C0C0C0" stroke-width="1"/>
+                        <circle class="fog-light left" cx="80" cy="62" r="3" fill="#FBBF24" opacity="0.7"/>
+                        <circle class="fog-light right" cx="200" cy="62" r="3" fill="#FBBF24" opacity="0.7"/>
+                        
+                        <!-- BMW логотип (упрощенный) -->
+                        <circle cx="140" cy="48" r="8" fill="#FFFFFF" stroke="#0066CC" stroke-width="2"/>
+                        <path d="M135 43 Q140 40 145 43 Q140 53 135 48 Z" fill="#0066CC"/>
+                        <path d="M145 43 Q140 53 135 48" fill="none" stroke="#FFFFFF" stroke-width="1"/>
+                        
                         <!-- Свет от фар -->
-                        <ellipse class="light-beam left" cx="15" cy="55" rx="20" ry="8" fill="url(#headlightGlow)" opacity="0.4" transform="rotate(-10 15 55)"/>
-                        <ellipse class="light-beam right" cx="185" cy="55" rx="20" ry="8" fill="url(#headlightGlow)" opacity="0.4" transform="rotate(10 185 55)"/>
-                        <!-- Фары -->
-                        <circle class="headlight left" cx="25" cy="55" r="6" fill="#FBBF24" filter="url(#glow)"/>
-                        <circle class="headlight right" cx="175" cy="55" r="6" fill="#FBBF24" filter="url(#glow)"/>
-                        <!-- Внутренний свет фар -->
-                        <circle class="inner-light left" cx="25" cy="55" r="3" fill="#FEF3C7"/>
-                        <circle class="inner-light right" cx="175" cy="55" r="3" fill="#FEF3C7"/>
-                        <!-- Решетка радиатора -->
-                        <rect x="175" y="50" width="5" height="15" fill="#374151"/>
+                        <ellipse class="light-cone left" cx="30" cy="48" rx="35" ry="15" fill="url(#headlightGlow)" opacity="0.3" transform="rotate(-5 30 48)"/>
+                        <ellipse class="light-cone right" cx="250" cy="48" rx="35" ry="15" fill="url(#headlightGlow)" opacity="0.3" transform="rotate(5 250 48)"/>
                     </svg>
                 </div>
                 <div class="hero-content">
@@ -481,6 +531,189 @@ class AutoPartsApp {
         });
 
         // Клик по товару для просмотра деталей
+        document.querySelectorAll('.product-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                if (!e.target.classList.contains('btn-add') && !e.target.classList.contains('btn-favorite')) {
+                    const productId = card.getAttribute('data-product-id');
+                    DataService.addToViewHistory(productId);
+                    this.showProductDetails(productId);
+                }
+            });
+        });
+    }
+
+    showProductDetails(productId) {
+        const product = DataService.getProduct(productId);
+        if (!product) return;
+
+        const brand = DataService.getCarBrand(product.brandId);
+        const category = DataService.getCategory(product.categoryId);
+        const homeScreen = document.getElementById('home-screen');
+
+        homeScreen.innerHTML = `
+            <div class="breadcrumb">
+                <button class="btn-back" onclick="window.app.goBack()">← Назад</button>
+                <span class="breadcrumb-separator">/</span>
+                <span>${brand?.name}</span>
+                <span class="breadcrumb-separator">/</span>
+                <span>${category?.title}</span>
+                <span class="breadcrumb-separator">/</span>
+                <span>${product.title}</span>
+            </div>
+
+            <div class="product-detail">
+                <div class="product-detail-image">
+                    <img src="${product.image}" alt="${product.title}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDQwMCAzMDAiIGZpbGw9Im5vbmUiPjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjMzM0MTU1Ii8+PHRleHQgeD0iMjAwIiB5PSIxNTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiM5NEEzQjgiIGZvbnQtc2l6ZT0iMTgiPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPgo='">
+                    <div class="product-rating">
+                        <span class="rating-stars">⭐⭐⭐⭐⭐</span>
+                        <span class="rating-value">${product.rating}</span>
+                        <span class="rating-count">(${product.reviews} отзывов)</span>
+                    </div>
+                </div>
+
+                <div class="product-detail-info">
+                    <div class="product-detail-header">
+                        <h1>${product.title}</h1>
+                        <button class="btn-favorite-large ${DataService.userData.favorites.includes(productId) ? 'active' : ''}" data-product-id="${productId}">
+                            ${DataService.userData.favorites.includes(productId) ? '♥' : '♡'}
+                        </button>
+                    </div>
+
+                    <div class="product-meta">
+                        <div class="meta-item">
+                            <span class="meta-label">Артикул:</span>
+                            <span class="meta-value">${product.article}</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Производитель:</span>
+                            <span class="meta-value">${product.manufacturer}</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Марка автомобиля:</span>
+                            <span class="meta-value">${brand?.name}</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Категория:</span>
+                            <span class="meta-value">${category?.title}</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Наличие:</span>
+                            <span class="meta-value ${product.inStock ? 'in-stock' : 'out-of-stock'}">
+                                ${product.inStock ? '✅ В наличии' : '❌ Нет в наличии'}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="product-description">
+                        <h3>Описание</h3>
+                        <p>${product.description}</p>
+                    </div>
+
+                    ${product.compatibility ? `
+                        <div class="product-compatibility">
+                            <h3>Совместимость</h3>
+                            <div class="compatibility-list">
+                                ${product.compatibility.map(model => `
+                                    <span class="compatibility-item">${model}</span>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    <div class="product-actions-detail">
+                        <div class="price-section">
+                            <span class="current-price">${product.price.toLocaleString()} ₽</span>
+                            <span class="price-note">за штуку</span>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="btn-add-large" data-product-id="${productId}" ${!product.inStock ? 'disabled' : ''}>
+                                ${!product.inStock ? 'Нет в наличии' : 'Добавить в корзину'}
+                            </button>
+                            <button class="btn-buy-now" data-product-id="${productId}" ${!product.inStock ? 'disabled' : ''}>
+                                Купить сейчас
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="related-products">
+                <h3>Похожие товары</h3>
+                <div class="products">
+                    ${DataService.getProducts(product.brandId, product.categoryId)
+                        .filter(p => p.id !== productId)
+                        .slice(0, 4)
+                        .map(relatedProduct => `
+                            <div class="card product-card" data-product-id="${relatedProduct.id}">
+                                <div class="product-badge">⭐ ${relatedProduct.rating}</div>
+                                <img src="${relatedProduct.image}" alt="${relatedProduct.title}">
+                                <div class="product-info">
+                                    <h4>${relatedProduct.title}</h4>
+                                    <p class="product-price">${relatedProduct.price} ₽</p>
+                                    <div class="product-actions">
+                                        <button class="btn-favorite ${DataService.userData.favorites.includes(relatedProduct.id) ? 'active' : ''}" data-product-id="${relatedProduct.id}">♡</button>
+                                        <button class="btn-add" data-product-id="${relatedProduct.id}">В корзину</button>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                </div>
+            </div>
+        `;
+
+        this.setupProductDetailEventListeners();
+    }
+
+    setupProductDetailEventListeners() {
+        // Кнопка добавления в корзину
+        document.querySelectorAll('.btn-add-large, .btn-add').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const productId = e.target.getAttribute('data-product-id');
+                const product = DataService.getProduct(productId);
+                if (product) {
+                    this.cart.addItem(product);
+                    
+                    btn.textContent = 'Добавлено!';
+                    btn.style.background = '#059669';
+                    setTimeout(() => {
+                        btn.textContent = e.target.classList.contains('btn-add-large') ? 'Добавить в корзину' : 'В корзину';
+                        btn.style.background = '#10B981';
+                    }, 1500);
+                }
+            });
+        });
+
+        // Кнопка "Купить сейчас"
+        document.querySelectorAll('.btn-buy-now').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const productId = e.target.getAttribute('data-product-id');
+                const product = DataService.getProduct(productId);
+                if (product) {
+                    this.cart.addItem(product);
+                    this.showScreen('checkout');
+                }
+            });
+        });
+
+        // Кнопки избранного
+        document.querySelectorAll('.btn-favorite, .btn-favorite-large').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const productId = e.target.getAttribute('data-product-id');
+                if (DataService.userData.favorites.includes(productId)) {
+                    DataService.removeFromFavorites(productId);
+                    btn.classList.remove('active');
+                    btn.textContent = '♡';
+                } else {
+                    DataService.addToFavorites(productId);
+                    btn.classList.add('active');
+                    btn.textContent = '♥';
+                }
+            });
+        });
+
+        // Клик по похожим товарам
         document.querySelectorAll('.product-card').forEach(card => {
             card.addEventListener('click', (e) => {
                 if (!e.target.classList.contains('btn-add') && !e.target.classList.contains('btn-favorite')) {
