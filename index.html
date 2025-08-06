@@ -20,6 +20,7 @@
     <!-- Экран загрузки -->
     <div id="loading-screen" class="loading-screen">
         <div class="loading-content">
+            <!-- Анимированная шестерёнка -->
             <svg class="loading-gear" viewBox="0 0 100 100">
                 <defs>
                     <filter id="glow">
@@ -51,6 +52,10 @@
                 <path class="inner-gear" d="M50 35c-8.3 0-15 6.7-15 15s6.7 15 15 15 15-6.7 15-15-6.7-15-15-15zm0 25c-5.5 0-10-4.5-10-10s4.5-10 10-10 10 4.5 10 10-4.5 10-10 10z" fill="url(#gear-gradient)" filter="url(#glow)"/>
             </svg>
             <div class="loading-text">AUTO63</div>
+            <!-- Полоса загрузки -->
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+            </div>
         </div>
     </div>
 
@@ -181,11 +186,16 @@
             // Инициализация Telegram WebApp
             window.Telegram.WebApp.ready();
             // Загрузка модулей без внешних анимаций
-            await loadScript('data.js');
-            await loadScript('Cart.js');
-            await loadScript('Profile.js');
-            await loadScript('Checkout.js');
-            await loadScript('app.js');
+            const scripts = ['data.js','Cart.js','Profile.js','Checkout.js','app.js'];
+            const total = scripts.length;
+            let loaded = 0;
+            for(const src of scripts){
+                await loadScript(src);
+                loaded++;
+                const percent = Math.round((loaded/total)*100);
+                document.getElementById('progress-fill').style.width = percent+'%';
+            }
+            
         });
     </script>
 </body>
