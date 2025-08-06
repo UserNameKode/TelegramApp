@@ -53,7 +53,7 @@ body {
 }
 
 .rotating-gear {
-  transform-origin: 60px 60px;
+  transform-origin: 50px 50px;
   animation: new-gear-rotate 3s linear infinite;
 }
 
@@ -1791,15 +1791,15 @@ h3 {
 }
 
 .headlight-left {
-  left: 26%;
-  top: 60%;
-  transform: rotate(-8deg);
+  left: 32%;
+  top: 62%;
+  transform: rotate(-5deg);
 }
 
 .headlight-right {
-  right: 26%;
-  top: 60%;
-  transform: rotate(8deg);
+  right: 32%;
+  top: 62%;
+  transform: rotate(5deg);
 }
 
 .headlight-glow {

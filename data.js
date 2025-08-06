@@ -277,6 +277,52 @@ const DataService = {
             rating: 4.5,
             reviews: 198
         },
+        // Фильтры для тестирования поиска
+        {
+            id: 'p12',
+            title: 'Фильтр воздушный BMW',
+            price: 890,
+            image: 'https://images.unsplash.com/photo-1625047509168-a7026f36de04?w=300',
+            categoryId: 'c2',
+            brandId: 'bmw',
+            article: 'BMW13717521023',
+            manufacturer: 'Mann-Filter',
+            description: 'Воздушный фильтр BMW для защиты двигателя от пыли.',
+            compatibility: ['BMW 3 Series F30', 'BMW 4 Series F32'],
+            inStock: true,
+            rating: 4.4,
+            reviews: 76
+        },
+        {
+            id: 'p13',
+            title: 'Фильтр масляный BMW',
+            price: 650,
+            image: 'https://images.unsplash.com/photo-1625047509168-a7026f36de04?w=300',
+            categoryId: 'c2',
+            brandId: 'bmw',
+            article: 'BMW11427508969',
+            manufacturer: 'Mahle',
+            description: 'Масляный фильтр BMW для очистки моторного масла.',
+            compatibility: ['BMW X1 F48', 'BMW X2 F39', 'BMW X3 G01'],
+            inStock: true,
+            rating: 4.7,
+            reviews: 134
+        },
+        {
+            id: 'p14',
+            title: 'Фильтр топливный Mercedes',
+            price: 1200,
+            image: 'https://images.unsplash.com/photo-1625047509168-a7026f36de04?w=300',
+            categoryId: 'c2',
+            brandId: 'mercedes',
+            article: 'MB6420920201',
+            manufacturer: 'Bosch',
+            description: 'Топливный фильтр Mercedes для очистки топлива.',
+            compatibility: ['Mercedes C-Class W205', 'Mercedes E-Class W213'],
+            inStock: true,
+            rating: 4.6,
+            reviews: 98
+        },
         {
             id: 'shock-absorber-hyundai',
             brandId: 'hyundai',
@@ -492,35 +538,83 @@ const DataService = {
     },
 
     searchProducts(query) {
-        const searchTerm = query.toLowerCase();
-        return this.products.filter(product => {
-            // Поиск по названию
-            if (product.title && product.title.toLowerCase().includes(searchTerm)) return true;
+        const searchTerm = query.toLowerCase().trim();
+        console.log(`🔍 ПОИСК: "${searchTerm}"`);
+        
+        if (!searchTerm) return [];
+        
+        const results = this.products.filter(product => {
+            let found = false;
+            let reasons = [];
             
-            // Поиск по артикулу
-            if (product.article && product.article.toLowerCase().includes(searchTerm)) return true;
+            // Поиск по названию товара
+            if (product.title && product.title.toLowerCase().includes(searchTerm)) {
+                found = true;
+                reasons.push('название');
+            }
+            
+            // Поиск по артикулу/VIN
+            if (product.article && product.article.toLowerCase().includes(searchTerm)) {
+                found = true;
+                reasons.push('артикул');
+            }
             
             // Поиск по описанию
-            if (product.description && product.description.toLowerCase().includes(searchTerm)) return true;
+            if (product.description && product.description.toLowerCase().includes(searchTerm)) {
+                found = true;
+                reasons.push('описание');
+            }
             
             // Поиск по производителю
-            if (product.manufacturer && product.manufacturer.toLowerCase().includes(searchTerm)) return true;
+            if (product.manufacturer && product.manufacturer.toLowerCase().includes(searchTerm)) {
+                found = true;
+                reasons.push('производитель');
+            }
             
-            // Поиск по бренду
+            // Поиск по бренду авто
             const brand = this.getCarBrand(product.brandId);
-            if (brand && brand.name && brand.name.toLowerCase().includes(searchTerm)) return true;
+            if (brand && brand.name && brand.name.toLowerCase().includes(searchTerm)) {
+                found = true;
+                reasons.push('марка авто');
+            }
             
             // Поиск по категории
             const category = this.getCategory(product.categoryId);
-            if (category && category.title && category.title.toLowerCase().includes(searchTerm)) return true;
+            if (category && category.title && category.title.toLowerCase().includes(searchTerm)) {
+                found = true;
+                reasons.push('категория');
+            }
             
-            // Поиск по совместимости
+            // Поиск по совместимости (модели авто)
             if (product.compatibility && product.compatibility.some(car => 
                 car.toLowerCase().includes(searchTerm)
-            )) return true;
+            )) {
+                found = true;
+                reasons.push('совместимость');
+            }
             
-            return false;
+            // Специальные поиски
+            // Поиск "фильтр" найдет все фильтры
+            if (searchTerm.includes('фильтр') && product.title.toLowerCase().includes('фильтр')) {
+                found = true;
+                reasons.push('тип детали');
+            }
+            
+            // Поиск "масло" найдет все масла
+            if (searchTerm.includes('масло') && product.title.toLowerCase().includes('масло')) {
+                found = true;
+                reasons.push('тип детали');
+            }
+            
+            if (found) {
+                console.log(`✅ Найден: "${product.title}" (${reasons.join(', ')})`);
+            }
+            
+            return found;
         });
+        
+        console.log(`📊 Результат поиска "${searchTerm}": ${results.length} товаров`);
+        return results;
     }
 };
 
