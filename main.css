@@ -31,23 +31,16 @@ body {
   width: 80px;
   height: 80px;
   margin-bottom: 32px;
-  animation: spin 2s linear infinite;
 }
 
-.spinner circle {
-  stroke-dasharray: 251;
-  stroke-dashoffset: 251;
-  animation: draw 2s ease-in-out infinite;
+.gear-main {
+  animation: gear-rotate 3s linear infinite;
+  transform-origin: center;
 }
 
-@keyframes spin {
+@keyframes gear-rotate {
+  from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
-}
-
-@keyframes draw {
-  0% { stroke-dashoffset: 251; }
-  50% { stroke-dashoffset: 0; }
-  100% { stroke-dashoffset: -251; }
 }
 
 .progress-bar {
@@ -164,17 +157,37 @@ h3 {
 
 /* Карточки */
 .card {
-  background: #1E293B;
-  border-radius: 12px;
-  padding: 16px;
+  background: linear-gradient(145deg, #1E293B, #334155);
+  border-radius: 16px;
+  padding: 20px;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  border: 1px solid #334155;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  position: relative;
+  overflow: hidden;
 }
 
 .card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(59, 130, 246, 0.3);
+  border-color: #3B82F6;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #3B82F6, #8B5CF6, #F59E0B);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.card:hover::before {
+  opacity: 1;
 }
 
 .card img {
@@ -201,36 +214,115 @@ h3 {
 
 .btn-add {
   width: 100%;
-  background: #10B981;
+  background: linear-gradient(135deg, #10B981, #059669);
   border: none;
   color: white;
-  padding: 10px;
-  border-radius: 8px;
+  padding: 12px 20px;
+  border-radius: 12px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
 }
 
 .btn-add:hover {
-  background: #059669;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+}
+
+.btn-add:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 10px rgba(16, 185, 129, 0.3);
+}
+
+.btn-add::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.btn-add:active::before {
+  width: 300px;
+  height: 300px;
+}
+
+/* Пустая корзина */
+.empty-cart {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.empty-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+  opacity: 0.3;
+}
+
+.empty-cart h3 {
+  margin-bottom: 12px;
+  color: #F8FAFC;
+}
+
+.empty-cart p {
+  color: #94A3B8;
+  margin-bottom: 32px;
+  line-height: 1.5;
+}
+
+/* Заголовок корзины */
+.cart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #334155;
+}
+
+.cart-count {
+  color: #94A3B8;
+  font-size: 14px;
+}
+
+/* Стеклянные карточки */
+.glass-card {
+  background: rgba(30, 41, 59, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 /* Корзина */
 .cart-item {
   display: flex;
-  gap: 12px;
-  background: #1E293B;
-  padding: 16px;
-  border-radius: 12px;
-  margin-bottom: 12px;
+  gap: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
   align-items: center;
+  transition: all 0.3s ease;
 }
 
-.cart-item img {
-  width: 60px;
-  height: 60px;
+.cart-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(59, 130, 246, 0.2);
+}
+
+.cart-item-image img {
+  width: 80px;
+  height: 80px;
   object-fit: cover;
-  border-radius: 8px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .cart-item-info {
@@ -238,25 +330,148 @@ h3 {
 }
 
 .cart-item h4 {
-  font-size: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #F8FAFC;
+}
+
+.cart-item-article {
+  font-size: 12px;
+  color: #94A3B8;
   margin-bottom: 4px;
 }
 
-.cart-item p {
-  font-size: 16px;
-  font-weight: 700;
+.cart-item-price {
+  font-size: 14px;
   color: #3B82F6;
+  font-weight: 500;
 }
 
-.cart-total {
-  text-align: right;
-  font-size: 20px;
-  font-weight: 700;
+.cart-item-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.quantity-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(15, 23, 42, 0.6);
+  border-radius: 8px;
+  padding: 4px;
+}
+
+.qty-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: #3B82F6;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.qty-btn:hover {
+  background: #2563EB;
+  transform: scale(1.1);
+}
+
+.quantity {
+  min-width: 24px;
+  text-align: center;
+  font-weight: 600;
   color: #F8FAFC;
-  margin-top: 16px;
-  padding: 16px;
-  background: #1E293B;
+}
+
+.cart-item-total {
+  font-size: 16px;
+  font-weight: 700;
+  color: #10B981;
+}
+
+.remove-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  opacity: 0.5;
+  transition: opacity 0.2s ease;
+}
+
+.remove-btn:hover {
+  opacity: 1;
+}
+
+/* Итоги корзины */
+.cart-summary {
+  padding: 24px;
+  margin-top: 24px;
+  position: sticky;
+  bottom: 16px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-size: 16px;
+}
+
+.summary-row.total {
+  padding-top: 12px;
+  border-top: 1px solid rgba(59, 130, 246, 0.3);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.summary-price {
+  color: #3B82F6;
+  font-weight: 600;
+}
+
+.total-price {
+  color: #10B981;
+  font-size: 20px;
+}
+
+.btn-checkout {
+  width: 100%;
+  background: linear-gradient(135deg, #3B82F6, #2563EB);
+  border: none;
+  color: white;
+  padding: 16px 24px;
   border-radius: 12px;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+}
+
+.btn-checkout:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 35px rgba(59, 130, 246, 0.4);
+}
+
+.checkout-arrow {
+  transition: transform 0.3s ease;
+}
+
+.btn-checkout:hover .checkout-arrow {
+  transform: translateX(4px);
 }
 
 /* Профиль */
@@ -294,18 +509,56 @@ h3 {
   border-color: #3B82F6;
 }
 
+/* Дополнительные стили для описания */
+.product-description {
+  color: #94A3B8;
+  font-size: 14px;
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.product-price {
+  color: #3B82F6 !important;
+  font-size: 18px !important;
+  font-weight: 700 !important;
+}
+
+/* Стили для категорий */
+.category-card h4 {
+  text-align: center;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
 /* Адаптивность */
 @media (max-width: 768px) {
   .categories {
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
   }
   
   .products {
     grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .card {
+    padding: 16px;
   }
   
   .nav-actions button {
     padding: 6px 10px;
     font-size: 14px;
+  }
+
+  main {
+    padding: 12px;
+  }
+
+  .card img {
+    height: 150px;
   }
 }
