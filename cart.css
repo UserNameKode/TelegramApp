@@ -1,0 +1,231 @@
+/* Корзина */
+.cart-container {
+    padding: var(--spacing-md);
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Пустая корзина */
+.empty-cart {
+    text-align: center;
+    padding: var(--spacing-xl) 0;
+}
+
+.empty-cart-icon {
+    font-size: 4rem;
+    margin-bottom: var(--spacing-md);
+    color: var(--color-gray-300);
+}
+
+.empty-cart h3 {
+    font-size: 1.5rem;
+    margin-bottom: var(--spacing-sm);
+}
+
+.empty-cart p {
+    color: var(--color-gray-500);
+    margin-bottom: var(--spacing-lg);
+}
+
+/* Список товаров */
+.cart-list {
+    margin-bottom: var(--spacing-xl);
+}
+
+.cart-item {
+    display: flex;
+    padding: var(--spacing-md);
+    background: var(--color-white);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--spacing-md);
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-fast);
+}
+
+.cart-item:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.cart-item-image {
+    width: 120px;
+    height: 120px;
+    margin-right: var(--spacing-md);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+.cart-item-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.cart-item-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.cart-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--spacing-xs);
+}
+
+.cart-item-title {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 1.125rem;
+    color: var(--color-primary);
+    margin: 0;
+}
+
+.cart-item-article {
+    font-size: 0.875rem;
+    color: var(--color-gray-500);
+    margin-bottom: var(--spacing-md);
+}
+
+.cart-item-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+}
+
+/* Управление количеством */
+.quantity-controls {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.btn-quantity {
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: var(--radius-full);
+    background: var(--color-gray-100);
+    color: var(--color-primary);
+    font-size: 1.25rem;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-quantity:hover {
+    background: var(--color-gray-200);
+}
+
+.quantity {
+    font-weight: 600;
+    min-width: 32px;
+    text-align: center;
+}
+
+/* Цены */
+.cart-item-price {
+    text-align: right;
+}
+
+.price {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: var(--color-primary);
+    display: block;
+}
+
+.price-per-item {
+    font-size: 0.875rem;
+    color: var(--color-gray-500);
+    display: block;
+    margin-top: var(--spacing-xs);
+}
+
+/* Итого */
+.cart-summary {
+    background: var(--color-white);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow-md);
+}
+
+.cart-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-md);
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+}
+
+.total-price {
+    font-size: 1.5rem;
+    color: var(--color-accent);
+}
+
+.checkout-btn {
+    width: 100%;
+}
+
+/* Анимация добавления в корзину */
+.flying-image {
+    position: fixed;
+    z-index: 1000;
+    pointer-events: none;
+    object-fit: contain;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+}
+
+.cart-bump {
+    animation: cart-bump 0.3s ease-out;
+}
+
+@keyframes cart-bump {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .cart-item {
+        flex-direction: column;
+    }
+
+    .cart-item-image {
+        width: 100%;
+        height: 200px;
+        margin-right: 0;
+        margin-bottom: var(--spacing-md);
+    }
+
+    .cart-item-footer {
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+
+    .cart-item-price {
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .cart-container {
+        padding: var(--spacing-sm);
+    }
+
+    .price {
+        font-size: 1.125rem;
+    }
+
+    .btn-quantity {
+        width: 28px;
+        height: 28px;
+    }
+}

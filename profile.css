@@ -1,0 +1,331 @@
+/* Профиль */
+.profile-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--spacing-md);
+}
+
+/* Шапка профиля */
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-xl);
+}
+
+.profile-avatar {
+    width: 80px;
+    height: 80px;
+    background: var(--color-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 2rem;
+    color: white;
+}
+
+.profile-title h2 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.profile-subtitle {
+    color: var(--color-gray-500);
+    margin: var(--spacing-xs) 0 0;
+}
+
+/* Секции профиля */
+.profile-sections {
+    display: grid;
+    gap: var(--spacing-xl);
+}
+
+.profile-section {
+    background: var(--color-white);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow-md);
+}
+
+.profile-section h3 {
+    margin: 0 0 var(--spacing-md);
+    font-size: 1.25rem;
+}
+
+/* Формы */
+.profile-form {
+    display: grid;
+    gap: var(--spacing-md);
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.form-group label {
+    font-weight: 500;
+    color: var(--color-text);
+}
+
+.form-input {
+    padding: var(--spacing-sm);
+    border: 1px solid var(--color-gray-300);
+    border-radius: var(--radius-md);
+    font-family: inherit;
+    font-size: 1rem;
+    transition: all var(--transition-fast);
+}
+
+.form-input:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(30, 61, 89, 0.1);
+    outline: none;
+}
+
+/* Адреса */
+.addresses-list {
+    display: grid;
+    gap: var(--spacing-md);
+}
+
+.address-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-md);
+    background: var(--color-gray-100);
+    border-radius: var(--radius-md);
+}
+
+.address-content h4 {
+    margin: 0 0 var(--spacing-xs);
+    font-size: 1rem;
+}
+
+.address-content p {
+    margin: 0;
+    color: var(--color-gray-500);
+    font-size: 0.875rem;
+}
+
+.add-address-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    width: 100%;
+    justify-content: center;
+}
+
+/* Настройки уведомлений */
+.notifications-settings {
+    display: grid;
+    gap: var(--spacing-md);
+}
+
+.setting-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+}
+
+.setting-content h4 {
+    margin: 0 0 var(--spacing-xs);
+    font-size: 1rem;
+}
+
+.setting-content p {
+    margin: 0;
+    color: var(--color-gray-500);
+    font-size: 0.875rem;
+}
+
+/* Переключатели */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 26px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--color-gray-300);
+    transition: var(--transition-fast);
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: var(--transition-fast);
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: var(--color-accent);
+}
+
+input:checked + .slider:before {
+    transform: translateX(24px);
+}
+
+/* История заказов */
+.orders-history {
+    display: grid;
+    gap: var(--spacing-md);
+}
+
+.order-card {
+    background: var(--color-gray-100);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-md);
+    background: var(--color-white);
+}
+
+.order-info h4 {
+    margin: 0 0 var(--spacing-xs);
+    font-size: 1rem;
+}
+
+.order-date {
+    color: var(--color-gray-500);
+    font-size: 0.875rem;
+}
+
+.order-status {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-full);
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.order-status.new { background: var(--color-accent); color: white; }
+.order-status.processing { background: var(--color-primary); color: white; }
+.order-status.shipped { background: var(--color-success); color: white; }
+.order-status.delivered { background: var(--color-gray-500); color: white; }
+.order-status.cancelled { background: var(--color-error); color: white; }
+
+.order-items {
+    padding: var(--spacing-md);
+}
+
+.order-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-sm) 0;
+}
+
+.order-item:not(:last-child) {
+    border-bottom: 1px solid var(--color-gray-200);
+}
+
+.order-item img {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    border-radius: var(--radius-md);
+}
+
+.order-item-info {
+    flex: 1;
+}
+
+.item-title {
+    font-weight: 500;
+    margin-bottom: var(--spacing-xs);
+    display: block;
+}
+
+.item-quantity {
+    color: var(--color-gray-500);
+    font-size: 0.875rem;
+}
+
+.order-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-md);
+    background: var(--color-white);
+}
+
+.order-total {
+    font-weight: 700;
+    color: var(--color-primary);
+}
+
+/* Пустые состояния */
+.empty-orders {
+    text-align: center;
+    padding: var(--spacing-xl) 0;
+}
+
+.empty-icon {
+    font-size: 4rem;
+    margin-bottom: var(--spacing-md);
+    color: var(--color-gray-300);
+}
+
+.empty-text {
+    color: var(--color-gray-500);
+    margin: 0;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .profile-sections {
+        gap: var(--spacing-md);
+    }
+
+    .profile-section {
+        padding: var(--spacing-md);
+    }
+
+    .order-header,
+    .order-footer {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .setting-item {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+}
