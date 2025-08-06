@@ -43,7 +43,7 @@
   <div id="app" style="display:none;">
     <!-- Navigation -->
     <nav class="nav-bar">
-      <button class="btn-back" data-screen="home">←</button>
+      <button class="btn-back" id="nav-back-btn">←</button>
       <h1 class="app-title">АвтоЗапчасти63</h1>
       <div class="nav-actions">
         <button data-screen="home">🏠</button>
@@ -74,21 +74,44 @@
     }
 
     document.addEventListener('DOMContentLoaded', async () => {
-      const scripts = ['data.js','Cart.js','Profile.js','Checkout.js','app.js'];
-      const total = scripts.length;
-      let loaded = 0;
-      for (const src of scripts) {
-        await loadScript(src);
-        loaded++;
-        document.getElementById('progress-fill').style.width = (loaded/total*100) + '%';
-      }
-      // Hide loader and show app
-      document.getElementById('loading-screen').style.display = 'none';
-      document.getElementById('app').style.display = '';
-      // Initialize app
-      if (window.app && typeof window.app.init === 'function') {
-        window.app.init();
-      }
+      // Показываем анимацию загрузки
+      const progressBar = document.getElementById('progress-fill');
+      const loadingScreen = document.getElementById('loading-screen');
+      const appContainer = document.getElementById('app');
+      
+      // Имитируем загрузку с красивой анимацией
+      let progress = 0;
+      const loadingInterval = setInterval(() => {
+        progress += Math.random() * 15 + 5; // Случайное увеличение от 5 до 20%
+        if (progress > 100) progress = 100;
+        
+        progressBar.style.width = progress + '%';
+        
+        if (progress >= 100) {
+          clearInterval(loadingInterval);
+          
+          // Загружаем скрипты
+          setTimeout(async () => {
+            const scripts = ['data.js','Cart.js','Profile.js','Checkout.js','app.js'];
+            for (const src of scripts) {
+              await loadScript(src);
+            }
+            
+            // Плавный переход к приложению
+            setTimeout(() => {
+              loadingScreen.style.opacity = '0';
+              setTimeout(() => {
+                loadingScreen.style.display = 'none';
+                appContainer.style.display = 'block';
+                appContainer.style.opacity = '1';
+                if (window.app && typeof window.app.init === 'function') {
+                  window.app.init();
+                }
+              }, 300);
+            }, 500);
+          }, 200);
+        }
+      }, 100); // Обновляем каждые 100ms
     });
   </script>
 </body>
