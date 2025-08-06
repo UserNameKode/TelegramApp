@@ -6,9 +6,19 @@ class AutoPartsApp {
 
     async init() {
         try {
+            console.log('Инициализация приложения...');
+            
             // Показываем экран загрузки
             this.setupLoadingScreen();
 
+            // Инициализируем Telegram WebApp
+            if (!window.Telegram || !window.Telegram.WebApp) {
+                throw new Error('Telegram WebApp не доступен');
+            }
+
+            // Инициализируем WebApp
+            window.Telegram.WebApp.ready();
+            
             // Инициализируем модули
             await this.initializeModules();
 
@@ -22,6 +32,7 @@ class AutoPartsApp {
     }
 
     setupLoadingScreen() {
+        console.log('Настройка экрана загрузки...');
         const loadingScreen = document.getElementById('loading-screen');
         const app = document.getElementById('app');
         
@@ -32,14 +43,18 @@ class AutoPartsApp {
     }
 
     async initializeModules() {
+        console.log('Инициализация модулей...');
         try {
-            // Инициализируем все модули
+            // Инициализируем все модули последовательно
             if (window.DataService) {
+                console.log('Инициализация DataService...');
                 await window.DataService.init();
             }
 
+            console.log('Инициализация UI компонентов...');
             window.uiComponents = new window.UIComponents();
 
+            return Promise.resolve();
         } catch (error) {
             console.error('Ошибка инициализации модулей:', error);
             throw error;
@@ -47,14 +62,17 @@ class AutoPartsApp {
     }
 
     postLoadInitialization() {
+        console.log('Завершение инициализации...');
         try {
-            // Скрываем экран загрузки
-            this.hideLoadingScreen();
-
-            // Показываем главный экран
-            if (window.uiComponents) {
-                window.uiComponents.showHome();
-            }
+            // Запускаем таймер для имитации загрузки
+            setTimeout(() => {
+                this.hideLoadingScreen();
+                
+                // Показываем главный экран
+                if (window.uiComponents) {
+                    window.uiComponents.showHome();
+                }
+            }, 2000);
 
         } catch (error) {
             console.error('Ошибка пост-инициализации:', error);
@@ -63,29 +81,29 @@ class AutoPartsApp {
     }
 
     hideLoadingScreen() {
+        console.log('Скрытие экрана загрузки...');
         const loadingScreen = document.getElementById('loading-screen');
         const app = document.getElementById('app');
         
         if (loadingScreen && app) {
-            // Сначала показываем приложение, но с opacity 0
+            // Показываем приложение
             app.style.display = 'block';
             app.style.opacity = '0';
             
-            // Даем время на загрузку анимации
-            setTimeout(() => {
-                // Плавно скрываем экран загрузки
+            // Плавно скрываем экран загрузки и показываем приложение
+            requestAnimationFrame(() => {
                 loadingScreen.style.opacity = '0';
                 loadingScreen.style.transition = 'opacity 0.5s ease';
                 
-                // Плавно показываем приложение
                 app.style.opacity = '1';
                 app.style.transition = 'opacity 0.5s ease';
                 
-                // После завершения анимации убираем экран загрузки
+                // Удаляем экран загрузки после завершения анимации
                 setTimeout(() => {
-                    loadingScreen.style.display = 'none';
+                    loadingScreen.remove();
+                    console.log('Приложение загружено');
                 }, 500);
-            }, 1500);
+            });
         }
     }
 
@@ -94,12 +112,30 @@ class AutoPartsApp {
 
         // Показываем уведомление об ошибке
         if (window.uiComponents) {
-            window.uiComponents.showNotification('Произошла ошибка', error.message, 'error');
+            window.uiComponents.showNotification(
+                'Произошла ошибка при загрузке приложения', 
+                'error'
+            );
+        }
+
+        // Показываем сообщение об ошибке на экране загрузки
+        const loadingScreen = document.getElementById('loading-screen');
+        if (loadingScreen) {
+            loadingScreen.innerHTML = `
+                <div class="error-message">
+                    <h2>Ошибка загрузки</h2>
+                    <p>${error.message}</p>
+                    <button onclick="location.reload()" class="btn btn-accent">
+                        Попробовать снова
+                    </button>
+                </div>
+            `;
         }
     }
 }
 
-// Создаем экземпляр приложения после загрузки всех скриптов
-window.addEventListener('DOMContentLoaded', () => {
+// Создаем экземпляр приложения после полной загрузки DOM
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM загружен, запуск приложения...');
     window.app = new AutoPartsApp();
 });

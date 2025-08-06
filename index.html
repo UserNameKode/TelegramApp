@@ -24,13 +24,15 @@
 <body>
     <!-- Экран загрузки -->
     <div id="loading-screen" class="loading-screen">
-        <div class="engine-assembly">
-            <!-- Анимированные шестерни -->
-            <div class="gear-main"></div>
-            <div class="gear-secondary gear-1"></div>
-            <div class="gear-secondary gear-2"></div>
-        </div>
         <div class="loading-logo">
+            <svg class="gears-svg" width="120" height="120" viewBox="0 0 120 120">
+                <g class="gear-group">
+                    <!-- Основная шестерня -->
+                    <path class="gear main-gear" d="M60 20a5 5 0 0 1 5 5v5a25 25 0 0 1 14.7 6.1l3.5-3.5a5 5 0 1 1 7.1 7.1l-3.5 3.5A25 25 0 0 1 93 58.9h5a5 5 0 0 1 0 10h-5a25 25 0 0 1-6.1 14.7l3.5 3.5a5 5 0 1 1-7.1 7.1l-3.5-3.5A25 25 0 0 1 65 97v5a5 5 0 0 1-10 0v-5a25 25 0 0 1-14.7-6.1l-3.5 3.5a5 5 0 1 1-7.1-7.1l3.5-3.5A25 25 0 0 1 27 68.9h-5a5 5 0 0 1 0-10h5a25 25 0 0 1 6.1-14.7l-3.5-3.5a5 5 0 1 1 7.1-7.1l3.5 3.5A25 25 0 0 1 55 30v-5a5 5 0 0 1 5-5z" fill="#FF6B35"/>
+                    <!-- Центр шестерни -->
+                    <circle cx="60" cy="60" r="8" fill="#FFFFFF"/>
+                </g>
+            </svg>
             <h1 class="brand-title">Auto<span>63</span></h1>
             <div class="loading-progress">
                 <div class="loading-bar"></div>
