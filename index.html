@@ -7,6 +7,12 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="main.css">
+    <!-- Phosphor Icons -->
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.0.3/src/style.css">
+    <!-- GSAP for lightweight animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <!-- Lottie Player for success animation -->
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
     <!-- GSAP for animations -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 </head>
@@ -160,29 +166,26 @@
     </div>
 
     <script>
+        // Helper to load scripts sequentially
+        async function loadScript(src) {
+            return new Promise((resolve, reject) => {
+                const s = document.createElement('script');
+                s.src = src;
+                s.onload = resolve;
+                s.onerror = reject;
+                document.body.appendChild(s);
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', async () => {
-            try {
-                // Инициализация Telegram WebApp
-                window.Telegram.WebApp.ready();
-                window.Telegram.WebApp.expand();
-
-                // Анимация навигационной панели
-                gsap.from('.nav-bar', { y: -60, opacity: 0, duration: 0.6, ease: 'power3.out' });
-
-                // Загружаем компоненты последовательно
-                const scripts = ['data.js', 'Cart.js', 'Profile.js', 'Checkout.js', 'app.js'];
-                for (const script of scripts) {
-                    await new Promise((resolve, reject) => {
-                        const s = document.createElement('script');
-                        s.src = script;
-                        s.onload = resolve;
-                        s.onerror = reject;
-                        document.body.appendChild(s);
-                    });
-                }
-            } catch (error) {
-                console.error('Ошибка инициализации:', error);
-            }
+            // Инициализация Telegram WebApp
+            window.Telegram.WebApp.ready();
+            // Загрузка модулей без внешних анимаций
+            await loadScript('data.js');
+            await loadScript('Cart.js');
+            await loadScript('Profile.js');
+            await loadScript('Checkout.js');
+            await loadScript('app.js');
         });
     </script>
 </body>
