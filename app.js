@@ -711,14 +711,43 @@ function initializeApp() {
     }
 }
 
-// Запускаем инициализацию только после полной загрузки страницы
-window.addEventListener('load', () => {
-    console.log('Страница полностью загружена');
-    console.log('DataService доступен:', !!window.DataService);
-    console.log('telegramAPI доступен:', !!window.telegramAPI);
-    console.log('uiComponents доступен:', !!window.uiComponents);
-    console.log('performanceOptimizer доступен:', !!window.performanceOptimizer);
-    
+// Инициализация приложения
+document.addEventListener('DOMContentLoaded', () => {
+    // Проверяем доступность Telegram Web App
+    if (!window.Telegram || !window.Telegram.WebApp) {
+        console.error('Telegram Web App не доступен');
+        const loadingScreen = document.getElementById('loading-screen');
+        if (loadingScreen) {
+            loadingScreen.innerHTML = `
+                <div class="error-message">
+                    <h2>Ошибка</h2>
+                    <p>Пожалуйста, откройте приложение в Telegram</p>
+                    <a href="https://t.me/your_bot" class="btn-reload">
+                        Открыть в Telegram
+                    </a>
+                </div>
+            `;
+        }
+        return;
+    }
+
+    // Инициализируем WebApp
+    window.Telegram.WebApp.ready();
+
+    // Получаем параметры запуска
+    const webApp = window.Telegram.WebApp;
+    const initData = webApp.initData;
+    const initDataUnsafe = webApp.initDataUnsafe;
+    const colorScheme = webApp.colorScheme;
+    const themeParams = webApp.themeParams;
+    const platform = webApp.platform;
+
+    console.log('Telegram WebApp параметры:', {
+        platform,
+        colorScheme,
+        themeParams
+    });
+
     // Показываем экран загрузки
     const loadingScreen = document.getElementById('loading-screen');
     const app = document.getElementById('app');
@@ -726,10 +755,15 @@ window.addEventListener('load', () => {
         loadingScreen.style.display = 'flex';
         app.style.display = 'none';
     }
-    
-    // Запускаем инициализацию с небольшой задержкой
-    setTimeout(() => {
-        console.log('Запуск инициализации...');
-        initializeApp();
-    }, 100);
+
+    // Применяем тему
+    document.documentElement.setAttribute('data-theme', colorScheme);
+
+    // Расширяем окно
+    if (webApp.expand) {
+        webApp.expand();
+    }
+
+    // Инициализируем приложение
+    window.app = new AutoPartsApp();
 }); 

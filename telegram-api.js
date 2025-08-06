@@ -11,7 +11,37 @@ class TelegramAPI {
             // Проверяем, запущено ли приложение в Telegram
             if (window.Telegram && window.Telegram.WebApp) {
                 this.webApp = window.Telegram.WebApp;
+                
+                // Инициализируем WebApp
+                this.webApp.ready();
+                
+                // Получаем параметры запуска
+                const initData = this.webApp.initData || '';
+                const initDataUnsafe = this.webApp.initDataUnsafe || {};
+                const colorScheme = this.webApp.colorScheme || 'light';
+                const themeParams = this.webApp.themeParams || {};
+                const platform = this.webApp.platform || 'unknown';
+                
+                console.log('Telegram WebApp параметры:', {
+                    platform,
+                    colorScheme,
+                    themeParams
+                });
+                
+                // Настраиваем WebApp
                 this.setupTelegram();
+                
+                // Расширяем окно на весь экран
+                if (this.webApp.expand) {
+                    this.webApp.expand();
+                }
+                
+                // Применяем тему
+                document.documentElement.setAttribute('data-theme', colorScheme);
+                
+                // Устанавливаем цвета
+                this.setThemeColors(themeParams);
+                
             } else {
                 // Демо-режим для тестирования вне Telegram
                 this.setupDemoMode();
@@ -21,6 +51,22 @@ class TelegramAPI {
             console.error('Ошибка инициализации Telegram API:', error);
             this.setupDemoMode();
         }
+    }
+    
+    setThemeColors(themeParams) {
+        const colors = {
+            '--tg-theme-bg-color': themeParams.bg_color || '#ffffff',
+            '--tg-theme-text-color': themeParams.text_color || '#000000',
+            '--tg-theme-hint-color': themeParams.hint_color || '#999999',
+            '--tg-theme-link-color': themeParams.link_color || '#2481cc',
+            '--tg-theme-button-color': themeParams.button_color || '#2481cc',
+            '--tg-theme-button-text-color': themeParams.button_text_color || '#ffffff',
+            '--tg-theme-secondary-bg-color': themeParams.secondary_bg_color || '#f0f0f0',
+        };
+        
+        Object.entries(colors).forEach(([key, value]) => {
+            document.documentElement.style.setProperty(key, value);
+        });
     }
 
     setupTelegram() {
