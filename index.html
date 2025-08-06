@@ -71,6 +71,8 @@
             <div class="loading-progress">
                 <div class="loading-progress-bar"></div>
             </div>
+            <!-- Debug Logs -->
+            <div id="debug-logs" class="debug-logs"></div>
         </div>
     </div>
 
@@ -294,8 +296,50 @@
     <!-- Scripts -->
     <script>
         // Глобальная функция для логирования
-        window.logInitialization = function(message) {
-            console.log(`[${new Date().toISOString()}] ${message}`);
+        window.logInitialization = function(message, data) {
+            const timestamp = new Date().toISOString();
+            console.log(`[${timestamp}] ${message}`, data || '');
+            
+            // Добавляем лог на страницу
+            const logsContainer = document.getElementById('debug-logs');
+            if (logsContainer) {
+                const logElement = document.createElement('div');
+                logElement.className = 'debug-log';
+                logElement.innerHTML = `
+                    <span class="debug-time">${timestamp}</span>
+                    <span class="debug-message">${message}</span>
+                    ${data ? `<pre class="debug-data">${JSON.stringify(data, null, 2)}</pre>` : ''}
+                `;
+                logsContainer.appendChild(logElement);
+                logsContainer.scrollTop = logsContainer.scrollHeight;
+            }
+        };
+        
+        // Перехватываем все console.log
+        const originalLog = console.log;
+        console.log = function() {
+            originalLog.apply(console, arguments);
+            const args = Array.from(arguments);
+            window.logInitialization(args.map(arg => 
+                typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
+            ).join(' '));
+        };
+        
+        // Перехватываем все console.error
+        const originalError = console.error;
+        console.error = function() {
+            originalError.apply(console, arguments);
+            const args = Array.from(arguments);
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'debug-error';
+            errorDiv.textContent = args.map(arg => 
+                typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
+            ).join(' ');
+            const logsContainer = document.getElementById('debug-logs');
+            if (logsContainer) {
+                logsContainer.appendChild(errorDiv);
+                logsContainer.scrollTop = logsContainer.scrollHeight;
+            }
         };
         
         window.logInitialization('Начало загрузки скриптов');

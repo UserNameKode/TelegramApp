@@ -1349,4 +1349,54 @@ body {
 .btn-reload:active {
     transform: translateY(0);
     box-shadow: var(--shadow-small);
+}
+
+/* Debug Logs */
+.debug-logs {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-height: 200px;
+    overflow-y: auto;
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    font-family: monospace;
+    font-size: 12px;
+    line-height: 1.4;
+    padding: 10px;
+    z-index: 9999;
+}
+
+.debug-log {
+    margin-bottom: 4px;
+    padding: 4px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.debug-time {
+    color: #aaa;
+    margin-right: 8px;
+}
+
+.debug-message {
+    color: #fff;
+}
+
+.debug-data {
+    margin: 4px 0 0;
+    padding: 4px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 2px;
+    white-space: pre-wrap;
+    font-size: 11px;
+}
+
+.debug-error {
+    margin-bottom: 4px;
+    padding: 4px 8px;
+    background: rgba(255, 0, 0, 0.2);
+    border-left: 2px solid #ff0000;
+    color: #ff9999;
 } 
