@@ -1,205 +1,98 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>АвтоЗапчасти63</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="main.css">
-    <!-- GSAP for lightweight animations -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <!-- Phosphor Icons -->
-    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.0.3/src/style.css">
-    <!-- GSAP for lightweight animations -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <!-- Lottie Player for success animation -->
-    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
-    <!-- GSAP for animations -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>АвтоЗапчасти63</title>
+  <style>
+    body {margin:0; font-family:sans-serif; background:#0F172A; color:#F8FAFC;}    
+    /* Лоадер */
+    #loader {position:fixed;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center; background:#0F172A;z-index:1000;}
+    .spinner {width:64px;height:64px;margin-bottom:16px; animation:rotate 1s linear infinite;}
+    @keyframes rotate{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+    .progress-bar{width:80%;height:8px;background:#334155;border-radius:4px;overflow:hidden;}    
+    .progress-fill{width:0;height:100%;background:#3B82F6;transition:width .3s ease;}
+    /* Общий контейнер */
+    #app{display:none;}
+    nav{background:#1E293B;padding:12px;display:flex;align-items:center;gap:12px;}
+    nav button{background:#3B82F6;border:none;color:#fff;padding:8px 12px;border-radius:4px;cursor:pointer;}
+    nav .brand{flex:1;font-weight:600;font-size:18px;}
+    main{padding:16px;}
+    .screen{display:none;}
+    .screen.active{display:block;}
+    /* Главный экран */
+    .categories, .products{display:flex;gap:12px;overflow-x:auto;padding:8px 0;}
+    .card{background:#1E293B;border-radius:8px;padding:12px;min-width:120px;cursor:pointer;}
+    .card img{width:100%;border-radius:4px;}    
+    .card h4{font-size:14px;margin:8px 0 4px;}
+    .card p{font-size:12px;color:#94A3B8;margin:0;}
+    .btn-add{margin-top:8px;background:#10B981;border:none;color:#fff;padding:6px 10px;border-radius:4px;cursor:pointer;}
+    /* Корзина */
+    .cart-item{display:flex;align-items:center;gap:8px;padding:8px;background:#334155;border-radius:6px;margin-bottom:8px;}
+    .cart-item img{width:40px;border-radius:4px;}
+    .cart-total{font-weight:600;text-align:right;margin-top:12px;}
+    /* Профиль */
+    .profile-field{margin-bottom:12px;}
+    .profile-field label{display:block;font-size:12px;color:#94A3B8;}
+    .profile-field input{width:100%;padding:8px;border:none;border-radius:4px;background:#334155;color:#F8FAFC;}
+  </style>
 </head>
-<body class="theme-dark">
-    <!-- Экран загрузки -->
-    <div id="loading-screen" class="loading-screen">
-        <div class="loading-content">
-            <!-- Анимированная шестерёнка -->
-            <svg class="loading-gear" viewBox="0 0 100 100">
-                <defs>
-                    <filter id="glow">
-                        <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-                        <feMerge>
-                            <feMergeNode in="coloredBlur"/>
-                            <feMergeNode in="SourceGraphic"/>
-                        </feMerge>
-                    </filter>
-                    <linearGradient id="gear-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style="stop-color: #3B82F6"/>
-                        <stop offset="100%" style="stop-color: #2563EB"/>
-                    </linearGradient>
-                </defs>
-                <!-- Основная шестерёнка -->
-                <path class="gear-body" d="M50 20c-16.6 0-30 13.4-30 30s13.4 30 30 30 30-13.4 30-30-13.4-30-30-30zm0 50c-11 0-20-9-20-20s9-20 20-20 20 9 20 20-9 20-20 20z" filter="url(#glow)" fill="url(#gear-gradient)"/>
-                <!-- Зубцы шестерёнки -->
-                <g class="gear-teeth" stroke="url(#gear-gradient)" stroke-width="4" stroke-linecap="round" filter="url(#glow)">
-                    <line x1="50" y1="5" x2="50" y2="15"/>
-                    <line x1="50" y1="85" x2="50" y2="95"/>
-                    <line x1="5" y1="50" x2="15" y2="50"/>
-                    <line x1="85" y1="50" x2="95" y2="50"/>
-                    <line x1="20" y1="20" x2="28" y2="28"/>
-                    <line x1="72" y1="72" x2="80" y2="80"/>
-                    <line x1="20" y1="80" x2="28" y2="72"/>
-                    <line x1="72" y1="28" x2="80" y2="20"/>
-                </g>
-                <!-- Внутренняя шестерёнка -->
-                <path class="inner-gear" d="M50 35c-8.3 0-15 6.7-15 15s6.7 15 15 15 15-6.7 15-15-6.7-15-15-15zm0 25c-5.5 0-10-4.5-10-10s4.5-10 10-10 10 4.5 10 10-4.5 10-10 10z" fill="url(#gear-gradient)" filter="url(#glow)"/>
-            </svg>
-            <div class="loading-text">AUTO63</div>
-            <!-- Полоса загрузки -->
-            <div class="progress-bar">
-                <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Основное приложение -->
-    <div id="app" class="app">
-        <!-- Навигация -->
-        <nav class="nav-bar glass-effect">
-            <div class="nav-left">
-                <button class="nav-btn btn-back">
-                    <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-                </button>
-                <h1 class="nav-title">АвтоЗапчасти63</h1>
-            </div>
-            <div class="nav-right">
-                <button class="nav-btn" data-screen="search">
-                    <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-                </button>
-                <button class="nav-btn" data-screen="cart">
-                    <svg viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1.003 1.003 0 0020 4H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
-                    <span class="badge" id="cart-badge">0</span>
-                </button>
-                <button class="nav-btn" data-screen="profile">
-                    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
-                </button>
-            </div>
-        </nav>
-
-        <!-- Основной контент -->
-        <main class="main">
-            <!-- Домашний экран -->
-            <section id="home-screen" class="screen active">
-                <!-- Hero секция -->
-                <div class="hero">
-                    <h1>Оригинальные запчасти для вашего авто</h1>
-                    <div class="hero-features">
-                        <div class="feature">
-                            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.16-1.46-3.27-3.4h1.96c.1 1.05.82 1.87 2.65 1.87 1.96 0 2.4-.98 2.4-1.59 0-.83-.44-1.61-2.67-2.14-2.48-.6-4.18-1.62-4.18-3.67 0-1.72 1.39-2.84 3.11-3.21V4h2.67v1.95c1.86.45 2.79 1.86 2.85 3.39H14.3c-.05-1.11-.64-1.87-2.22-1.87-1.5 0-2.4.68-2.4 1.64 0 .84.65 1.39 2.67 1.91s4.18 1.39 4.18 3.91c-.01 1.83-1.38 2.83-3.12 3.16z"/></svg>
-                            <span>Лучшие цены</span>
-                        </div>
-                        <div class="feature">
-                            <svg viewBox="0 0 24 24"><path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zm-7 1H5V6h8v3zm4 0H15V6h2v3zm-6 9c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm8 0c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"/></svg>
-                            <span>Быстрая доставка</span>
-                        </div>
-                        <div class="feature">
-                            <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
-                            <span>Гарантия качества</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Поиск -->
-                <div class="search-section">
-                    <div class="search-bar">
-                        <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-                        <input type="text" placeholder="Поиск по артикулу или названию" class="search-input">
-                    </div>
-                    <button class="vin-search-btn">
-                        <div class="btn-content">
-                            <svg viewBox="0 0 24 24"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.85 7h10.29l1.08 3.11H5.77L6.85 7zM19 17H5v-5h14v5z"/></svg>
-                            <div class="btn-text">
-                                <span>Поиск по VIN</span>
-                                <small>Найдите точные запчасти для вашего авто</small>
-                            </div>
-                        </div>
-                        <svg class="btn-arrow" viewBox="0 0 24 24"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
-                    </button>
-                </div>
-
-                <!-- Категории -->
-                <div class="categories-section">
-                    <div class="section-header">
-                        <h2>Категории запчастей</h2>
-                        <button class="view-all-btn">
-                            <span>Все категории</span>
-                            <svg viewBox="0 0 24 24"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
-                        </button>
-                    </div>
-                    <div class="categories-grid" id="categories"></div>
-                </div>
-
-                <!-- Фильтры -->
-                <div class="filters-section">
-                    <div class="filter-chips">
-                        <button class="chip active">Все</button>
-                        <button class="chip">Новинки</button>
-                        <button class="chip">Со скидкой</button>
-                        <button class="chip">Популярные</button>
-                    </div>
-                    <div class="sort-dropdown">
-                        <button class="sort-btn">
-                            <svg viewBox="0 0 24 24"><path d="M3 18h6v-2H3v2zM3 6v2h18V6H3zm0 7h12v-2H3v2z"/></svg>
-                            <span>Сортировка</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Товары -->
-                <div class="products-grid" id="products"></div>
-            </section>
-
-            <!-- Экран товара -->
-            <section id="product-screen" class="screen"></section>
-
-            <!-- Корзина -->
-            <section id="cart-screen" class="screen"></section>
-
-            <!-- Профиль -->
-            <section id="profile-screen" class="screen"></section>
-
-            <!-- Оформление заказа -->
-            <section id="checkout-screen" class="screen"></section>
-        </main>
-    </div>
-
-    <script>
-        // Helper to load scripts sequentially
-        async function loadScript(src) {
-            return new Promise((resolve, reject) => {
-                const s = document.createElement('script');
-                s.src = src;
-                s.onload = resolve;
-                s.onerror = reject;
-                document.body.appendChild(s);
-            });
-        }
-
-        document.addEventListener('DOMContentLoaded', async () => {
-            // Инициализация Telegram WebApp
-            window.Telegram.WebApp.ready();
-            // Загрузка модулей без внешних анимаций
-            const scripts = ['data.js','Cart.js','Profile.js','Checkout.js','app.js'];
-            const total = scripts.length;
-            let loaded = 0;
-            for(const src of scripts){
-                await loadScript(src);
-                loaded++;
-                const percent = Math.round((loaded/total)*100);
-                const pf=document.getElementById('progress-fill');
-                if(pf) pf.style.width=percent+'%';
-            }
-            
-        });
-    </script>
+<body>
+  <div id="loader">
+    <svg class="spinner" viewBox="0 0 50 50"><circle cx="25" cy="25" r="20" stroke="#3B82F6" stroke-width="5" fill="none"/></svg>
+    <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+  </div>
+  <div id="app">
+    <nav>
+      <button onclick="show('home')">Главная</button>
+      <div class="brand">АвтоЗапчасти63</div>
+      <button onclick="show('cart')">Корзина (<span id="badge">0</span>)</button>
+      <button onclick="show('profile')">Профиль</button>
+    </nav>
+    <main>
+      <section id="home" class="screen active">
+        <h3>Категории</h3>
+        <div class="categories" id="cats"></div>
+        <h3>Товары</h3>
+        <div class="products" id="prods"></div>
+      </section>
+      <section id="cart" class="screen">
+        <h3>Корзина</h3>
+        <div id="cart-items"></div>
+        <div class="cart-total">Итого: <span id="total">0</span> ₽</div>
+      </section>
+      <section id="profile" class="screen">
+        <h3>Профиль</h3>
+        <div class="profile-field"><label>Имя</label><input id="pf-name" placeholder="Ваше имя"></div>
+        <div class="profile-field"><label>Телефон</label><input id="pf-phone" placeholder="+7..."></div>
+        <button onclick="saveProfile()" class="btn-add">Сохранить</button>
+      </section>
+    </main>
+  </div>
+  <script>
+    const data={
+      cats:['Двигатель','Тормоза','Электрика'],
+      prods:[
+        {id:1,cat:0,name:'Фильтр масляный',price:850,img:'https://i.ibb.co/VxKrY8M/mann-filter.jpg'},
+        {id:2,cat:1,name:'Колодки тормозные',price:3200,img:'https://i.ibb.co/0MKXh4k/brembo-pads.jpg'}
+      ],
+      cart:[]
+    };
+    function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');updateCart();}
+    function updateCart(){document.getElementById('badge').textContent=data.cart.reduce((a,b)=>a+b.qty,0);const el=document.getElementById('cart-items');el.innerHTML='';data.cart.forEach(it=>{el.innerHTML+=`<div class="cart-item"><img src="${it.img}"><div>${it.name} ×${it.qty}</div><div>${it.price*it.qty}₽</div></div>`});document.getElementById('total').textContent=data.cart.reduce((a,b)=>a+b.qty*b.price,0);}    
+    function addToCart(id){const p=data.prods.find(x=>x.id===id);let it=data.cart.find(x=>x.id===id);it?it.qty++:data.cart.push({id:id,name:p.name,price:p.price,qty:1,img:p.img});updateCart();}
+    function saveProfile(){alert('Профиль сохранён');}
+    // Загрузка
+    const scripts=['initData'];let loaded=0, total=1;
+    function step(){loaded++;document.getElementById('progress').style.width=Math.round(loaded/total*100)+'%';if(loaded>=total){setTimeout(()=>{document.getElementById('loader').style.display='none';document.getElementById('app').style.display='';renderHome();},300);}}
+    function loadScript(name){return new Promise(r=>{setTimeout(()=>{r();step();},500)});}
+    function renderHome(){const c=document.getElementById('cats'),p=document.getElementById('prods');c.innerHTML='';data.cats.forEach((ct,i)=>c.innerHTML+=`<div class="card" onclick="filter(${i})"><h4>${ct}</h4></div>`);
+      function showAll(){renderProds(-1);}      
+      window.filter=id=>renderProds(id);
+      window.renderProds=id=>{p.innerHTML='';data.prods.filter(x=>id<0||x.cat===id).forEach(x=>p.innerHTML+=`<div class="card"><img src="${x.img}"><h4>${x.name}</h4><p>${x.price} ₽</p><button class="btn-add" onclick="addToCart(${x.id})">В корзину</button></div>`)};
+      renderProds(-1);
+    }
+    document.addEventListener('DOMContentLoaded',async()=>{await loadScript('initData');});
+  </script>
 </body>
 </html>
