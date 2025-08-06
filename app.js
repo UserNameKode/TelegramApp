@@ -1,7 +1,5 @@
-// Основной класс приложения
 class AutoPartsApp {
     constructor() {
-        // Сразу запускаем инициализацию
         this.init().catch(error => {
             console.error('Ошибка при инициализации:', error);
             this.handleError(error);
@@ -10,7 +8,7 @@ class AutoPartsApp {
 
     async init() {
         try {
-            console.log('Начало инициализации приложения');
+            window.debugLog('Начало инициализации приложения');
 
             // Проверяем доступность Telegram WebApp
             if (!window.Telegram?.WebApp) {
@@ -20,11 +18,15 @@ class AutoPartsApp {
             // Показываем экран загрузки
             this.showLoadingScreen();
 
-            // Инициализируем все модули
-            await this.initializeModules();
+            // Инициализируем WebApp
+            window.Telegram.WebApp.ready();
+            window.debugLog('Telegram WebApp инициализирован');
 
-            // Запускаем приложение
-            this.startApp();
+            // Инициализируем компоненты
+            await this.initializeComponents();
+
+            // Показываем приложение
+            await this.showApp();
 
         } catch (error) {
             console.error('Ошибка инициализации:', error);
@@ -33,7 +35,7 @@ class AutoPartsApp {
     }
 
     showLoadingScreen() {
-        console.log('Показываем экран загрузки');
+        window.debugLog('Показываем экран загрузки');
         const loadingScreen = document.getElementById('loading-screen');
         const app = document.getElementById('app');
         
@@ -44,20 +46,43 @@ class AutoPartsApp {
         }
     }
 
-    async initializeModules() {
-        console.log('Инициализация модулей');
+    async initializeComponents() {
+        window.debugLog('Инициализация компонентов');
         
-        // Инициализируем компоненты
-        window.uiComponents = new window.UIComponents();
-        
+        // Создаем экземпляры компонентов
+        window.cart = new Cart();
+        window.profile = new Profile();
+        window.checkout = new Checkout();
+
+        // Инициализируем UI компоненты
+        this.initializeUI();
+
         // Даем время на загрузку
         await new Promise(resolve => setTimeout(resolve, 2000));
-        
-        return Promise.resolve();
     }
 
-    startApp() {
-        console.log('Запуск приложения');
+    initializeUI() {
+        window.debugLog('Инициализация UI');
+
+        // Настраиваем обработчики событий
+        document.querySelectorAll('[data-screen]').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const screen = e.currentTarget.dataset.screen;
+                this.showScreen(screen);
+            });
+        });
+
+        // Кнопка "Назад"
+        const backButton = document.querySelector('.btn-back');
+        if (backButton) {
+            backButton.addEventListener('click', () => {
+                this.handleBackButton();
+            });
+        }
+    }
+
+    async showApp() {
+        window.debugLog('Показываем приложение');
         
         const loadingScreen = document.getElementById('loading-screen');
         const app = document.getElementById('app');
@@ -74,32 +99,60 @@ class AutoPartsApp {
         requestAnimationFrame(() => {
             // Скрываем загрузку
             loadingScreen.style.opacity = '0';
+            loadingScreen.style.transition = 'opacity 0.5s ease';
             
             // Показываем приложение
             app.style.opacity = '1';
+            app.style.transition = 'opacity 0.5s ease';
             
             // После завершения анимации
             setTimeout(() => {
                 loadingScreen.remove();
-                
-                // Показываем домашний экран
-                if (window.uiComponents) {
-                    window.uiComponents.showHome();
-                }
-                
-                console.log('Приложение запущено');
+                this.showScreen('home');
+                window.debugLog('Приложение запущено');
             }, 500);
         });
     }
 
+    showScreen(screenName) {
+        window.debugLog(`Показываем экран: ${screenName}`);
+        
+        // Скрываем все экраны
+        document.querySelectorAll('.screen').forEach(screen => {
+            screen.classList.remove('active');
+        });
+
+        // Показываем нужный экран
+        const screen = document.getElementById(`${screenName}-screen`);
+        if (screen) {
+            screen.classList.add('active');
+            
+            // Обновляем активную кнопку
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            const activeButton = document.querySelector(`[data-screen="${screenName}"]`);
+            if (activeButton) {
+                activeButton.classList.add('active');
+            }
+        }
+    }
+
+    handleBackButton() {
+        window.debugLog('Нажата кнопка "Назад"');
+        this.showScreen('home');
+    }
+
     handleError(error) {
-        console.error('Ошибка в приложении:', error);
+        console.error('Произошла ошибка:', error);
+        window.debugLog(`Ошибка: ${error.message}`);
 
         const loadingScreen = document.getElementById('loading-screen');
         if (loadingScreen) {
             loadingScreen.innerHTML = `
                 <div class="error-message">
-                    <h2>Ошибка загрузки</h2>
+                    <h2>Ошибка</h2>
                     <p>${error.message}</p>
                     <button onclick="location.reload()" class="btn btn-accent">
                         Попробовать снова
@@ -110,8 +163,8 @@ class AutoPartsApp {
     }
 }
 
-// Запускаем приложение после загрузки DOM
+// Создаем экземпляр приложения после загрузки DOM
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM загружен, создаем приложение');
+    window.debugLog('DOM загружен, создаем приложение');
     window.app = new AutoPartsApp();
 });
