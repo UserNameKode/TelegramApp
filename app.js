@@ -67,15 +67,25 @@ class AutoPartsApp {
         const app = document.getElementById('app');
         
         if (loadingScreen && app) {
-            // Добавляем класс для анимации скрытия
-            loadingScreen.classList.add('hidden');
+            // Сначала показываем приложение, но с opacity 0
+            app.style.display = 'block';
+            app.style.opacity = '0';
             
-            // После завершения анимации скрываем элемент
+            // Даем время на загрузку анимации
             setTimeout(() => {
-                loadingScreen.style.display = 'none';
-                app.style.display = 'block';
-                app.classList.add('fade-in');
-            }, 1500); // Увеличили время для демонстрации анимации
+                // Плавно скрываем экран загрузки
+                loadingScreen.style.opacity = '0';
+                loadingScreen.style.transition = 'opacity 0.5s ease';
+                
+                // Плавно показываем приложение
+                app.style.opacity = '1';
+                app.style.transition = 'opacity 0.5s ease';
+                
+                // После завершения анимации убираем экран загрузки
+                setTimeout(() => {
+                    loadingScreen.style.display = 'none';
+                }, 500);
+            }, 1500);
         }
     }
 

@@ -23,48 +23,88 @@
     margin-bottom: var(--spacing-xl);
 }
 
-.part {
+/* Основная шестерня */
+.gear-main {
     position: absolute;
     width: 100px;
     height: 100px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     background: var(--color-accent);
-    border-radius: var(--radius-md);
-    transform-style: preserve-3d;
-    animation: float 3s ease-in-out infinite;
+    border-radius: 50%;
+    box-shadow: 0 0 20px rgba(255, 107, 53, 0.5);
 }
 
-/* Шестерни */
+.gear-main::before {
+    content: '';
+    position: absolute;
+    width: 120%;
+    height: 120%;
+    top: -10%;
+    left: -10%;
+    background: repeating-conic-gradient(
+        from 0deg,
+        var(--color-accent) 0deg 30deg,
+        transparent 30deg 60deg
+    );
+    border-radius: 50%;
+    animation: rotate 4s linear infinite;
+}
+
+.gear-main::after {
+    content: '';
+    position: absolute;
+    width: 30%;
+    height: 30%;
+    top: 35%;
+    left: 35%;
+    background: var(--color-white);
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+/* Дополнительные шестерни */
+.gear-secondary {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    background: var(--color-white);
+    border-radius: 50%;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+}
+
+.gear-secondary::before {
+    content: '';
+    position: absolute;
+    width: 120%;
+    height: 120%;
+    top: -10%;
+    left: -10%;
+    background: repeating-conic-gradient(
+        from 0deg,
+        var(--color-white) 0deg 30deg,
+        transparent 30deg 60deg
+    );
+    border-radius: 50%;
+}
+
 .gear-1 {
-    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-    animation: rotate3D 4s linear infinite;
+    top: 20%;
+    left: 70%;
+    animation: rotate 4s linear infinite reverse;
 }
 
 .gear-2 {
-    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-    animation: rotate3D-reverse 4s linear infinite;
-    transform: translateZ(50px);
-}
-
-/* Поршень */
-.piston {
-    width: 60px;
-    height: 120px;
-    background: var(--color-white);
-    animation: piston-move 2s ease-in-out infinite;
-}
-
-/* Клапан */
-.valve {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: var(--color-gray-300);
-    animation: valve-move 1s ease-in-out infinite;
+    top: 60%;
+    left: 20%;
+    animation: rotate 4s linear infinite;
 }
 
 /* Логотип */
 .loading-logo {
     text-align: center;
+    margin-top: var(--spacing-xl);
 }
 
 .brand-title {
@@ -75,10 +115,12 @@
     text-transform: uppercase;
     letter-spacing: 2px;
     margin-bottom: var(--spacing-md);
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
 }
 
 .brand-title span {
     color: var(--color-accent);
+    text-shadow: 0 0 20px rgba(255, 107, 53, 0.5);
 }
 
 /* Прогресс загрузки */
@@ -88,6 +130,7 @@
     background: rgba(255, 255, 255, 0.1);
     border-radius: var(--radius-full);
     overflow: hidden;
+    margin-top: var(--spacing-md);
 }
 
 .loading-bar {
@@ -98,49 +141,13 @@
     animation: loading 2s ease-in-out infinite;
 }
 
-/* Keyframes */
-@keyframes float {
-    0%, 100% {
-        transform: translateY(0);
-    }
-    50% {
-        transform: translateY(-20px);
-    }
-}
-
-@keyframes rotate3D {
+/* Анимации */
+@keyframes rotate {
     from {
-        transform: rotateZ(0deg) rotateX(45deg) rotateY(45deg);
+        transform: rotate(0deg);
     }
     to {
-        transform: rotateZ(360deg) rotateX(45deg) rotateY(45deg);
-    }
-}
-
-@keyframes rotate3D-reverse {
-    from {
-        transform: rotateZ(360deg) rotateX(-45deg) rotateY(-45deg);
-    }
-    to {
-        transform: rotateZ(0deg) rotateX(-45deg) rotateY(-45deg);
-    }
-}
-
-@keyframes piston-move {
-    0%, 100% {
-        transform: translateY(0) translateZ(30px);
-    }
-    50% {
-        transform: translateY(30px) translateZ(30px);
-    }
-}
-
-@keyframes valve-move {
-    0%, 100% {
-        transform: translateX(0) translateZ(60px);
-    }
-    50% {
-        transform: translateX(30px) translateZ(60px);
+        transform: rotate(360deg);
     }
 }
 
