@@ -1,301 +1,242 @@
-// Демо-данные для Telegram MiniApp "АвтоЗапчасти"
-
-// Категории товаров
-const categories = {
-    engine: {
-        id: 'engine',
-        name: 'Двигатель',
-        description: 'Детали двигателя и системы',
-        icon: '🔧'
-    },
-    brakes: {
-        id: 'brakes',
-        name: 'Тормоза',
-        description: 'Тормозная система',
-        icon: '🛑'
-    },
-    suspension: {
-        id: 'suspension',
-        name: 'Подвеска',
-        description: 'Подвеска и ходовая часть',
-        icon: '⚙️'
-    },
-    electronics: {
-        id: 'electronics',
-        name: 'Электроника',
-        description: 'Электронные компоненты',
-        icon: '⚡'
-    }
-};
-
-// Товары по категориям
-const products = {
-    engine: [
-        {
-            id: 'engine_001',
-            name: 'Масляный фильтр',
-            description: 'Высококачественный масляный фильтр для двигателя',
-            price: 850,
-            brand: 'Bosch',
-            inStock: true,
-            icon: 'filter',
-            image: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=300&h=300&fit=crop&crop=center'
-        },
-        {
-            id: 'engine_002',
-            name: 'Воздушный фильтр',
-            description: 'Воздушный фильтр двигателя с многослойной фильтрацией',
-            price: 650,
-            brand: 'Mann',
-            inStock: true,
-            icon: 'filter',
-            image: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=300&h=300&fit=crop&crop=center'
-        },
-        {
-            id: 'engine_003',
-            name: 'Ремень ГРМ',
-            description: 'Ремень газораспределительного механизма',
-            price: 3200,
-            brand: 'Gates',
-            inStock: true,
-            icon: 'belt',
-            image: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=300&h=300&fit=crop&crop=center'
-        },
-        {
-            id: 'engine_004',
-            name: 'Свечи зажигания',
-            description: 'Иридиевые свечи зажигания для оптимальной работы двигателя',
-            price: 1800,
-            brand: 'NGK',
-            inStock: true,
-            icon: 'spark',
-            image: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=300&h=300&fit=crop&crop=center'
-        },
-        {
-            id: 'engine_005',
-            name: 'Топливный насос',
-            description: 'Электрический топливный насос высокого давления',
-            price: 4500,
-            brand: 'Bosch',
-            inStock: true,
-            icon: 'pump',
-            image: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=300&h=300&fit=crop&crop=center'
-        }
-    ],
-    brakes: [
-        {
-            id: 'brakes_001',
-            name: 'Тормозные колодки',
-            description: 'Передние тормозные колодки',
-            price: 2800,
-            brand: 'Brembo',
-            inStock: true,
-            icon: 'brake',
-            image: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=300&h=300&fit=crop&crop=center'
-        },
-        {
-            id: 'brakes_002',
-            name: 'Тормозные диски',
-            description: 'Вентилируемые тормозные диски',
-            price: 4500,
-            brand: 'Brembo',
-            inStock: true,
-            icon: 'disc',
-            image: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=300&h=300&fit=crop&crop=center'
-        },
-        {
-            id: 'brakes_003',
-            name: 'Тормозная жидкость',
-            description: 'Высококачественная тормозная жидкость DOT 4',
-            price: 350,
-            brand: 'Castrol',
-            inStock: true,
-            icon: 'fluid',
-            image: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=300&h=300&fit=crop&crop=center'
-        },
-        {
-            id: 'brakes_004',
-            name: 'Тормозные шланги',
-            description: 'Гибкие тормозные шланги высокого давления',
-            price: 1200,
-            brand: 'Goodridge',
-            inStock: true,
-            icon: 'hose',
-            image: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=300&h=300&fit=crop&crop=center'
-        }
-    ],
-    suspension: [
-        {
-            id: 'suspension_001',
-            name: 'Амортизаторы',
-            description: 'Передние амортизаторы подвески',
-            price: 8500,
-            brand: 'KYB',
-            inStock: true,
-            icon: 'shock'
-        },
-        {
-            id: 'suspension_002',
-            name: 'Пружины подвески',
-            description: 'Комплект пружин подвески',
-            price: 3200,
-            brand: 'Eibach',
-            inStock: true,
-            icon: 'spring'
-        }
-    ],
-    electronics: [
-        {
-            id: 'electronics_001',
-            name: 'Аккумулятор',
-            description: 'Автомобильный аккумулятор 60 Ач',
-            price: 6500,
-            brand: 'Varta',
-            inStock: true,
-            icon: 'battery'
-        },
-        {
-            id: 'electronics_002',
-            name: 'Генератор',
-            description: 'Автомобильный генератор 90А',
-            price: 12000,
-            brand: 'Bosch',
-            inStock: true,
-            icon: 'generator'
-        }
-    ]
-};
-
-// Профиль пользователя
-const userProfile = {
-    name: 'Александр Петров',
-    phone: '+7 (999) 123-45-67',
-    email: 'alex@example.com',
-    address: 'г. Москва, ул. Примерная, д. 1, кв. 1'
-};
-
-// История заказов
-const orderHistory = [
-    {
-        id: 'ORD001',
-        date: '2024-01-15',
-        status: 'completed',
-        total: 8500,
-        items: [
-            { id: 'engine_001', name: 'Масляный фильтр', quantity: 2, price: 850 },
-            { id: 'brakes_001', name: 'Тормозные колодки', quantity: 1, price: 2800 }
-        ]
-    },
-    {
-        id: 'ORD002',
-        date: '2024-01-10',
-        status: 'processing',
-        total: 12000,
-        items: [
-            { id: 'electronics_002', name: 'Генератор', quantity: 1, price: 12000 }
-        ]
-    },
-    {
-        id: 'ORD003',
-        date: '2024-01-05',
-        status: 'pending',
-        total: 6500,
-        items: [
-            { id: 'electronics_001', name: 'Аккумулятор', quantity: 1, price: 6500 }
-        ]
-    }
-];
-
 // Сервис для работы с данными
-const DataService = {
-    // Инициализация сервиса
-    init() {
-        console.log('DataService инициализирован');
-        return Promise.resolve();
-    },
-
-    // Получение категорий
-    getCategories() {
-        return Object.values(categories);
-    },
-
-    // Получение категории по ID
-    getCategory(categoryId) {
-        return categories[categoryId];
-    },
-
-    // Получение товаров по категории
-    getProductsByCategory(categoryId) {
-        return products[categoryId] || [];
-    },
-
-    // Получение товара по ID
-    getProduct(productId) {
-        for (const categoryProducts of Object.values(products)) {
-            const product = categoryProducts.find(p => p.id === productId);
-            if (product) return product;
-        }
-        return null;
-    },
-
-    // Получение профиля пользователя
-    getUserProfile() {
-        return userProfile;
-    },
-
-    // Получение истории заказов
-    getOrderHistory() {
-        return orderHistory;
-    },
-
-    // Получение заказа по ID
-    getOrder(orderId) {
-        return orderHistory.find(order => order.id === orderId);
-    },
-
-    // Поиск товаров
-    searchProducts(query) {
-        const results = [];
-        const searchQuery = query.toLowerCase();
-
-        for (const categoryProducts of Object.values(products)) {
-            for (const product of categoryProducts) {
-                if (product.name.toLowerCase().includes(searchQuery) ||
-                    product.description.toLowerCase().includes(searchQuery) ||
-                    product.brand.toLowerCase().includes(searchQuery)) {
-                    results.push(product);
-                }
+class DataService {
+    constructor() {
+        this.categories = [
+            {
+                id: 'engine',
+                title: 'Двигатель и компоненты',
+                image: 'https://i.ibb.co/M6QMKNP/engine.jpg',
+                count: 5
+            },
+            {
+                id: 'brake',
+                title: 'Тормозная система',
+                image: 'https://i.ibb.co/4WM5tJX/brake.jpg',
+                count: 3
+            },
+            {
+                id: 'suspension',
+                title: 'Подвеска и ходовая',
+                image: 'https://i.ibb.co/tQc6pKq/suspension.jpg',
+                count: 4
+            },
+            {
+                id: 'electrical',
+                title: 'Электрооборудование',
+                image: 'https://i.ibb.co/VvCnMxp/electrical.jpg',
+                count: 3
+            },
+            {
+                id: 'body',
+                title: 'Кузовные детали',
+                image: 'https://i.ibb.co/C2z0KSJ/body.jpg',
+                count: 2
             }
+        ];
+
+        this.products = [
+            // Двигатель
+            {
+                id: 'engine-1',
+                categoryId: 'engine',
+                title: 'Поршневая группа ВАЗ 2110',
+                price: 12500,
+                image: 'https://i.ibb.co/HdKXzKQ/piston-group.jpg',
+                description: 'Комплект поршневой группы для ВАЗ 2110. Включает поршни, кольца и пальцы.'
+            },
+            {
+                id: 'engine-2',
+                categoryId: 'engine',
+                title: 'Комплект ГРМ Ford Focus',
+                price: 8900,
+                image: 'https://i.ibb.co/0MZ0H5Y/timing-belt.jpg',
+                description: 'Комплект ГРМ для Ford Focus 2.0. Ремень, ролики, натяжитель.'
+            },
+            {
+                id: 'engine-3',
+                categoryId: 'engine',
+                title: 'Масляный насос Toyota',
+                price: 5600,
+                image: 'https://i.ibb.co/XS8DNzp/oil-pump.jpg',
+                description: 'Масляный насос для Toyota Camry 2.4. Оригинал.'
+            },
+
+            // Тормоза
+            {
+                id: 'brake-1',
+                categoryId: 'brake',
+                title: 'Дисковые тормоза Brembo',
+                price: 15800,
+                image: 'https://i.ibb.co/VqFgRf7/brembo-brakes.jpg',
+                description: 'Комплект передних тормозных дисков Brembo. Высокая производительность.'
+            },
+            {
+                id: 'brake-2',
+                categoryId: 'brake',
+                title: 'Колодки Ferodo BMW',
+                price: 4500,
+                image: 'https://i.ibb.co/0MKyqJ6/brake-pads.jpg',
+                description: 'Передние тормозные колодки Ferodo для BMW 3 серии.'
+            },
+
+            // Подвеска
+            {
+                id: 'suspension-1',
+                categoryId: 'suspension',
+                title: 'Амортизаторы KYB',
+                price: 7800,
+                image: 'https://i.ibb.co/C1Q8Jyq/shock-absorber.jpg',
+                description: 'Передние амортизаторы KYB для Honda Civic. Комплект 2 шт.'
+            },
+            {
+                id: 'suspension-2',
+                categoryId: 'suspension',
+                title: 'Рычаги Audi',
+                price: 12300,
+                image: 'https://i.ibb.co/xGV2Yyq/control-arm.jpg',
+                description: 'Комплект передних рычагов для Audi A4 B8.'
+            },
+
+            // Электрика
+            {
+                id: 'electrical-1',
+                categoryId: 'electrical',
+                title: 'Генератор Bosch',
+                price: 18500,
+                image: 'https://i.ibb.co/0XKQ8LS/generator.jpg',
+                description: 'Генератор Bosch для Volkswagen Polo 1.6.'
+            },
+            {
+                id: 'electrical-2',
+                categoryId: 'electrical',
+                title: 'Стартер Valeo',
+                price: 14200,
+                image: 'https://i.ibb.co/wSxVKqc/starter.jpg',
+                description: 'Стартер Valeo для Renault Logan. Новый.'
+            },
+
+            // Кузов
+            {
+                id: 'body-1',
+                categoryId: 'body',
+                title: 'Капот Hyundai Solaris',
+                price: 21500,
+                image: 'https://i.ibb.co/0QKwVJy/hood.jpg',
+                description: 'Капот для Hyundai Solaris 2017+. Оригинал.'
+            },
+            {
+                id: 'body-2',
+                categoryId: 'body',
+                title: 'Крылья Toyota Corolla',
+                price: 8900,
+                image: 'https://i.ibb.co/XxQ3p1d/fender.jpg',
+                description: 'Переднее крыло для Toyota Corolla 2019+. Левое и правое.'
+            }
+        ];
+    }
+
+    // Методы для работы с категориями
+    getCategories() {
+        return this.categories;
+    }
+
+    getCategoryById(id) {
+        return this.categories.find(category => category.id === id);
+    }
+
+    // Методы для работы с товарами
+    getProducts() {
+        return this.products;
+    }
+
+    getProductById(id) {
+        return this.products.find(product => product.id === id);
+    }
+
+    getProductsByCategory(categoryId) {
+        return this.products.filter(product => product.categoryId === categoryId);
+    }
+
+    // Методы для работы с корзиной
+    getCart() {
+        const cart = localStorage.getItem('cart');
+        return cart ? JSON.parse(cart) : [];
+    }
+
+    addToCart(productId, quantity = 1) {
+        const cart = this.getCart();
+        const existingItem = cart.find(item => item.productId === productId);
+
+        if (existingItem) {
+            existingItem.quantity += quantity;
+        } else {
+            cart.push({ productId, quantity });
         }
 
-        return results;
-    },
+        localStorage.setItem('cart', JSON.stringify(cart));
+    }
 
-    // Создание нового заказа
+    removeFromCart(productId) {
+        const cart = this.getCart();
+        const updatedCart = cart.filter(item => item.productId !== productId);
+        localStorage.setItem('cart', JSON.stringify(updatedCart));
+    }
+
+    updateCartItemQuantity(productId, quantity) {
+        const cart = this.getCart();
+        const item = cart.find(item => item.productId === productId);
+        
+        if (item) {
+            item.quantity = quantity;
+            localStorage.setItem('cart', JSON.stringify(cart));
+        }
+    }
+
+    clearCart() {
+        localStorage.removeItem('cart');
+    }
+
+    // Методы для работы с избранным
+    getFavorites() {
+        const favorites = localStorage.getItem('favorites');
+        return favorites ? JSON.parse(favorites) : [];
+    }
+
+    toggleFavorite(productId) {
+        const favorites = this.getFavorites();
+        const index = favorites.indexOf(productId);
+
+        if (index === -1) {
+            favorites.push(productId);
+        } else {
+            favorites.splice(index, 1);
+        }
+
+        localStorage.setItem('favorites', JSON.stringify(favorites));
+    }
+
+    // Методы для работы с заказами
+    getOrders() {
+        const orders = localStorage.getItem('orders');
+        return orders ? JSON.parse(orders) : [];
+    }
+
     createOrder(orderData) {
+        const orders = this.getOrders();
         const newOrder = {
-            id: `ORD${Date.now()}`,
-            date: new Date().toISOString().split('T')[0],
-            status: 'pending',
-            total: orderData.total,
-            items: orderData.items,
-            customer: orderData.customer
+            id: Date.now().toString(),
+            ...orderData,
+            status: 'new',
+            createdAt: new Date().toISOString()
         };
 
-        orderHistory.unshift(newOrder);
+        orders.push(newOrder);
+        localStorage.setItem('orders', JSON.stringify(orders));
+        this.clearCart();
+
         return newOrder;
     }
-};
+}
 
-// Экспорт для использования в других модулях
-window.DataService = DataService;
-window.categories = categories;
-window.products = products;
-window.userProfile = userProfile;
-window.orderHistory = orderHistory;
-
-// Убеждаемся, что DataService доступен глобально
-if (typeof window !== 'undefined') {
-    window.DataService = DataService;
-    console.log('DataService экспортирован в window');
-} 
+// Создаем глобальный экземпляр сервиса
+window.DataService = new DataService();
