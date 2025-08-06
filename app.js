@@ -391,47 +391,44 @@ class AutoPartsApp {
         const searchBtn = document.getElementById('search-btn');
 
         if (searchInput) {
-            console.log('Поле поиска найдено, добавляем обработчики');
+            console.log('=== НАСТРОЙКА ПОИСКА ===');
+            console.log('Поле поиска найдено:', searchInput);
             
-            // Удаляем старые обработчики
-            searchInput.replaceWith(searchInput.cloneNode(true));
-            const newSearchInput = document.getElementById('search-input');
-            
-            newSearchInput.addEventListener('input', (e) => {
-                console.log('=== INPUT EVENT ===');
-                console.log('Введен текст:', e.target.value);
-                if (e.target.value.length >= 1) {
+            // Простые обработчики без клонирования
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.trim();
+                console.log('ВВОД ТЕКСТА:', query);
+                
+                if (query.length >= 1) {
+                    console.log('Запускаем поиск для:', query);
                     this.performSearch();
+                } else {
+                    console.log('Очищаем поиск');
+                    this.renderHome();
                 }
             });
             
-            newSearchInput.addEventListener('keypress', (e) => {
-                console.log('=== KEYPRESS EVENT ===');
+            searchInput.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') {
                     e.preventDefault();
-                    console.log('Нажат Enter, запускаем поиск');
+                    console.log('ENTER - запускаем поиск');
                     this.performSearch();
                 }
             });
         } else {
-            console.error('Поле поиска НЕ найдено в DOM!');
+            console.error('❌ ПОЛЕ ПОИСКА НЕ НАЙДЕНО!');
         }
 
         if (searchBtn) {
-            console.log('Кнопка поиска найдена, добавляем обработчик');
+            console.log('Кнопка поиска найдена:', searchBtn);
             
-            // Удаляем старые обработчики
-            searchBtn.replaceWith(searchBtn.cloneNode(true));
-            const newSearchBtn = document.getElementById('search-btn');
-            
-            newSearchBtn.addEventListener('click', (e) => {
+            searchBtn.addEventListener('click', (e) => {
                 e.preventDefault();
-                console.log('=== CLICK EVENT ===');
-                console.log('Нажата кнопка поиска');
+                console.log('КЛИК ПО КНОПКЕ ПОИСКА');
                 this.performSearch();
             });
         } else {
-            console.error('Кнопка поиска НЕ найдена в DOM!');
+            console.error('❌ КНОПКА ПОИСКА НЕ НАЙДЕНА!');
         }
 
         // Фильтры
@@ -557,9 +554,12 @@ class AutoPartsApp {
             <div class="categories">
                 ${DataService.getCategories().map(category => {
                     const categoryProducts = DataService.getProducts(brandId, category.id);
+                    console.log(`КАТЕГОРИЯ ${category.title}: ${categoryProducts.length} товаров для бренда ${brandId}`);
                     return `
-                        <div class="card category-card ${categoryProducts.length === 0 ? 'disabled' : ''}" 
-                             ${categoryProducts.length > 0 ? `onclick="window.app.renderBrandCategoryProducts('${brandId}', '${category.id}')"` : ''}>
+                        <div class="card category-card clickable-category" 
+                             data-brand="${brandId}" 
+                             data-category="${category.id}"
+                             onclick="window.app.renderBrandCategoryProducts('${brandId}', '${category.id}')">
                             <div class="category-icon">${category.icon}</div>
                             <h4>${category.title}</h4>
                             <p class="category-count">${categoryProducts.length} товаров</p>
