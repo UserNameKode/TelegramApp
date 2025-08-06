@@ -2,206 +2,139 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta http-equiv="Cache-Control" content="no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    <title>АвтоЗапчасти63 - Telegram MiniApp</title>
-
-    <!-- Шрифты -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-
-    <!-- Стили -->
-    <link rel="stylesheet" href="main.css">
-
-    <!-- Telegram Web App -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>АвтоЗапчасти63</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-    <!-- Отладка -->
-    <script>
-        window.debugLog = function(message) {
-            console.log(message);
-            const debugLogs = document.getElementById('debug-logs');
-            if (debugLogs) {
-                const log = document.createElement('div');
-                log.className = 'debug-log';
-                log.textContent = `${new Date().toISOString()}: ${message}`;
-                debugLogs.appendChild(log);
-                debugLogs.scrollTop = debugLogs.scrollHeight;
-            }
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="main.css">
+    <style>
+        /* Скрываем отладочные сообщения */
+        .debug-logs {
+            display: none !important;
         }
-    </script>
+    </style>
 </head>
 <body>
-    <!-- Экран загрузки -->
     <div id="loading-screen" class="loading-screen">
-        <div class="loading-logo">
-            <svg class="gear-svg" viewBox="0 0 100 100" width="150" height="150">
-                <circle class="gear-base" cx="50" cy="50" r="45" fill="#FF6B35"/>
-                <g class="gear-teeth">
-                    <path d="M50 5 L55 0 L60 5 L55 10 Z" class="gear-tooth"/>
-                    <path d="M71 11 L78 8 L80 14 L73 17 Z" class="gear-tooth"/>
-                    <path d="M89 29 L95 29 L93 35 L87 33 Z" class="gear-tooth"/>
-                    <path d="M95 50 L100 52 L95 57 L90 53 Z" class="gear-tooth"/>
-                    <path d="M89 71 L95 74 L90 79 L85 75 Z" class="gear-tooth"/>
-                    <path d="M71 89 L75 95 L69 97 L66 91 Z" class="gear-tooth"/>
-                    <path d="M50 95 L53 100 L47 100 L45 95 Z" class="gear-tooth"/>
-                    <path d="M29 89 L26 95 L20 93 L24 87 Z" class="gear-tooth"/>
-                    <path d="M11 71 L8 75 L5 71 L9 67 Z" class="gear-tooth"/>
-                    <path d="M5 50 L0 53 L0 47 L5 45 Z" class="gear-tooth"/>
-                    <path d="M11 29 L5 26 L7 20 L13 24 Z" class="gear-tooth"/>
-                    <path d="M29 11 L25 5 L31 3 L34 9 Z" class="gear-tooth"/>
-                </g>
-                <circle cx="50" cy="50" r="35" fill="#1E3D59"/>
-                <circle cx="50" cy="50" r="25" fill="#FF6B35"/>
-                <circle cx="50" cy="50" r="15" fill="#1E3D59"/>
-                <circle cx="50" cy="50" r="8" fill="#FFFFFF"/>
+        <div class="gear-container">
+            <svg class="gear" viewBox="0 0 100 100">
+                <path class="gear-path" d="M50 25c-13.8 0-25 11.2-25 25s11.2 25 25 25 25-11.2 25-25-11.2-25-25-25zm0 45c-11 0-20-9-20-20s9-20 20-20 20 9 20 20-9 20-20 20zm0-35c-8.3 0-15 6.7-15 15s6.7 15 15 15 15-6.7 15-15-6.7-15-15-15zm0 25c-5.5 0-10-4.5-10-10s4.5-10 10-10 10 4.5 10 10-4.5 10-10 10z"/>
+                <path class="gear-teeth" d="M50 5v10m0 70v10M5 50h10m70 0h10M15 15l7 7m56 56l7 7M15 85l7-7m56-56l7-7"/>
             </svg>
-            <h1 class="brand-title">Auto<span>63</span></h1>
-            <div class="loading-progress">
-                <div class="loading-bar"></div>
-            </div>
         </div>
-        <div id="debug-logs" class="debug-logs"></div>
+        <div class="loading-text">AUTO63</div>
     </div>
 
-    <!-- Основной контейнер -->
-    <div id="app" class="app-container" style="display: none;">
+    <div id="app" class="app-container">
         <!-- Навигация -->
-        <nav class="nav-bar">
-            <button class="nav-btn btn-back">
-                <span class="nav-icon">←</span>
+        <header class="header">
+            <button class="btn-back">
+                <svg class="icon" viewBox="0 0 24 24">
+                    <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+                </svg>
             </button>
-            <div class="nav-title">АвтоЗапчасти63</div>
+            <h1 class="app-title">АвтоЗапчасти63</h1>
             <div class="nav-actions">
                 <button id="search-btn" class="nav-btn" data-screen="search">
-                    <span class="nav-icon">🔍</span>
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                    </svg>
                 </button>
                 <button id="cart-btn" class="nav-btn" data-screen="cart">
-                    <span class="nav-icon">🛒</span>
-                    <span class="badge" id="cart-badge">0</span>
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+                    </svg>
+                    <span id="cart-badge" class="badge">0</span>
                 </button>
                 <button id="profile-btn" class="nav-btn" data-screen="profile">
-                    <span class="nav-icon">👤</span>
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+                    </svg>
                 </button>
             </div>
-        </nav>
+        </header>
 
         <!-- Основной контент -->
         <main class="main-content">
             <!-- Домашний экран -->
-            <section id="home-screen" class="screen">
-                <div class="welcome-banner">
-                    <h1>Автозапчасти<br>с доставкой</h1>
+            <div id="home-screen" class="screen">
+                <section class="hero-section">
+                    <h2>Автозапчасти с доставкой</h2>
                     <p>Оригинальные запчасти для вашего автомобиля</p>
-                </div>
+                    <div class="stats">
+                        <div class="stat-item">
+                            <span class="stat-value">5+</span>
+                            <span class="stat-label">Лет опыта</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">1000+</span>
+                            <span class="stat-label">Запчастей</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">24/7</span>
+                            <span class="stat-label">Поддержка</span>
+                        </div>
+                    </div>
+                </section>
 
-                <!-- Статистика -->
-                <div class="quick-stats">
-                    <div class="stat-item">
-                        <span class="stat-value">5+</span>
-                        <span class="stat-label">Лет опыта</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-value">1000+</span>
-                        <span class="stat-label">Запчастей</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-value">24/7</span>
-                        <span class="stat-label">Поддержка</span>
-                    </div>
-                </div>
-
-                <!-- Категории -->
-                <div class="categories-section">
+                <section class="categories-section">
                     <h2>Категории</h2>
-                    <div class="categories-grid">
-                        <!-- Категории будут добавлены через JavaScript -->
-                    </div>
-                </div>
+                    <div class="categories"></div>
+                </section>
 
-                <!-- Популярные товары -->
-                <div class="featured-section">
+                <section class="products-section">
                     <h2>Популярные товары</h2>
-                    <div class="products-grid">
-                        <!-- Товары будут добавлены через JavaScript -->
-                    </div>
+                    <div class="products"></div>
+                </section>
+            </div>
+
+            <!-- Экран корзины -->
+            <div id="cart-screen" class="screen">
+                <div class="cart-container">
+                    <h2>Корзина</h2>
+                    <div class="cart-items"></div>
                 </div>
-            </section>
+            </div>
 
-            <!-- Остальные экраны -->
-            <section id="category-screen" class="screen">
-                <div class="category-header"></div>
-                <div class="products-grid"></div>
-            </section>
-
-            <section id="product-screen" class="screen">
-                <div class="product-detail"></div>
-            </section>
-
-            <section id="cart-screen" class="screen">
-                <div class="cart-items"></div>
-                <div class="cart-summary"></div>
-            </section>
-
-            <section id="profile-screen" class="screen">
-                <div class="profile-info"></div>
-                <div class="profile-actions"></div>
-            </section>
-
-            <section id="orders-screen" class="screen">
-                <div class="orders-list"></div>
-            </section>
-
-            <section id="search-screen" class="screen">
-                <div class="search-container">
-                    <input type="text" class="search-input" placeholder="Поиск запчастей...">
-                    <div class="search-results"></div>
+            <!-- Экран профиля -->
+            <div id="profile-screen" class="screen">
+                <div class="profile-container">
+                    <div class="profile-info"></div>
                 </div>
-            </section>
+            </div>
 
-            <section id="checkout-screen" class="screen">
-                <div class="checkout-container">
-                    <!-- Форма оформления заказа будет добавлена через JavaScript -->
-                </div>
-            </section>
+            <!-- Экран оформления заказа -->
+            <div id="checkout-screen" class="screen">
+                <div class="checkout-container"></div>
+            </div>
         </main>
     </div>
 
-    <!-- Скрипты -->
     <script>
-        // Последовательная загрузка скриптов
-        function loadScript(src) {
+        // Глобальная функция логирования
+        window.logInitialization = function(message, data = null) {
+            console.log(`[${new Date().toISOString()}] ${message}`, data || '');
+        };
+
+        // Функция для последовательной загрузки скриптов
+        async function loadScript(src) {
             return new Promise((resolve, reject) => {
                 const script = document.createElement('script');
                 script.src = src;
-                script.onload = () => {
-                    window.debugLog(`Загружен скрипт: ${src}`);
-                    resolve();
-                };
-                script.onerror = () => {
-                    window.debugLog(`Ошибка загрузки скрипта: ${src}`);
-                    reject(new Error(`Ошибка загрузки скрипта: ${src}`));
-                };
+                script.onload = resolve;
+                script.onerror = reject;
                 document.body.appendChild(script);
             });
         }
 
         // Инициализация приложения
-        async function initApp() {
+        document.addEventListener('DOMContentLoaded', async () => {
             try {
-                window.debugLog('Начало инициализации приложения');
-
-                // Проверяем Telegram WebApp
-                if (!window.Telegram?.WebApp) {
-                    throw new Error('Telegram WebApp не доступен');
-                }
+                window.logInitialization('Начало инициализации приложения');
 
                 // Инициализируем WebApp
                 window.Telegram.WebApp.ready();
-                window.debugLog('Telegram WebApp инициализирован');
+                window.logInitialization('Telegram WebApp инициализирован');
                 
                 // Загружаем скрипты последовательно
                 await loadScript('data.js');
@@ -210,54 +143,19 @@
                 await loadScript('Checkout.js');
                 await loadScript('app.js');
 
-                window.debugLog('Все скрипты загружены');
-
-                // Показываем приложение
-                const loadingScreen = document.getElementById('loading-screen');
-                const app = document.getElementById('app');
-                
-                if (loadingScreen && app) {
-                    // Показываем приложение
-                    app.style.display = 'block';
-                    app.style.opacity = '0';
-                    
-                    // Даем время на инициализацию
-                    setTimeout(() => {
-                        // Плавно скрываем загрузку
-                        loadingScreen.style.opacity = '0';
-                        loadingScreen.style.transition = 'opacity 0.5s ease';
-                        
-                        // Плавно показываем приложение
-                        app.style.opacity = '1';
-                        app.style.transition = 'opacity 0.5s ease';
-                        
-                        // Удаляем экран загрузки после анимации
-                        setTimeout(() => {
-                            loadingScreen.remove();
-                            window.debugLog('Приложение запущено');
-                        }, 500);
-                    }, 1000);
-                }
+                window.logInitialization('Все скрипты загружены');
 
             } catch (error) {
-                window.debugLog(`Ошибка инициализации: ${error.message}`);
-                const loadingScreen = document.getElementById('loading-screen');
-                if (loadingScreen) {
-                    loadingScreen.innerHTML = `
-                        <div class="error-message">
-                            <h2>Ошибка</h2>
-                            <p>${error.message}</p>
-                            <button onclick="location.reload()" class="btn btn-accent">
-                                Попробовать снова
-                            </button>
-                        </div>
-                    `;
-                }
+                console.error('Ошибка при инициализации:', error);
+                document.body.innerHTML = `
+                    <div class="error-screen">
+                        <h1>Ошибка</h1>
+                        <p>Произошла ошибка при загрузке приложения.</p>
+                        <p>Пожалуйста, попробуйте позже.</p>
+                    </div>
+                `;
             }
-        }
-
-        // Запускаем инициализацию после загрузки DOM
-        document.addEventListener('DOMContentLoaded', initApp);
+        });
     </script>
 </body>
 </html>
