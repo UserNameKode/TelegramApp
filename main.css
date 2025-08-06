@@ -1295,4 +1295,35 @@ body {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+/* ===== СООБЩЕНИЯ ОБ ОШИБКАХ ===== */
+.error-message {
+    text-align: center;
+    padding: var(--spacing-xl);
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: var(--border-radius);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    animation: fadeIn 0.5s ease-out;
+}
+
+.error-message h2 {
+    color: #e74c3c;
+    margin-bottom: var(--spacing-md);
+    font-size: var(--font-size-2xl);
+}
+
+.error-message p {
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-sm);
+}
+
+.error-details {
+    font-family: monospace;
+    background: rgba(0, 0, 0, 0.1);
+    padding: var(--spacing-sm);
+    border-radius: var(--border-radius-small);
+    margin-top: var(--spacing-md);
+    font-size: var(--font-size-sm);
 } 
