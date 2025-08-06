@@ -1,98 +1,73 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>АвтоЗапчасти63</title>
-  <style>
-    body {margin:0; font-family:sans-serif; background:#0F172A; color:#F8FAFC;}    
-    /* Лоадер */
-    #loader {position:fixed;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center; background:#0F172A;z-index:1000;}
-    .spinner {width:64px;height:64px;margin-bottom:16px; animation:rotate 1s linear infinite;}
-    @keyframes rotate{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
-    .progress-bar{width:80%;height:8px;background:#334155;border-radius:4px;overflow:hidden;}    
-    .progress-fill{width:0;height:100%;background:#3B82F6;transition:width .3s ease;}
-    /* Общий контейнер */
-    #app{display:none;}
-    nav{background:#1E293B;padding:12px;display:flex;align-items:center;gap:12px;}
-    nav button{background:#3B82F6;border:none;color:#fff;padding:8px 12px;border-radius:4px;cursor:pointer;}
-    nav .brand{flex:1;font-weight:600;font-size:18px;}
-    main{padding:16px;}
-    .screen{display:none;}
-    .screen.active{display:block;}
-    /* Главный экран */
-    .categories, .products{display:flex;gap:12px;overflow-x:auto;padding:8px 0;}
-    .card{background:#1E293B;border-radius:8px;padding:12px;min-width:120px;cursor:pointer;}
-    .card img{width:100%;border-radius:4px;}    
-    .card h4{font-size:14px;margin:8px 0 4px;}
-    .card p{font-size:12px;color:#94A3B8;margin:0;}
-    .btn-add{margin-top:8px;background:#10B981;border:none;color:#fff;padding:6px 10px;border-radius:4px;cursor:pointer;}
-    /* Корзина */
-    .cart-item{display:flex;align-items:center;gap:8px;padding:8px;background:#334155;border-radius:6px;margin-bottom:8px;}
-    .cart-item img{width:40px;border-radius:4px;}
-    .cart-total{font-weight:600;text-align:right;margin-top:12px;}
-    /* Профиль */
-    .profile-field{margin-bottom:12px;}
-    .profile-field label{display:block;font-size:12px;color:#94A3B8;}
-    .profile-field input{width:100%;padding:8px;border:none;border-radius:4px;background:#334155;color:#F8FAFC;}
-  </style>
+  <link rel="stylesheet" href="main.css" />
 </head>
 <body>
-  <div id="loader">
-    <svg class="spinner" viewBox="0 0 50 50"><circle cx="25" cy="25" r="20" stroke="#3B82F6" stroke-width="5" fill="none"/></svg>
-    <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+  <!-- Loader Screen -->
+  <div id="loading-screen">
+    <svg class="spinner" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="40" stroke="#3B82F6" stroke-width="8" fill="none"/>
+    </svg>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill"></div>
+    </div>
   </div>
-  <div id="app">
-    <nav>
-      <button onclick="show('home')">Главная</button>
-      <div class="brand">АвтоЗапчасти63</div>
-      <button onclick="show('cart')">Корзина (<span id="badge">0</span>)</button>
-      <button onclick="show('profile')">Профиль</button>
+
+  <!-- App Container -->
+  <div id="app" style="display:none;">
+    <!-- Navigation -->
+    <nav class="nav-bar">
+      <button class="btn-back" data-screen="home">←</button>
+      <h1 class="app-title">АвтоЗапчасти63</h1>
+      <div class="nav-actions">
+        <button data-screen="home">🏠</button>
+        <button data-screen="cart">🛒 <span id="cart-badge">0</span></button>
+        <button data-screen="profile">👤</button>
+      </div>
     </nav>
+
+    <!-- Screens -->
     <main>
-      <section id="home" class="screen active">
-        <h3>Категории</h3>
-        <div class="categories" id="cats"></div>
-        <h3>Товары</h3>
-        <div class="products" id="prods"></div>
-      </section>
-      <section id="cart" class="screen">
-        <h3>Корзина</h3>
-        <div id="cart-items"></div>
-        <div class="cart-total">Итого: <span id="total">0</span> ₽</div>
-      </section>
-      <section id="profile" class="screen">
-        <h3>Профиль</h3>
-        <div class="profile-field"><label>Имя</label><input id="pf-name" placeholder="Ваше имя"></div>
-        <div class="profile-field"><label>Телефон</label><input id="pf-phone" placeholder="+7..."></div>
-        <button onclick="saveProfile()" class="btn-add">Сохранить</button>
-      </section>
+      <section id="home-screen" class="screen active"></section>
+      <section id="product-screen" class="screen"></section>
+      <section id="cart-screen" class="screen"></section>
+      <section id="checkout-screen" class="screen"></section>
+      <section id="profile-screen" class="screen"></section>
     </main>
   </div>
+
   <script>
-    const data={
-      cats:['Двигатель','Тормоза','Электрика'],
-      prods:[
-        {id:1,cat:0,name:'Фильтр масляный',price:850,img:'https://i.ibb.co/VxKrY8M/mann-filter.jpg'},
-        {id:2,cat:1,name:'Колодки тормозные',price:3200,img:'https://i.ibb.co/0MKXh4k/brembo-pads.jpg'}
-      ],
-      cart:[]
-    };
-    function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');updateCart();}
-    function updateCart(){document.getElementById('badge').textContent=data.cart.reduce((a,b)=>a+b.qty,0);const el=document.getElementById('cart-items');el.innerHTML='';data.cart.forEach(it=>{el.innerHTML+=`<div class="cart-item"><img src="${it.img}"><div>${it.name} ×${it.qty}</div><div>${it.price*it.qty}₽</div></div>`});document.getElementById('total').textContent=data.cart.reduce((a,b)=>a+b.qty*b.price,0);}    
-    function addToCart(id){const p=data.prods.find(x=>x.id===id);let it=data.cart.find(x=>x.id===id);it?it.qty++:data.cart.push({id:id,name:p.name,price:p.price,qty:1,img:p.img});updateCart();}
-    function saveProfile(){alert('Профиль сохранён');}
-    // Загрузка
-    const scripts=['initData'];let loaded=0, total=1;
-    function step(){loaded++;document.getElementById('progress').style.width=Math.round(loaded/total*100)+'%';if(loaded>=total){setTimeout(()=>{document.getElementById('loader').style.display='none';document.getElementById('app').style.display='';renderHome();},300);}}
-    function loadScript(name){return new Promise(r=>{setTimeout(()=>{r();step();},500)});}
-    function renderHome(){const c=document.getElementById('cats'),p=document.getElementById('prods');c.innerHTML='';data.cats.forEach((ct,i)=>c.innerHTML+=`<div class="card" onclick="filter(${i})"><h4>${ct}</h4></div>`);
-      function showAll(){renderProds(-1);}      
-      window.filter=id=>renderProds(id);
-      window.renderProds=id=>{p.innerHTML='';data.prods.filter(x=>id<0||x.cat===id).forEach(x=>p.innerHTML+=`<div class="card"><img src="${x.img}"><h4>${x.name}</h4><p>${x.price} ₽</p><button class="btn-add" onclick="addToCart(${x.id})">В корзину</button></div>`)};
-      renderProds(-1);
+    function loadScript(src) {
+      return new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = src;
+        s.onload = resolve;
+        s.onerror = reject;
+        document.body.appendChild(s);
+      });
     }
-    document.addEventListener('DOMContentLoaded',async()=>{await loadScript('initData');});
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const scripts = ['data.js','Cart.js','Profile.js','Checkout.js','app.js'];
+      const total = scripts.length;
+      let loaded = 0;
+      for (const src of scripts) {
+        await loadScript(src);
+        loaded++;
+        document.getElementById('progress-fill').style.width = (loaded/total*100) + '%';
+      }
+      // Hide loader and show app
+      document.getElementById('loading-screen').style.display = 'none';
+      document.getElementById('app').style.display = '';
+      // Initialize app
+      if (window.app && typeof window.app.init === 'function') {
+        window.app.init();
+      }
+    });
   </script>
 </body>
 </html>
