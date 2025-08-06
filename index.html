@@ -247,46 +247,75 @@
     </div>
 
     <!-- Scripts -->
-    <script src="data.js" defer></script>
-    <script src="optimization.js" defer></script>
-    <script src="telegram-api.js" defer></script>
-    <script src="components.js" defer></script>
-    <script src="app.js" defer></script>
     <script>
-        // Инициализация приложения после загрузки всех скриптов
-        window.addEventListener('DOMContentLoaded', function() {
+        // Глобальная функция для логирования
+        window.logInitialization = function(message) {
+            console.log(`[${new Date().toISOString()}] ${message}`);
+        };
+        
+        window.logInitialization('Начало загрузки скриптов');
+    </script>
+    
+    <script src="data.js"></script>
+    <script>window.logInitialization('data.js загружен');</script>
+    
+    <script src="optimization.js"></script>
+    <script>window.logInitialization('optimization.js загружен');</script>
+    
+    <script src="telegram-api.js"></script>
+    <script>window.logInitialization('telegram-api.js загружен');</script>
+    
+    <script src="components.js"></script>
+    <script>window.logInitialization('components.js загружен');</script>
+    
+    <script src="app.js"></script>
+    <script>window.logInitialization('app.js загружен');</script>
+    
+    <script>
+        // Инициализация приложения
+        window.addEventListener('load', function() {
+            window.logInitialization('Страница полностью загружена');
+            
             // Показываем экран загрузки
             const loadingScreen = document.getElementById('loading-screen');
             const app = document.getElementById('app');
+            
             if (loadingScreen && app) {
                 loadingScreen.style.display = 'flex';
                 app.style.display = 'none';
+                window.logInitialization('Экран загрузки показан');
             }
             
-            // Ждем загрузки всех модулей
-            const checkModules = setInterval(function() {
-                if (window.DataService && window.telegramAPI && window.uiComponents && window.performanceOptimizer) {
-                    clearInterval(checkModules);
-                    console.log('Все модули загружены, запускаем приложение...');
-                    window.app = new AutoPartsApp();
-                }
-            }, 100);
+            // Проверяем доступность модулей
+            window.logInitialization(`DataService доступен: ${!!window.DataService}`);
+            window.logInitialization(`telegramAPI доступен: ${!!window.telegramAPI}`);
+            window.logInitialization(`uiComponents доступен: ${!!window.uiComponents}`);
+            window.logInitialization(`performanceOptimizer доступен: ${!!window.performanceOptimizer}`);
             
-            // Таймаут на случай, если что-то пойдет не так
-            setTimeout(function() {
-                if (!window.app) {
-                    console.error('Не удалось загрузить все модули');
-                    if (loadingScreen) {
-                        loadingScreen.innerHTML = `
-                            <div class="error-message">
-                                <h2>Ошибка загрузки</h2>
-                                <p>Не удалось загрузить все необходимые компоненты</p>
-                                <p class="error-details">Попробуйте обновить страницу</p>
-                            </div>
-                        `;
-                    }
+            // Запускаем приложение
+            if (window.DataService && window.telegramAPI && window.uiComponents && window.performanceOptimizer) {
+                window.logInitialization('Все модули доступны, создаем приложение');
+                window.app = new AutoPartsApp();
+            } else {
+                window.logInitialization('ОШИБКА: Не все модули доступны');
+                if (loadingScreen) {
+                    loadingScreen.innerHTML = `
+                        <div class="error-message">
+                            <h2>Ошибка загрузки</h2>
+                            <p>Не удалось загрузить все необходимые компоненты</p>
+                            <p class="error-details">
+                                DataService: ${!!window.DataService}<br>
+                                telegramAPI: ${!!window.telegramAPI}<br>
+                                uiComponents: ${!!window.uiComponents}<br>
+                                performanceOptimizer: ${!!window.performanceOptimizer}
+                            </p>
+                            <button onclick="location.reload()" class="btn-reload">
+                                Обновить страницу
+                            </button>
+                        </div>
+                    `;
                 }
-            }, 5000);
+            }
         });
     </script>
 </body>
