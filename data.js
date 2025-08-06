@@ -199,6 +199,84 @@ const DataService = {
             rating: 4.6,
             reviews: 142
         },
+        // Трансмиссия BMW
+        {
+            id: 'p7',
+            title: 'АКПП BMW 8HP50 Фильтр',
+            price: 2400,
+            image: 'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=300',
+            categoryId: 'c3',
+            brandId: 'bmw',
+            article: 'BMW24117624192',
+            manufacturer: 'BMW Original',
+            description: 'Оригинальный фильтр автоматической коробки передач BMW 8HP50.',
+            compatibility: ['BMW X5 F15', 'BMW X6 F16', 'BMW 5 Series F10'],
+            inStock: true,
+            rating: 4.7,
+            reviews: 178
+        },
+        {
+            id: 'p8',
+            title: 'Сцепление BMW Комплект',
+            price: 18900,
+            image: 'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=300',
+            categoryId: 'c3',
+            brandId: 'bmw',
+            article: 'BMW21207568464',
+            manufacturer: 'LuK',
+            description: 'Полный комплект сцепления для BMW с механической коробкой передач.',
+            compatibility: ['BMW 3 Series E46', 'BMW Z4 E85', 'BMW X3 E83'],
+            inStock: true,
+            rating: 4.8,
+            reviews: 234
+        },
+        // Охлаждение BMW
+        {
+            id: 'p9',
+            title: 'Термостат BMW 83°C',
+            price: 1890,
+            image: 'https://images.unsplash.com/photo-1625047509168-a7026f36de04?w=300',
+            categoryId: 'c5',
+            brandId: 'bmw',
+            article: 'BMW11531436823',
+            manufacturer: 'Wahler',
+            description: 'Термостат системы охлаждения BMW с температурой открытия 83°C.',
+            compatibility: ['BMW 1 Series F20', 'BMW 2 Series F22', 'BMW MINI Cooper'],
+            inStock: true,
+            rating: 4.4,
+            reviews: 167
+        },
+        {
+            id: 'p10',
+            title: 'Помпа водяная BMW',
+            price: 7800,
+            image: 'https://images.unsplash.com/photo-1625047509168-a7026f36de04?w=300',
+            categoryId: 'c5',
+            brandId: 'bmw',
+            article: 'BMW11517586925',
+            manufacturer: 'BMW Original',
+            description: 'Водяной насос (помпа) системы охлаждения BMW.',
+            compatibility: ['BMW X1 F48', 'BMW 2 Series F45', 'BMW MINI Countryman'],
+            inStock: true,
+            rating: 4.6,
+            reviews: 145
+        },
+        // Дополнительные товары BMW для подвески
+        {
+            id: 'p11',
+            title: 'Рычаг подвески BMW передний левый',
+            price: 4200,
+            image: 'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=300',
+            categoryId: 'c4',
+            brandId: 'bmw',
+            article: 'BMW31126851859',
+            manufacturer: 'BMW Original',
+            description: 'Передний левый рычаг подвески BMW с шаровой опорой.',
+            compatibility: ['BMW 5 Series F10', 'BMW 6 Series F12', 'BMW 7 Series F01'],
+            inStock: true,
+            rating: 4.5,
+            reviews: 198
+        },
         {
             id: 'shock-absorber-hyundai',
             brandId: 'hyundai',
@@ -414,13 +492,35 @@ const DataService = {
     },
 
     searchProducts(query) {
-        const lowercaseQuery = query.toLowerCase();
-        return this.products.filter(product => 
-            product.title.toLowerCase().includes(lowercaseQuery) ||
-            product.description.toLowerCase().includes(lowercaseQuery) ||
-            product.article.toLowerCase().includes(lowercaseQuery) ||
-            product.manufacturer.toLowerCase().includes(lowercaseQuery)
-        );
+        const searchTerm = query.toLowerCase();
+        return this.products.filter(product => {
+            // Поиск по названию
+            if (product.title && product.title.toLowerCase().includes(searchTerm)) return true;
+            
+            // Поиск по артикулу
+            if (product.article && product.article.toLowerCase().includes(searchTerm)) return true;
+            
+            // Поиск по описанию
+            if (product.description && product.description.toLowerCase().includes(searchTerm)) return true;
+            
+            // Поиск по производителю
+            if (product.manufacturer && product.manufacturer.toLowerCase().includes(searchTerm)) return true;
+            
+            // Поиск по бренду
+            const brand = this.getCarBrand(product.brandId);
+            if (brand && brand.name && brand.name.toLowerCase().includes(searchTerm)) return true;
+            
+            // Поиск по категории
+            const category = this.getCategory(product.categoryId);
+            if (category && category.title && category.title.toLowerCase().includes(searchTerm)) return true;
+            
+            // Поиск по совместимости
+            if (product.compatibility && product.compatibility.some(car => 
+                car.toLowerCase().includes(searchTerm)
+            )) return true;
+            
+            return false;
+        });
     }
 };
 

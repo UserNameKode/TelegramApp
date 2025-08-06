@@ -89,6 +89,12 @@ class AutoPartsApp {
         const homeScreen = document.getElementById('home-screen');
         if (!homeScreen) return;
 
+        // Скрываем кнопку назад на главной странице
+        const backBtn = document.getElementById('nav-back-btn');
+        if (backBtn) {
+            backBtn.style.display = 'none';
+        }
+
         const userLevel = DataService.getUserLevel();
 
         homeScreen.innerHTML = `
@@ -222,14 +228,16 @@ class AutoPartsApp {
 
     performSearch() {
         const searchInput = document.getElementById('search-input');
-        const query = searchInput.value.trim().toLowerCase();
+        if (!searchInput) return;
         
-        if (query.length < 2) {
-            this.renderHome(); // Возвращаем к исходному состоянию
-            return;
+        const query = searchInput.value.trim();
+        
+        if (query.length < 1) {
+            return; // Не ищем пустые запросы
         }
 
         const searchResults = DataService.searchProducts(query);
+        console.log('Поиск:', query, 'Найдено:', searchResults.length);
         this.renderSearchResults(searchResults, query);
     }
 
@@ -368,13 +376,22 @@ class AutoPartsApp {
         const searchBtn = document.getElementById('search-btn');
 
         if (searchInput) {
-            searchInput.addEventListener('input', () => {
+            searchInput.addEventListener('input', (e) => {
+                console.log('Введен текст:', e.target.value);
                 this.performSearch();
+            });
+            
+            searchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    this.performSearch();
+                }
             });
         }
 
         if (searchBtn) {
-            searchBtn.addEventListener('click', () => {
+            searchBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log('Нажата кнопка поиска');
                 this.performSearch();
             });
         }
