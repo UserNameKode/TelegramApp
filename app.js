@@ -1,124 +1,100 @@
 // Основной класс приложения
 class AutoPartsApp {
     constructor() {
-        this.init();
+        // Сразу запускаем инициализацию
+        this.init().catch(error => {
+            console.error('Ошибка при инициализации:', error);
+            this.handleError(error);
+        });
     }
 
     async init() {
         try {
-            console.log('Инициализация приложения...');
-            
-            // Показываем экран загрузки
-            this.setupLoadingScreen();
+            console.log('Начало инициализации приложения');
 
-            // Инициализируем Telegram WebApp
-            if (!window.Telegram || !window.Telegram.WebApp) {
+            // Проверяем доступность Telegram WebApp
+            if (!window.Telegram?.WebApp) {
                 throw new Error('Telegram WebApp не доступен');
             }
 
-            // Инициализируем WebApp
-            window.Telegram.WebApp.ready();
-            
-            // Инициализируем модули
+            // Показываем экран загрузки
+            this.showLoadingScreen();
+
+            // Инициализируем все модули
             await this.initializeModules();
 
-            // Завершаем инициализацию
-            this.postLoadInitialization();
+            // Запускаем приложение
+            this.startApp();
 
         } catch (error) {
-            console.error('Ошибка инициализации приложения:', error);
-            this.handleError(error);
+            console.error('Ошибка инициализации:', error);
+            throw error;
         }
     }
 
-    setupLoadingScreen() {
-        console.log('Настройка экрана загрузки...');
+    showLoadingScreen() {
+        console.log('Показываем экран загрузки');
         const loadingScreen = document.getElementById('loading-screen');
         const app = document.getElementById('app');
         
         if (loadingScreen && app) {
             loadingScreen.style.display = 'flex';
+            loadingScreen.style.opacity = '1';
             app.style.display = 'none';
         }
     }
 
     async initializeModules() {
-        console.log('Инициализация модулей...');
-        try {
-            // Инициализируем все модули последовательно
-            if (window.DataService) {
-                console.log('Инициализация DataService...');
-                await window.DataService.init();
-            }
-
-            console.log('Инициализация UI компонентов...');
-            window.uiComponents = new window.UIComponents();
-
-            return Promise.resolve();
-        } catch (error) {
-            console.error('Ошибка инициализации модулей:', error);
-            throw error;
-        }
+        console.log('Инициализация модулей');
+        
+        // Инициализируем компоненты
+        window.uiComponents = new window.UIComponents();
+        
+        // Даем время на загрузку
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        return Promise.resolve();
     }
 
-    postLoadInitialization() {
-        console.log('Завершение инициализации...');
-        try {
-            // Запускаем таймер для имитации загрузки
-            setTimeout(() => {
-                this.hideLoadingScreen();
-                
-                // Показываем главный экран
-                if (window.uiComponents) {
-                    window.uiComponents.showHome();
-                }
-            }, 2000);
-
-        } catch (error) {
-            console.error('Ошибка пост-инициализации:', error);
-            throw error;
-        }
-    }
-
-    hideLoadingScreen() {
-        console.log('Скрытие экрана загрузки...');
+    startApp() {
+        console.log('Запуск приложения');
+        
         const loadingScreen = document.getElementById('loading-screen');
         const app = document.getElementById('app');
         
-        if (loadingScreen && app) {
-            // Показываем приложение
-            app.style.display = 'block';
-            app.style.opacity = '0';
-            
-            // Плавно скрываем экран загрузки и показываем приложение
-            requestAnimationFrame(() => {
-                loadingScreen.style.opacity = '0';
-                loadingScreen.style.transition = 'opacity 0.5s ease';
-                
-                app.style.opacity = '1';
-                app.style.transition = 'opacity 0.5s ease';
-                
-                // Удаляем экран загрузки после завершения анимации
-                setTimeout(() => {
-                    loadingScreen.remove();
-                    console.log('Приложение загружено');
-                }, 500);
-            });
+        if (!loadingScreen || !app) {
+            throw new Error('Не найдены необходимые элементы DOM');
         }
+
+        // Показываем приложение
+        app.style.display = 'block';
+        app.style.opacity = '0';
+
+        // Запускаем анимацию перехода
+        requestAnimationFrame(() => {
+            // Скрываем загрузку
+            loadingScreen.style.opacity = '0';
+            
+            // Показываем приложение
+            app.style.opacity = '1';
+            
+            // После завершения анимации
+            setTimeout(() => {
+                loadingScreen.remove();
+                
+                // Показываем домашний экран
+                if (window.uiComponents) {
+                    window.uiComponents.showHome();
+                }
+                
+                console.log('Приложение запущено');
+            }, 500);
+        });
     }
 
     handleError(error) {
-        console.error('Произошла ошибка:', error);
+        console.error('Ошибка в приложении:', error);
 
-        // Показываем уведомление об ошибке
-        if (window.uiComponents) {
-            window.uiComponents.showNotification(
-                'Произошла ошибка при загрузке приложения', 
-                'error'
-            );
-        }
-
-        // Показываем сообщение об ошибке на экране загрузки
         const loadingScreen = document.getElementById('loading-screen');
         if (loadingScreen) {
             loadingScreen.innerHTML = `
@@ -134,8 +110,8 @@ class AutoPartsApp {
     }
 }
 
-// Создаем экземпляр приложения после полной загрузки DOM
+// Запускаем приложение после загрузки DOM
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM загружен, запуск приложения...');
+    console.log('DOM загружен, создаем приложение');
     window.app = new AutoPartsApp();
 });

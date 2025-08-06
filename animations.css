@@ -11,6 +11,8 @@
     align-items: center;
     justify-content: center;
     z-index: 1000;
+    opacity: 1;
+    transition: opacity 0.5s ease;
 }
 
 /* Логотип и анимация */
@@ -23,22 +25,26 @@
 }
 
 /* SVG шестерня */
-.gears-svg {
-    width: 120px;
-    height: 120px;
-    margin-bottom: 1rem;
+.gear-svg {
+    animation: rotate 3s linear infinite;
+    filter: drop-shadow(0 0 10px rgba(255, 107, 53, 0.5));
 }
 
-.gear-group {
-    transform-origin: center;
-    animation: spin 4s linear infinite;
+.gear-base {
+    filter: url(#shadow);
 }
 
-.main-gear {
-    filter: drop-shadow(0 0 8px rgba(255, 107, 53, 0.6));
+.gear-tooth {
+    fill: #FF6B35;
 }
 
-@keyframes spin {
+.gear-details {
+    stroke: #1E3D59;
+    stroke-width: 2;
+    stroke-linecap: round;
+}
+
+@keyframes rotate {
     from {
         transform: rotate(0deg);
     }

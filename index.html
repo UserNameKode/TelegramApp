@@ -20,19 +20,63 @@
 
     <!-- Telegram Web App -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <!-- Инициализация приложения -->
+    <script>
+        window.addEventListener('DOMContentLoaded', function() {
+            // Проверяем доступность Telegram WebApp
+            if (!window.Telegram?.WebApp) {
+                console.error('Telegram WebApp не доступен');
+                return;
+            }
+
+            // Инициализируем WebApp
+            window.Telegram.WebApp.ready();
+            console.log('Telegram WebApp инициализирован');
+        });
+    </script>
 </head>
 <body>
     <!-- Экран загрузки -->
     <div id="loading-screen" class="loading-screen">
         <div class="loading-logo">
-            <svg class="gears-svg" width="120" height="120" viewBox="0 0 120 120">
-                <g class="gear-group">
-                    <!-- Основная шестерня -->
-                    <path class="gear main-gear" d="M60 20a5 5 0 0 1 5 5v5a25 25 0 0 1 14.7 6.1l3.5-3.5a5 5 0 1 1 7.1 7.1l-3.5 3.5A25 25 0 0 1 93 58.9h5a5 5 0 0 1 0 10h-5a25 25 0 0 1-6.1 14.7l3.5 3.5a5 5 0 1 1-7.1 7.1l-3.5-3.5A25 25 0 0 1 65 97v5a5 5 0 0 1-10 0v-5a25 25 0 0 1-14.7-6.1l-3.5 3.5a5 5 0 1 1-7.1-7.1l3.5-3.5A25 25 0 0 1 27 68.9h-5a5 5 0 0 1 0-10h5a25 25 0 0 1 6.1-14.7l-3.5-3.5a5 5 0 1 1 7.1-7.1l3.5 3.5A25 25 0 0 1 55 30v-5a5 5 0 0 1 5-5z" fill="#FF6B35"/>
-                    <!-- Центр шестерни -->
-                    <circle cx="60" cy="60" r="8" fill="#FFFFFF"/>
+            <!-- Реалистичная автомобильная шестерня -->
+            <svg class="gear-svg" viewBox="0 0 100 100" width="150" height="150">
+                <!-- Внешний круг -->
+                <circle class="gear-base" cx="50" cy="50" r="45" fill="#FF6B35"/>
+                
+                <!-- Зубцы шестерни -->
+                <g class="gear-teeth">
+                    <!-- 12 зубцов -->
+                    <path d="M50 5 L55 0 L60 5 L55 10 Z" class="gear-tooth"/>
+                    <path d="M71 11 L78 8 L80 14 L73 17 Z" class="gear-tooth"/>
+                    <path d="M89 29 L95 29 L93 35 L87 33 Z" class="gear-tooth"/>
+                    <path d="M95 50 L100 52 L95 57 L90 53 Z" class="gear-tooth"/>
+                    <path d="M89 71 L95 74 L90 79 L85 75 Z" class="gear-tooth"/>
+                    <path d="M71 89 L75 95 L69 97 L66 91 Z" class="gear-tooth"/>
+                    <path d="M50 95 L53 100 L47 100 L45 95 Z" class="gear-tooth"/>
+                    <path d="M29 89 L26 95 L20 93 L24 87 Z" class="gear-tooth"/>
+                    <path d="M11 71 L8 75 L5 71 L9 67 Z" class="gear-tooth"/>
+                    <path d="M5 50 L0 53 L0 47 L5 45 Z" class="gear-tooth"/>
+                    <path d="M11 29 L5 26 L7 20 L13 24 Z" class="gear-tooth"/>
+                    <path d="M29 11 L25 5 L31 3 L34 9 Z" class="gear-tooth"/>
+                </g>
+                
+                <!-- Внутренние детали -->
+                <circle cx="50" cy="50" r="35" fill="#1E3D59"/>
+                <circle cx="50" cy="50" r="25" fill="#FF6B35"/>
+                <circle cx="50" cy="50" r="15" fill="#1E3D59"/>
+                <circle cx="50" cy="50" r="8" fill="#FFFFFF"/>
+                
+                <!-- Декоративные линии -->
+                <g class="gear-details" stroke="#1E3D59" stroke-width="2">
+                    <line x1="50" y1="15" x2="50" y2="35"/>
+                    <line x1="65" y1="50" x2="85" y2="50"/>
+                    <line x1="50" y1="65" x2="50" y2="85"/>
+                    <line x1="15" y1="50" x2="35" y2="50"/>
                 </g>
             </svg>
+
             <h1 class="brand-title">Auto<span>63</span></h1>
             <div class="loading-progress">
                 <div class="loading-bar"></div>
@@ -41,7 +85,7 @@
     </div>
 
     <!-- Основной контейнер -->
-    <div id="app" class="app-container" style="display: none;">
+    <div id="app" class="app-container">
         <!-- Навигация -->
         <nav class="nav-bar">
             <button class="nav-btn btn-back">
@@ -65,7 +109,7 @@
         <!-- Основной контент -->
         <main class="main-content">
             <!-- Домашний экран -->
-            <section id="home-screen" class="screen active">
+            <section id="home-screen" class="screen">
                 <div class="welcome-banner">
                     <h1>Автозапчасти<br>с доставкой</h1>
                     <p>Оригинальные запчасти для вашего автомобиля</p>
@@ -104,7 +148,36 @@
                 </div>
             </section>
 
-            <!-- Остальные экраны будут добавлены позже -->
+            <!-- Остальные экраны -->
+            <section id="category-screen" class="screen">
+                <div class="category-header"></div>
+                <div class="products-grid"></div>
+            </section>
+
+            <section id="product-screen" class="screen">
+                <div class="product-detail"></div>
+            </section>
+
+            <section id="cart-screen" class="screen">
+                <div class="cart-items"></div>
+                <div class="cart-summary"></div>
+            </section>
+
+            <section id="profile-screen" class="screen">
+                <div class="profile-info"></div>
+                <div class="profile-actions"></div>
+            </section>
+
+            <section id="orders-screen" class="screen">
+                <div class="orders-list"></div>
+            </section>
+
+            <section id="search-screen" class="screen">
+                <div class="search-container">
+                    <input type="text" class="search-input" placeholder="Поиск запчастей...">
+                    <div class="search-results"></div>
+                </div>
+            </section>
         </main>
     </div>
 
