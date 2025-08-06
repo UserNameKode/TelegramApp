@@ -1,70 +1,50 @@
 class AutoPartsApp {
     constructor() {
-        this.init().catch(error => {
-            console.error('Ошибка при инициализации:', error);
-            this.handleError(error);
-        });
+        this.currentScreen = 'home';
+        this.navigationHistory = [];
+        this.init();
     }
 
     async init() {
         try {
-            window.debugLog('Начало инициализации приложения');
-
-            // Проверяем доступность Telegram WebApp
-            if (!window.Telegram?.WebApp) {
-                throw new Error('Telegram WebApp не доступен');
-            }
-
-            // Показываем экран загрузки
-            this.showLoadingScreen();
-
-            // Инициализируем WebApp
-            window.Telegram.WebApp.ready();
-            window.debugLog('Telegram WebApp инициализирован');
-
+            window.logInitialization('AutoPartsApp.init: Начало инициализации');
+            
             // Инициализируем компоненты
-            await this.initializeComponents();
-
-            // Показываем приложение
-            await this.showApp();
-
+            await this.initializeModules();
+            
+            // Настраиваем обработчики событий
+            this.setupEventHandlers();
+            
+            // Показываем начальный экран
+            this.showScreen('home');
+            
+            // Скрываем экран загрузки
+            this.hideLoadingScreen();
+            
+            window.logInitialization('AutoPartsApp.init: Инициализация завершена');
         } catch (error) {
-            console.error('Ошибка инициализации:', error);
-            throw error;
+            console.error('Ошибка при инициализации приложения:', error);
+            this.handleError(error);
         }
     }
 
-    showLoadingScreen() {
-        window.debugLog('Показываем экран загрузки');
-        const loadingScreen = document.getElementById('loading-screen');
-        const app = document.getElementById('app');
+    async initializeModules() {
+        window.logInitialization('AutoPartsApp.initializeModules: Начало инициализации модулей');
         
-        if (loadingScreen && app) {
-            loadingScreen.style.display = 'flex';
-            loadingScreen.style.opacity = '1';
-            app.style.display = 'none';
-        }
+        // Инициализируем навигацию
+        this.setupNavigation();
+        
+        // Отрисовываем категории
+        this.renderCategories();
+        
+        // Отрисовываем товары
+        this.renderProducts();
+        
+        window.logInitialization('AutoPartsApp.initializeModules: Модули инициализированы');
     }
 
-    async initializeComponents() {
-        window.debugLog('Инициализация компонентов');
-        
-        // Создаем экземпляры компонентов
-        window.cart = new Cart();
-        window.profile = new Profile();
-        window.checkout = new Checkout();
-
-        // Инициализируем UI компоненты
-        this.initializeUI();
-
-        // Даем время на загрузку
-        await new Promise(resolve => setTimeout(resolve, 2000));
-    }
-
-    initializeUI() {
-        window.debugLog('Инициализация UI');
-
-        // Настраиваем обработчики событий
+    setupEventHandlers() {
+        // Обработчики навигации
         document.querySelectorAll('[data-screen]').forEach(button => {
             button.addEventListener('click', (e) => {
                 const screen = e.currentTarget.dataset.screen;
@@ -72,99 +52,200 @@ class AutoPartsApp {
             });
         });
 
-        // Кнопка "Назад"
+        // Обработчики добавления в корзину
+        document.querySelectorAll('.btn-add-to-cart').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const productId = e.currentTarget.dataset.productId;
+                const product = window.DataService.getProduct(productId);
+                if (product) {
+                    window.cart.addItem(product);
+                }
+            });
+        });
+
+        // Обработка ошибок
+        window.addEventListener('unhandledrejection', this.handleUnhandledRejection.bind(this));
+    }
+
+    setupNavigation() {
         const backButton = document.querySelector('.btn-back');
         if (backButton) {
-            backButton.addEventListener('click', () => {
-                this.handleBackButton();
-            });
+            backButton.addEventListener('click', () => this.goBack());
         }
     }
 
-    async showApp() {
-        window.debugLog('Показываем приложение');
+    showScreen(screenId) {
+        window.logInitialization(`AutoPartsApp.showScreen: Переключение на экран ${screenId}`);
+        
+        const screens = document.querySelectorAll('.screen');
+        screens.forEach(screen => {
+            screen.style.display = screen.id === `${screenId}-screen` ? 'block' : 'none';
+        });
+
+        // Обновляем историю навигации
+        if (this.currentScreen !== screenId) {
+            this.navigationHistory.push(this.currentScreen);
+            this.currentScreen = screenId;
+        }
+
+        // Обновляем видимость кнопки "Назад"
+        const backButton = document.querySelector('.btn-back');
+        if (backButton) {
+            backButton.style.display = this.navigationHistory.length > 0 ? 'block' : 'none';
+        }
+
+        // Обновляем контент если нужно
+        if (screenId === 'home') {
+            this.renderProducts();
+        }
+    }
+
+    goBack() {
+        if (this.navigationHistory.length > 0) {
+            const previousScreen = this.navigationHistory.pop();
+            this.currentScreen = previousScreen;
+            this.showScreen(previousScreen);
+        }
+    }
+
+    renderCategories() {
+        const categoriesContainer = document.querySelector('.categories');
+        if (!categoriesContainer) return;
+
+        const categories = window.DataService.getCategories();
+        categoriesContainer.innerHTML = categories.map(category => `
+            <div class="category-card" data-category="${category.id}">
+                <span class="category-icon">${category.icon}</span>
+                <h3>${category.title}</h3>
+            </div>
+        `).join('');
+
+        // Добавляем обработчики
+        categoriesContainer.querySelectorAll('.category-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const categoryId = card.dataset.category;
+                this.renderProducts(categoryId);
+            });
+        });
+    }
+
+    renderProducts(categoryId = null) {
+        const productsContainer = document.querySelector('.products');
+        if (!productsContainer) return;
+
+        const products = window.DataService.getProducts(categoryId);
+        
+        if (products.length === 0) {
+            productsContainer.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">🔍</div>
+                    <h3>Товары не найдены</h3>
+                    <p>Попробуйте выбрать другую категорию</p>
+                </div>
+            `;
+            return;
+        }
+
+        productsContainer.innerHTML = products.map(product => `
+            <div class="product-card" data-product-id="${product.id}">
+                <div class="product-image">
+                    <img src="${product.image}" alt="${product.title}">
+                </div>
+                <div class="product-info">
+                    <h3 class="product-title">${product.title}</h3>
+                    <p class="product-article">Артикул: ${product.article}</p>
+                    <p class="product-manufacturer">Производитель: ${product.manufacturer}</p>
+                    <div class="product-footer">
+                        <span class="product-price">${product.price} ₽</span>
+                        <button class="btn btn-primary btn-add-to-cart" data-product-id="${product.id}">
+                            В корзину
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+
+        // Обновляем обработчики добавления в корзину
+        this.setupEventHandlers();
+    }
+
+    hideLoadingScreen() {
+        window.logInitialization('AutoPartsApp.hideLoadingScreen: Начало скрытия экрана загрузки');
         
         const loadingScreen = document.getElementById('loading-screen');
         const app = document.getElementById('app');
         
         if (!loadingScreen || !app) {
-            throw new Error('Не найдены необходимые элементы DOM');
+            window.logInitialization('AutoPartsApp.hideLoadingScreen: Не найдены необходимые элементы');
+            return;
         }
 
-        // Показываем приложение
-        app.style.display = 'block';
+        // Устанавливаем начальное состояние
+        loadingScreen.style.opacity = '1';
         app.style.opacity = '0';
+        app.style.display = 'block';
 
-        // Запускаем анимацию перехода
+        // Запускаем анимацию
         requestAnimationFrame(() => {
-            // Скрываем загрузку
+            loadingScreen.style.transition = 'opacity 0.8s ease-out';
+            app.style.transition = 'opacity 0.8s ease-out';
+
             loadingScreen.style.opacity = '0';
-            loadingScreen.style.transition = 'opacity 0.5s ease';
-            
-            // Показываем приложение
             app.style.opacity = '1';
-            app.style.transition = 'opacity 0.5s ease';
-            
-            // После завершения анимации
+
             setTimeout(() => {
-                loadingScreen.remove();
-                this.showScreen('home');
-                window.debugLog('Приложение запущено');
-            }, 500);
+                loadingScreen.style.display = 'none';
+                window.logInitialization('AutoPartsApp.hideLoadingScreen: Экран загрузки скрыт');
+            }, 800);
         });
     }
 
-    showScreen(screenName) {
-        window.debugLog(`Показываем экран: ${screenName}`);
+    showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.textContent = message;
         
-        // Скрываем все экраны
-        document.querySelectorAll('.screen').forEach(screen => {
-            screen.classList.remove('active');
-        });
-
-        // Показываем нужный экран
-        const screen = document.getElementById(`${screenName}-screen`);
-        if (screen) {
-            screen.classList.add('active');
-            
-            // Обновляем активную кнопку
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            
-            const activeButton = document.querySelector(`[data-screen="${screenName}"]`);
-            if (activeButton) {
-                activeButton.classList.add('active');
-            }
-        }
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }, 100);
     }
 
-    handleBackButton() {
-        window.debugLog('Нажата кнопка "Назад"');
-        this.showScreen('home');
+    showLoading() {
+        const loading = document.createElement('div');
+        loading.className = 'loading-overlay';
+        loading.innerHTML = `
+            <div class="loading-spinner"></div>
+            <p>Загрузка...</p>
+        `;
+        document.body.appendChild(loading);
+    }
+
+    hideLoading() {
+        const loading = document.querySelector('.loading-overlay');
+        if (loading) {
+            loading.remove();
+        }
     }
 
     handleError(error) {
-        console.error('Произошла ошибка:', error);
-        window.debugLog(`Ошибка: ${error.message}`);
+        console.error('Ошибка в приложении:', error);
+        this.showNotification(
+            'Произошла ошибка. Пожалуйста, попробуйте позже.',
+            'error'
+        );
+    }
 
-        const loadingScreen = document.getElementById('loading-screen');
-        if (loadingScreen) {
-            loadingScreen.innerHTML = `
-                <div class="error-message">
-                    <h2>Ошибка</h2>
-                    <p>${error.message}</p>
-                    <button onclick="location.reload()" class="btn btn-accent">
-                        Попробовать снова
-                    </button>
-                </div>
-            `;
-        }
+    handleUnhandledRejection(event) {
+        console.error('Необработанная ошибка Promise:', event.reason);
+        this.handleError(event.reason);
     }
 }
 
-// Создаем экземпляр приложения после загрузки DOM
-document.addEventListener('DOMContentLoaded', () => {
-    window.debugLog('DOM загружен, создаем приложение');
-    window.app = new AutoPartsApp();
-});
+// Создаем глобальный экземпляр приложения
+window.app = new AutoPartsApp();
