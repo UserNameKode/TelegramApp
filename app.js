@@ -228,16 +228,31 @@ class AutoPartsApp {
 
     performSearch() {
         const searchInput = document.getElementById('search-input');
-        if (!searchInput) return;
+        if (!searchInput) {
+            console.error('Поле поиска не найдено!');
+            return;
+        }
         
         const query = searchInput.value.trim();
+        console.log('=== ПОИСК ===');
+        console.log('Запрос:', query);
         
         if (query.length < 1) {
-            return; // Не ищем пустые запросы
+            console.log('Пустой запрос, возвращаемся на главную');
+            this.renderHome();
+            return;
         }
 
         const searchResults = DataService.searchProducts(query);
-        console.log('Поиск:', query, 'Найдено:', searchResults.length);
+        console.log('Найдено товаров:', searchResults.length);
+        console.log('Результаты:', searchResults);
+        
+        // Показываем кнопку назад для результатов поиска
+        const backBtn = document.getElementById('nav-back-btn');
+        if (backBtn) {
+            backBtn.style.display = 'block';
+        }
+        
         this.renderSearchResults(searchResults, query);
     }
 
@@ -376,24 +391,47 @@ class AutoPartsApp {
         const searchBtn = document.getElementById('search-btn');
 
         if (searchInput) {
-            searchInput.addEventListener('input', (e) => {
-                console.log('Введен текст:', e.target.value);
-                this.performSearch();
-            });
+            console.log('Поле поиска найдено, добавляем обработчики');
             
-            searchInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
+            // Удаляем старые обработчики
+            searchInput.replaceWith(searchInput.cloneNode(true));
+            const newSearchInput = document.getElementById('search-input');
+            
+            newSearchInput.addEventListener('input', (e) => {
+                console.log('=== INPUT EVENT ===');
+                console.log('Введен текст:', e.target.value);
+                if (e.target.value.length >= 1) {
                     this.performSearch();
                 }
             });
+            
+            newSearchInput.addEventListener('keypress', (e) => {
+                console.log('=== KEYPRESS EVENT ===');
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    console.log('Нажат Enter, запускаем поиск');
+                    this.performSearch();
+                }
+            });
+        } else {
+            console.error('Поле поиска НЕ найдено в DOM!');
         }
 
         if (searchBtn) {
-            searchBtn.addEventListener('click', (e) => {
+            console.log('Кнопка поиска найдена, добавляем обработчик');
+            
+            // Удаляем старые обработчики
+            searchBtn.replaceWith(searchBtn.cloneNode(true));
+            const newSearchBtn = document.getElementById('search-btn');
+            
+            newSearchBtn.addEventListener('click', (e) => {
                 e.preventDefault();
+                console.log('=== CLICK EVENT ===');
                 console.log('Нажата кнопка поиска');
                 this.performSearch();
             });
+        } else {
+            console.error('Кнопка поиска НЕ найдена в DOM!');
         }
 
         // Фильтры

@@ -36,8 +36,7 @@ body {
 
 .gear-main {
   animation: gear-rotate 3s linear infinite;
-  transform-origin: 60px 60px; /* Центр SVG viewBox */
-  transform: translate(60px, 60px); /* Центрируем в viewBox */
+  transform-origin: center center; /* Вращаем вокруг центра группы */
 }
 
 @keyframes gear-rotate {
@@ -1497,6 +1496,44 @@ h3 {
   display: block !important;
 }
 
+/* Дополнительные стили для шестерёнки */
+.spinner {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.gear-main {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Стили для кликабельных категорий */
+.clickable-category.available {
+  cursor: pointer;
+  opacity: 1;
+}
+
+.clickable-category.available:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.clickable-category.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.coming-soon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #F59E0B;
+  color: white;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
 /* Стили для поиска */
 .search-results {
   padding: 20px 0;
@@ -1680,13 +1717,13 @@ h3 {
 }
 
 .headlight-left {
-  left: 25%;
-  top: 35%;
+  left: 18%;
+  top: 55%;
 }
 
 .headlight-right {
-  right: 25%;
-  top: 35%;
+  right: 18%;
+  top: 55%;
 }
 
 .headlight-glow {
