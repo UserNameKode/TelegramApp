@@ -247,10 +247,47 @@
     </div>
 
     <!-- Scripts -->
-    <script src="data.js"></script>
-    <script src="telegram-api.js"></script>
-    <script src="components.js"></script>
-    <script src="optimization.js"></script>
-    <script src="app.js"></script>
+    <script src="data.js" defer></script>
+    <script src="optimization.js" defer></script>
+    <script src="telegram-api.js" defer></script>
+    <script src="components.js" defer></script>
+    <script src="app.js" defer></script>
+    <script>
+        // Инициализация приложения после загрузки всех скриптов
+        window.addEventListener('DOMContentLoaded', function() {
+            // Показываем экран загрузки
+            const loadingScreen = document.getElementById('loading-screen');
+            const app = document.getElementById('app');
+            if (loadingScreen && app) {
+                loadingScreen.style.display = 'flex';
+                app.style.display = 'none';
+            }
+            
+            // Ждем загрузки всех модулей
+            const checkModules = setInterval(function() {
+                if (window.DataService && window.telegramAPI && window.uiComponents && window.performanceOptimizer) {
+                    clearInterval(checkModules);
+                    console.log('Все модули загружены, запускаем приложение...');
+                    window.app = new AutoPartsApp();
+                }
+            }, 100);
+            
+            // Таймаут на случай, если что-то пойдет не так
+            setTimeout(function() {
+                if (!window.app) {
+                    console.error('Не удалось загрузить все модули');
+                    if (loadingScreen) {
+                        loadingScreen.innerHTML = `
+                            <div class="error-message">
+                                <h2>Ошибка загрузки</h2>
+                                <p>Не удалось загрузить все необходимые компоненты</p>
+                                <p class="error-details">Попробуйте обновить страницу</p>
+                            </div>
+                        `;
+                    }
+                }
+            }, 5000);
+        });
+    </script>
 </body>
 </html> 

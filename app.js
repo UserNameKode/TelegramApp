@@ -711,19 +711,25 @@ function initializeApp() {
     }
 }
 
-// Запускаем инициализацию после полной загрузки страницы
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initializeApp);
-} else {
-    // Если DOM уже загружен, запускаем сразу
-    initializeApp();
-}
-
-// Альтернативный способ инициализации через window.onload
+// Запускаем инициализацию только после полной загрузки страницы
 window.addEventListener('load', () => {
-    // Дополнительная инициализация после загрузки всех ресурсов
-    if (window.app && !window.app.isInitialized) {
-        console.log('Дополнительная инициализация после загрузки ресурсов...');
-        // Здесь можно добавить дополнительную логику
+    console.log('Страница полностью загружена');
+    console.log('DataService доступен:', !!window.DataService);
+    console.log('telegramAPI доступен:', !!window.telegramAPI);
+    console.log('uiComponents доступен:', !!window.uiComponents);
+    console.log('performanceOptimizer доступен:', !!window.performanceOptimizer);
+    
+    // Показываем экран загрузки
+    const loadingScreen = document.getElementById('loading-screen');
+    const app = document.getElementById('app');
+    if (loadingScreen && app) {
+        loadingScreen.style.display = 'flex';
+        app.style.display = 'none';
     }
+    
+    // Запускаем инициализацию с небольшой задержкой
+    setTimeout(() => {
+        console.log('Запуск инициализации...');
+        initializeApp();
+    }, 100);
 }); 
