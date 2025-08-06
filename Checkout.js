@@ -1,39 +1,51 @@
 class Checkout {
     constructor() {
         this.deliveryMethods = [
-            { id: 'courier', title: 'Курьером', price: 300, time: '1-2 дня', icon: `
-                <svg viewBox="0 0 24 24">
-                    <path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
-                </svg>
-            ` },
-            { id: 'pickup', title: 'Самовывоз', price: 0, time: 'Сегодня', icon: `
-                <svg viewBox="0 0 24 24">
-                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-                </svg>
-            ` },
-            { id: 'post', title: 'Почтой России', price: 350, time: '5-7 дней', icon: `
-                <svg viewBox="0 0 24 24">
-                    <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
-                </svg>
-            ` }
+            { 
+                id: 'courier', 
+                title: 'Курьером', 
+                price: 300, 
+                time: '1-2 дня', 
+                icon: 'truck',
+                description: 'Доставка до двери курьером в удобное время'
+            },
+            { 
+                id: 'pickup', 
+                title: 'Самовывоз', 
+                price: 0, 
+                time: 'Сегодня', 
+                icon: 'map-pin',
+                description: 'Бесплатный самовывоз из нашего магазина'
+            },
+            { 
+                id: 'post', 
+                title: 'Почтой России', 
+                price: 350, 
+                time: '5-7 дней', 
+                icon: 'package',
+                description: 'Доставка в любую точку России'
+            }
         ];
 
         this.paymentMethods = [
-            { id: 'card', title: 'Банковской картой', icon: `
-                <svg viewBox="0 0 24 24">
-                    <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/>
-                </svg>
-            ` },
-            { id: 'cash', title: 'Наличными при получении', icon: `
-                <svg viewBox="0 0 24 24">
-                    <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
-                </svg>
-            ` },
-            { id: 'online', title: 'Онлайн оплата', icon: `
-                <svg viewBox="0 0 24 24">
-                    <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
-                </svg>
-            ` }
+            { 
+                id: 'card', 
+                title: 'Банковской картой', 
+                icon: 'credit-card',
+                description: 'Visa, MasterCard, МИР'
+            },
+            { 
+                id: 'cash', 
+                title: 'Наличными при получении', 
+                icon: 'money',
+                description: 'Оплата курьеру при доставке'
+            },
+            { 
+                id: 'online', 
+                title: 'Онлайн оплата', 
+                icon: 'qr-code',
+                description: 'СБП, ЮMoney, QIWI'
+            }
         ];
 
         this.init();
@@ -54,56 +66,88 @@ class Checkout {
         checkoutScreen.innerHTML = `
             <div class="checkout-content">
                 <div class="checkout-main">
+                    <div class="checkout-progress glass-morphism">
+                        <div class="progress-step active">
+                            <div class="step-icon">
+                                <i class="ph ph-user"></i>
+                            </div>
+                            <span>Контакты</span>
+                        </div>
+                        <div class="progress-line"></div>
+                        <div class="progress-step">
+                            <div class="step-icon">
+                                <i class="ph ph-truck"></i>
+                            </div>
+                            <span>Доставка</span>
+                        </div>
+                        <div class="progress-line"></div>
+                        <div class="progress-step">
+                            <div class="step-icon">
+                                <i class="ph ph-credit-card"></i>
+                            </div>
+                            <span>Оплата</span>
+                        </div>
+                    </div>
+
                     <form id="checkout-form" class="checkout-form">
                         <!-- Личные данные -->
-                        <div class="checkout-section">
+                        <div class="checkout-section glass-morphism">
                             <div class="section-header">
-                                <h3>Личные данные</h3>
-                                <svg class="section-icon" viewBox="0 0 24 24">
-                                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                                </svg>
+                                <h3>
+                                    <i class="ph ph-user-circle"></i>
+                                    Личные данные
+                                </h3>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group glass-effect">
                                 <label>Имя*</label>
                                 <input type="text" name="firstName" required 
                                     value="${userData.firstName || ''}" 
                                     placeholder="Введите имя">
+                                <i class="ph ph-user"></i>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group glass-effect">
                                 <label>Телефон*</label>
                                 <input type="tel" name="phone" required 
                                     value="${userData.phone || ''}" 
                                     placeholder="+7 (___) ___-__-__">
+                                <i class="ph ph-phone"></i>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group glass-effect">
                                 <label>Email</label>
                                 <input type="email" name="email" 
                                     value="${userData.email || ''}" 
                                     placeholder="example@mail.com">
+                                <i class="ph ph-envelope"></i>
                             </div>
                         </div>
 
                         <!-- Способ доставки -->
-                        <div class="checkout-section">
+                        <div class="checkout-section glass-morphism">
                             <div class="section-header">
-                                <h3>Способ доставки</h3>
-                                <svg class="section-icon" viewBox="0 0 24 24">
-                                    <path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4z"/>
-                                </svg>
+                                <h3>
+                                    <i class="ph ph-truck"></i>
+                                    Способ доставки
+                                </h3>
                             </div>
                             <div class="delivery-methods">
                                 ${this.deliveryMethods.map(method => `
-                                    <label class="delivery-method">
+                                    <label class="delivery-method glass-effect">
                                         <input type="radio" name="delivery" 
                                             value="${method.id}" 
                                             ${method.id === 'courier' ? 'checked' : ''}>
                                         <div class="method-content">
-                                            <div class="method-icon">${method.icon}</div>
+                                            <div class="method-icon">
+                                                <i class="ph ph-${method.icon}"></i>
+                                            </div>
                                             <div class="method-info">
                                                 <h4>${method.title}</h4>
+                                                <p>${method.description}</p>
                                                 <div class="method-details">
-                                                    <span class="method-time">${method.time}</span>
-                                                    <span class="method-price">
+                                                    <span class="delivery-time">
+                                                        <i class="ph ph-clock"></i>
+                                                        ${method.time}
+                                                    </span>
+                                                    <span class="delivery-price gradient-text">
                                                         ${method.price > 0 ? `${method.price} ₽` : 'Бесплатно'}
                                                     </span>
                                                 </div>
@@ -115,56 +159,70 @@ class Checkout {
                         </div>
 
                         <!-- Адрес доставки -->
-                        <div class="checkout-section" id="delivery-address">
+                        <div class="checkout-section glass-morphism" id="delivery-address">
                             <div class="section-header">
-                                <h3>Адрес доставки</h3>
-                                <svg class="section-icon" viewBox="0 0 24 24">
-                                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-                                </svg>
+                                <h3>
+                                    <i class="ph ph-map-pin"></i>
+                                    Адрес доставки
+                                </h3>
                             </div>
                             ${userData.addresses.length > 0 ? `
                                 <div class="saved-addresses">
-                                    <select name="savedAddress" class="form-select">
-                                        <option value="">Выбрать сохраненный адрес</option>
-                                        ${userData.addresses.map(address => `
-                                            <option value="${address.id}">
-                                                ${address.title}: ${address.street}, ${address.city}
-                                            </option>
-                                        `).join('')}
-                                    </select>
+                                    <div class="form-group glass-effect">
+                                        <label>Выберите сохраненный адрес</label>
+                                        <select name="savedAddress" class="form-select">
+                                            <option value="">Новый адрес</option>
+                                            ${userData.addresses.map(address => `
+                                                <option value="${address.id}">
+                                                    ${address.title}: ${address.street}, ${address.city}
+                                                </option>
+                                            `).join('')}
+                                        </select>
+                                        <i class="ph ph-houses"></i>
+                                    </div>
                                 </div>
                             ` : ''}
-                            <div class="form-group">
-                                <label>Город*</label>
-                                <input type="text" name="city" required placeholder="Введите город">
-                            </div>
-                            <div class="form-group">
-                                <label>Улица, дом, квартира*</label>
-                                <input type="text" name="street" required placeholder="Введите адрес">
-                            </div>
-                            <div class="form-group">
-                                <label>Комментарий к доставке</label>
-                                <textarea name="comment" placeholder="Например: код домофона, этаж"></textarea>
+                            <div class="address-fields">
+                                <div class="form-group glass-effect">
+                                    <label>Город*</label>
+                                    <input type="text" name="city" required placeholder="Введите город">
+                                    <i class="ph ph-buildings"></i>
+                                </div>
+                                <div class="form-group glass-effect">
+                                    <label>Улица, дом, квартира*</label>
+                                    <input type="text" name="street" required placeholder="Введите адрес">
+                                    <i class="ph ph-house"></i>
+                                </div>
+                                <div class="form-group glass-effect">
+                                    <label>Комментарий к доставке</label>
+                                    <textarea name="comment" placeholder="Например: код домофона, этаж"></textarea>
+                                    <i class="ph ph-note-pencil"></i>
+                                </div>
                             </div>
                         </div>
 
                         <!-- Способ оплаты -->
-                        <div class="checkout-section">
+                        <div class="checkout-section glass-morphism">
                             <div class="section-header">
-                                <h3>Способ оплаты</h3>
-                                <svg class="section-icon" viewBox="0 0 24 24">
-                                    <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/>
-                                </svg>
+                                <h3>
+                                    <i class="ph ph-credit-card"></i>
+                                    Способ оплаты
+                                </h3>
                             </div>
                             <div class="payment-methods">
                                 ${this.paymentMethods.map(method => `
-                                    <label class="payment-method">
+                                    <label class="payment-method glass-effect">
                                         <input type="radio" name="payment" 
                                             value="${method.id}" 
                                             ${method.id === 'card' ? 'checked' : ''}>
                                         <div class="method-content">
-                                            <div class="method-icon">${method.icon}</div>
-                                            <span class="method-title">${method.title}</span>
+                                            <div class="method-icon">
+                                                <i class="ph ph-${method.icon}"></i>
+                                            </div>
+                                            <div class="method-info">
+                                                <h4>${method.title}</h4>
+                                                <p>${method.description}</p>
+                                            </div>
                                         </div>
                                     </label>
                                 `).join('')}
@@ -175,21 +233,27 @@ class Checkout {
 
                 <!-- Сводка заказа -->
                 <div class="checkout-sidebar">
-                    <div class="order-summary">
+                    <div class="order-summary glass-morphism">
                         <div class="section-header">
                             <h3>Ваш заказ</h3>
-                            <span class="items-count">${cart.length} ${this.getItemsText(cart.length)}</span>
+                            <span class="items-count">
+                                <i class="ph ph-shopping-cart"></i>
+                                ${cart.length} ${this.getItemsText(cart.length)}
+                            </span>
                         </div>
                         <div class="order-items">
                             ${cart.map(item => `
-                                <div class="order-item">
+                                <div class="order-item glass-effect">
                                     <img src="${item.image}" alt="${item.title}">
                                     <div class="item-details">
                                         <h4>${item.title}</h4>
-                                        <p class="item-article">Артикул: ${item.article}</p>
+                                        <p class="item-article">
+                                            <i class="ph ph-barcode"></i>
+                                            Артикул: ${item.article}
+                                        </p>
                                         <div class="item-price">
                                             <span class="quantity">${item.quantity} ×</span>
-                                            <span class="price">${item.price} ₽</span>
+                                            <span class="price gradient-text">${item.price} ₽</span>
                                         </div>
                                     </div>
                                 </div>
@@ -206,16 +270,41 @@ class Checkout {
                             </div>
                             <div class="total-line total">
                                 <span>Итого</span>
-                                <span id="total-cost">${subtotal + 300} ₽</span>
+                                <span id="total-cost" class="gradient-text">${subtotal + 300} ₽</span>
                             </div>
                         </div>
-                        <button type="button" class="btn-primary btn-lg" onclick="window.checkout.submitOrder()">
-                            Оформить заказ
+                        <button type="button" class="gradient-btn btn-lg" onclick="window.checkout.submitOrder()">
+                            <span>Оформить заказ</span>
+                            <i class="ph ph-check-circle"></i>
                         </button>
                     </div>
                 </div>
             </div>
         `;
+
+        // Анимируем появление элементов
+        gsap.from('.checkout-progress', {
+            y: -30,
+            opacity: 0,
+            duration: 0.5,
+            ease: 'power3.out'
+        });
+
+        gsap.from('.checkout-section', {
+            y: 30,
+            opacity: 0,
+            duration: 0.5,
+            stagger: 0.1,
+            ease: 'power3.out'
+        });
+
+        gsap.from('.checkout-sidebar', {
+            x: 30,
+            opacity: 0,
+            duration: 0.5,
+            delay: 0.3,
+            ease: 'power3.out'
+        });
 
         this.setupEventListeners();
     }
@@ -236,12 +325,38 @@ class Checkout {
                 const totalCost = document.getElementById('total-cost');
                 const subtotal = window.cart.calculateTotal();
 
-                deliveryCost.textContent = method.price > 0 ? `${method.price} ₽` : 'Бесплатно';
-                totalCost.textContent = `${subtotal + method.price} ₽`;
+                gsap.to(deliveryCost, {
+                    opacity: 0,
+                    duration: 0.2,
+                    onComplete: () => {
+                        deliveryCost.textContent = method.price > 0 ? `${method.price} ₽` : 'Бесплатно';
+                        totalCost.textContent = `${subtotal + method.price} ₽`;
+                        gsap.to(deliveryCost, {
+                            opacity: 1,
+                            duration: 0.2
+                        });
+                    }
+                });
 
                 // Показываем/скрываем адрес доставки
                 const addressSection = document.getElementById('delivery-address');
-                addressSection.style.display = method.id === 'pickup' ? 'none' : 'block';
+                if (method.id === 'pickup') {
+                    gsap.to(addressSection, {
+                        height: 0,
+                        opacity: 0,
+                        duration: 0.3,
+                        onComplete: () => {
+                            addressSection.style.display = 'none';
+                        }
+                    });
+                } else {
+                    addressSection.style.display = 'block';
+                    gsap.from(addressSection, {
+                        height: 0,
+                        opacity: 0,
+                        duration: 0.3
+                    });
+                }
             });
         });
 
@@ -251,8 +366,18 @@ class Checkout {
             addressSelect.addEventListener('change', (e) => {
                 const address = window.profile.userData.addresses.find(a => a.id === e.target.value);
                 if (address) {
-                    document.querySelector('input[name="city"]').value = address.city;
-                    document.querySelector('input[name="street"]').value = address.street;
+                    gsap.to('.address-fields input', {
+                        opacity: 0,
+                        duration: 0.2,
+                        onComplete: () => {
+                            document.querySelector('input[name="city"]').value = address.city;
+                            document.querySelector('input[name="street"]').value = address.street;
+                            gsap.to('.address-fields input', {
+                                opacity: 1,
+                                duration: 0.2
+                            });
+                        }
+                    });
                 }
             });
         }
@@ -315,24 +440,37 @@ class Checkout {
 
     showOrderSuccess(order) {
         const modal = document.createElement('div');
-        modal.className = 'modal success-modal';
+        modal.className = 'modal';
         modal.innerHTML = `
-            <div class="modal-content">
+            <div class="modal-content glass-morphism">
                 <div class="success-animation">
-                    <svg class="checkmark" viewBox="0 0 52 52">
-                        <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
-                        <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
-                    </svg>
+                    <lottie-player
+                        src="https://assets2.lottiefiles.com/packages/lf20_s2lryxtd.json"
+                        background="transparent"
+                        speed="1"
+                        style="width: 200px; height: 200px;"
+                        autoplay
+                    ></lottie-player>
                 </div>
-                <h2>Заказ оформлен!</h2>
-                <p>Номер заказа: ${order.id}</p>
-                <p>Мы отправили детали заказа на ваш email</p>
+                <h2 class="gradient-text">Заказ оформлен!</h2>
+                <div class="order-info">
+                    <div class="info-item">
+                        <i class="ph ph-hash"></i>
+                        <span>Номер заказа: ${order.id}</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="ph ph-envelope"></i>
+                        <span>Детали отправлены на ваш email</span>
+                    </div>
+                </div>
                 <div class="modal-actions">
-                    <button class="btn-outline" onclick="window.app.showScreen('profile')">
-                        История заказов
+                    <button class="btn-outline-gradient" onclick="window.app.showScreen('profile')">
+                        <i class="ph ph-list"></i>
+                        <span>История заказов</span>
                     </button>
-                    <button class="btn-primary" onclick="window.app.showScreen('home')">
-                        Продолжить покупки
+                    <button class="gradient-btn" onclick="window.app.showScreen('home')">
+                        <i class="ph ph-shopping-cart"></i>
+                        <span>Продолжить покупки</span>
                     </button>
                 </div>
             </div>
@@ -340,11 +478,25 @@ class Checkout {
 
         document.body.appendChild(modal);
 
+        // Анимация появления
+        gsap.from(modal.querySelector('.modal-content'), {
+            scale: 0.8,
+            opacity: 0,
+            duration: 0.3,
+            ease: 'power3.out'
+        });
+
         // Удаляем модальное окно при клике вне его содержимого
         modal.addEventListener('click', (e) => {
             if (e.target === modal) {
-                modal.remove();
-                window.app.showScreen('home');
+                gsap.to(modal, {
+                    opacity: 0,
+                    duration: 0.3,
+                    onComplete: () => {
+                        modal.remove();
+                        window.app.showScreen('home');
+                    }
+                });
             }
         });
     }

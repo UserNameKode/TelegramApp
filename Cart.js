@@ -25,6 +25,8 @@ class Cart {
             const count = this.items.reduce((sum, item) => sum + item.quantity, 0);
             badge.textContent = count;
             badge.style.display = count > 0 ? 'flex' : 'none';
+            if (count > 0) badge.classList.add('pulse-effect');
+            else badge.classList.remove('pulse-effect');
         }
     }
 
@@ -48,25 +50,7 @@ class Cart {
         this.saveToStorage();
         this.render();
         this.showAddToCartAnimation(product.id);
-    }
-
-    removeItem(productId) {
-        this.items = this.items.filter(item => item.id !== productId);
-        this.saveToStorage();
-        this.render();
-    }
-
-    updateQuantity(productId, quantity) {
-        const item = this.items.find(item => item.id === productId);
-        if (item) {
-            item.quantity = Math.max(1, quantity);
-            this.saveToStorage();
-            this.render();
-        }
-    }
-
-    calculateTotal() {
-        return this.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        window.app.showNotification('Товар добавлен в корзину', 'success');
     }
 
     showAddToCartAnimation(productId) {
@@ -78,7 +62,7 @@ class Cart {
             const cartRect = cartButton.getBoundingClientRect();
             
             const particle = document.createElement('div');
-            particle.className = 'cart-particle';
+            particle.className = 'flying-particle';
             
             const startX = productRect.left + productRect.width / 2;
             const startY = productRect.top + productRect.height / 2;
@@ -96,25 +80,21 @@ class Cart {
                 left: ${startX}px;
                 top: ${startY}px;
                 transform: translate(-50%, -50%);
-                transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
             `;
             
             document.body.appendChild(particle);
             
-            requestAnimationFrame(() => {
-                particle.style.cssText += `
-                    left: ${endX}px;
-                    top: ${endY}px;
-                    transform: translate(-50%, -50%) scale(0.2);
-                    opacity: 0;
-                `;
+            gsap.to(particle, {
+                x: endX - startX,
+                y: endY - startY,
+                duration: 0.8,
+                ease: "power3.out",
+                onComplete: () => {
+                    particle.remove();
+                    cartButton.classList.add('cart-bump');
+                    setTimeout(() => cartButton.classList.remove('cart-bump'), 300);
+                }
             });
-            
-            setTimeout(() => {
-                particle.remove();
-                cartButton.classList.add('cart-bump');
-                setTimeout(() => cartButton.classList.remove('cart-bump'), 300);
-            }, 600);
         }
     }
 
@@ -124,14 +104,15 @@ class Cart {
 
         if (this.items.length === 0) {
             cartScreen.innerHTML = `
-                <div class="empty-state">
-                    <svg class="empty-icon" viewBox="0 0 24 24">
-                        <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1.003 1.003 0 0020 4H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
-                    </svg>
+                <div class="empty-state glass-morphism">
+                    <div class="empty-icon">
+                        <i class="ph ph-shopping-cart"></i>
+                    </div>
                     <h2>Корзина пуста</h2>
                     <p>Добавьте товары из каталога</p>
-                    <button class="btn-primary" onclick="window.app.showScreen('home')">
-                        Перейти к покупкам
+                    <button class="gradient-btn" onclick="window.app.showScreen('home')">
+                        <i class="ph ph-arrow-left"></i>
+                        <span>Перейти к покупкам</span>
                     </button>
                 </div>
             `;
@@ -142,33 +123,46 @@ class Cart {
             <div class="cart-content">
                 <div class="cart-items">
                     ${this.items.map(item => `
-                        <div class="cart-item" data-product-id="${item.id}">
+                        <div class="cart-item glass-morphism" data-product-id="${item.id}">
                             <div class="cart-item-image">
                                 <img src="${item.image}" alt="${item.title}">
                             </div>
                             <div class="cart-item-content">
                                 <div class="cart-item-header">
                                     <h3>${item.title}</h3>
-                                    <button class="btn-icon" onclick="window.cart.removeItem('${item.id}')">
-                                        <svg viewBox="0 0 24 24">
-                                            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-                                        </svg>
+                                    <button class="btn-icon ripple-effect" onclick="window.cart.removeItem('${item.id}')">
+                                        <i class="ph ph-x"></i>
                                     </button>
                                 </div>
                                 <div class="cart-item-details">
                                     <div class="item-meta">
-                                        <span class="item-article">Артикул: ${item.article}</span>
-                                        <span class="item-manufacturer">Производитель: ${item.manufacturer}</span>
+                                        <span class="item-article">
+                                            <i class="ph ph-barcode"></i>
+                                            Артикул: ${item.article}
+                                        </span>
+                                        <span class="item-manufacturer">
+                                            <i class="ph ph-factory"></i>
+                                            ${item.manufacturer}
+                                        </span>
                                     </div>
                                     <div class="item-controls">
-                                        <div class="quantity-controls">
-                                            <button class="btn-quantity" onclick="window.cart.updateQuantity('${item.id}', ${item.quantity - 1})">−</button>
+                                        <div class="quantity-controls glass-effect">
+                                            <button class="btn-quantity ripple-effect" onclick="window.cart.updateQuantity('${item.id}', ${item.quantity - 1})">
+                                                <i class="ph ph-minus"></i>
+                                            </button>
                                             <span class="quantity">${item.quantity}</span>
-                                            <button class="btn-quantity" onclick="window.cart.updateQuantity('${item.id}', ${item.quantity + 1})">+</button>
+                                            <button class="btn-quantity ripple-effect" onclick="window.cart.updateQuantity('${item.id}', ${item.quantity + 1})">
+                                                <i class="ph ph-plus"></i>
+                                            </button>
                                         </div>
                                         <div class="item-price">
-                                            <span class="price">${item.price * item.quantity} ₽</span>
-                                            ${item.quantity > 1 ? `<span class="price-per-item">${item.price} ₽/шт</span>` : ''}
+                                            <span class="price gradient-text">${item.price * item.quantity} ₽</span>
+                                            ${item.quantity > 1 ? `
+                                                <span class="price-per-item">
+                                                    <i class="ph ph-info"></i>
+                                                    ${item.price} ₽/шт
+                                                </span>
+                                            ` : ''}
                                         </div>
                                     </div>
                                 </div>
@@ -176,23 +170,84 @@ class Cart {
                         </div>
                     `).join('')}
                 </div>
-                <div class="cart-summary">
+                <div class="cart-summary glass-morphism">
                     <div class="summary-content">
-                        <div class="summary-row">
-                            <span>Товаров в корзине:</span>
-                            <span>${this.items.reduce((sum, item) => sum + item.quantity, 0)} шт</span>
+                        <div class="summary-header">
+                            <h3>Ваш заказ</h3>
+                            <span class="items-count">
+                                <i class="ph ph-shopping-cart"></i>
+                                ${this.items.reduce((sum, item) => sum + item.quantity, 0)} шт
+                            </span>
                         </div>
-                        <div class="summary-row total">
-                            <span>Итого:</span>
-                            <span class="total-price">${this.calculateTotal()} ₽</span>
+                        <div class="summary-details">
+                            <div class="summary-row">
+                                <span>Товары</span>
+                                <span>${this.calculateTotal()} ₽</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Доставка</span>
+                                <span class="delivery-cost">Бесплатно</span>
+                            </div>
+                            <div class="summary-row total">
+                                <span>Итого</span>
+                                <span class="total-price gradient-text">${this.calculateTotal()} ₽</span>
+                            </div>
                         </div>
-                        <button class="btn-primary btn-lg" onclick="window.app.showScreen('checkout')">
-                            Оформить заказ
+                        <button class="gradient-btn checkout-btn" onclick="window.app.showScreen('checkout')">
+                            <span>Оформить заказ</span>
+                            <i class="ph ph-arrow-right"></i>
                         </button>
                     </div>
                 </div>
             </div>
         `;
+
+        // Анимируем появление элементов
+        gsap.from('.cart-item', {
+            y: 30,
+            opacity: 0,
+            duration: 0.5,
+            stagger: 0.1,
+            ease: 'power3.out'
+        });
+
+        gsap.from('.cart-summary', {
+            x: 30,
+            opacity: 0,
+            duration: 0.5,
+            delay: 0.3,
+            ease: 'power3.out'
+        });
+    }
+
+    removeItem(productId) {
+        this.items = this.items.filter(item => item.id !== productId);
+        this.saveToStorage();
+        this.render();
+        window.app.showNotification('Товар удален из корзины', 'info');
+    }
+
+    updateQuantity(productId, quantity) {
+        const item = this.items.find(item => item.id === productId);
+        if (item) {
+            if (quantity < 1) {
+                this.removeItem(productId);
+                return;
+            }
+            item.quantity = quantity;
+            this.saveToStorage();
+            this.render();
+        }
+    }
+
+    calculateTotal() {
+        return this.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    }
+
+    clearCart() {
+        this.items = [];
+        this.saveToStorage();
+        this.render();
     }
 }
 
