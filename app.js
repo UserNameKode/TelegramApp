@@ -227,25 +227,30 @@ class AutoPartsApp {
     }
 
     performSearch() {
+        console.log('🔍 === ЗАПУСК ПОИСКА ===');
+        
         const searchInput = document.getElementById('search-input');
         if (!searchInput) {
-            console.error('Поле поиска не найдено!');
+            console.error('❌ Поле поиска не найдено!');
             return;
         }
         
         const query = searchInput.value.trim();
-        console.log('=== ПОИСК ===');
-        console.log('Запрос:', query);
+        console.log('📝 Запрос поиска:', `"${query}"`);
         
         if (query.length < 1) {
-            console.log('Пустой запрос, возвращаемся на главную');
+            console.log('🔄 Пустой запрос, возвращаемся на главную');
             this.renderHome();
             return;
         }
 
+        console.log('🔎 Выполняем поиск...');
         const searchResults = DataService.searchProducts(query);
-        console.log('Найдено товаров:', searchResults.length);
-        console.log('Результаты:', searchResults);
+        console.log(`✅ Найдено товаров: ${searchResults.length}`);
+        
+        if (searchResults.length > 0) {
+            console.log('📦 Первые результаты:', searchResults.slice(0, 3));
+        }
         
         // Показываем кнопку назад для результатов поиска
         const backBtn = document.getElementById('nav-back-btn');

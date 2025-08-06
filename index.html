@@ -10,29 +10,52 @@
   <!-- НОВЫЙ Loader Screen -->
   <div id="loading-screen">
     <div class="loading-content">
-      <!-- НОВАЯ РАБОЧАЯ ШЕСТЕРЁНКА -->
+      <!-- НАСТОЯЩАЯ АВТОМОБИЛЬНАЯ ШЕСТЕРЁНКА -->
       <div class="gear-container">
-        <svg class="gear-svg" viewBox="0 0 100 100" width="80" height="80">
+        <svg class="gear-svg" viewBox="0 0 120 120" width="80" height="80">
           <g class="rotating-gear">
-            <!-- Зубья шестерни -->
-            <path d="M50,10 L55,5 L60,10 L60,20 L55,25 L50,20 Z" fill="#3B82F6"/>
-            <path d="M70,15 L75,10 L80,15 L75,25 L70,20 Z" fill="#3B82F6" transform="rotate(45 50 50)"/>
-            <path d="M85,35 L90,30 L95,35 L90,45 L85,40 Z" fill="#3B82F6" transform="rotate(90 50 50)"/>
-            <path d="M85,65 L90,70 L85,75 L75,70 L80,65 Z" fill="#3B82F6" transform="rotate(135 50 50)"/>
-            <path d="M60,85 L55,90 L50,85 L50,75 L55,70 L60,75 Z" fill="#3B82F6" transform="rotate(180 50 50)"/>
-            <path d="M30,85 L25,90 L20,85 L25,75 L30,80 Z" fill="#3B82F6" transform="rotate(225 50 50)"/>
-            <path d="M15,65 L10,70 L5,65 L10,55 L15,60 Z" fill="#3B82F6" transform="rotate(270 50 50)"/>
-            <path d="M15,35 L10,30 L15,25 L25,30 L20,35 Z" fill="#3B82F6" transform="rotate(315 50 50)"/>
+            <!-- Внешние зубья шестерни (точно как в автомобиле) -->
+            <g fill="#3B82F6" stroke="#1E40AF" stroke-width="1">
+              <polygon points="60,5 65,10 65,20 60,25 55,20 55,10" />
+              <polygon points="60,5 65,10 65,20 60,25 55,20 55,10" transform="rotate(30 60 60)" />
+              <polygon points="60,5 65,10 65,20 60,25 55,20 55,10" transform="rotate(60 60 60)" />
+              <polygon points="60,5 65,10 65,20 60,25 55,20 55,10" transform="rotate(90 60 60)" />
+              <polygon points="60,5 65,10 65,20 60,25 55,20 55,10" transform="rotate(120 60 60)" />
+              <polygon points="60,5 65,10 65,20 60,25 55,20 55,10" transform="rotate(150 60 60)" />
+              <polygon points="60,5 65,10 65,20 60,25 55,20 55,10" transform="rotate(180 60 60)" />
+              <polygon points="60,5 65,10 65,20 60,25 55,20 55,10" transform="rotate(210 60 60)" />
+              <polygon points="60,5 65,10 65,20 60,25 55,20 55,10" transform="rotate(240 60 60)" />
+              <polygon points="60,5 65,10 65,20 60,25 55,20 55,10" transform="rotate(270 60 60)" />
+              <polygon points="60,5 65,10 65,20 60,25 55,20 55,10" transform="rotate(300 60 60)" />
+              <polygon points="60,5 65,10 65,20 60,25 55,20 55,10" transform="rotate(330 60 60)" />
+            </g>
             
             <!-- Основное тело шестерни -->
-            <circle cx="50" cy="50" r="20" fill="#2563EB" stroke="#1E40AF" stroke-width="2"/>
+            <circle cx="60" cy="60" r="25" fill="#2563EB" stroke="#1E40AF" stroke-width="3"/>
+            
+            <!-- Внутренний обод -->
+            <circle cx="60" cy="60" r="20" fill="none" stroke="#1E293B" stroke-width="2"/>
             
             <!-- Центральное отверстие -->
-            <circle cx="50" cy="50" r="8" fill="#0F172A" stroke="#374151" stroke-width="2"/>
+            <circle cx="60" cy="60" r="10" fill="#0F172A" stroke="#374151" stroke-width="2"/>
             
-            <!-- Крестовина в центре -->
-            <line x1="50" y1="42" x2="50" y2="58" stroke="#6B7280" stroke-width="2"/>
-            <line x1="42" y1="50" x2="58" y2="50" stroke="#6B7280" stroke-width="2"/>
+            <!-- Крестовина в центре (как в настоящей шестерне) -->
+            <g stroke="#6B7280" stroke-width="2">
+              <line x1="60" y1="50" x2="60" y2="70"/>
+              <line x1="50" y1="60" x2="70" y2="60"/>
+              <line x1="53" y1="53" x2="67" y2="67"/>
+              <line x1="53" y1="67" x2="67" y2="53"/>
+            </g>
+            
+            <!-- Болты крепления -->
+            <g fill="#6B7280" stroke="#374151" stroke-width="1">
+              <circle cx="60" cy="40" r="2"/>
+              <circle cx="77" cy="47" r="2"/>
+              <circle cx="77" cy="73" r="2"/>
+              <circle cx="60" cy="80" r="2"/>
+              <circle cx="43" cy="73" r="2"/>
+              <circle cx="43" cy="47" r="2"/>
+            </g>
           </g>
         </svg>
       </div>
