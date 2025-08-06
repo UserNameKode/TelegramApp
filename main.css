@@ -36,7 +36,7 @@ body {
 
 .gear-main {
   animation: gear-rotate 3s linear infinite;
-  transform-origin: center;
+  transform-origin: 60px 60px; /* Фиксированный центр */
 }
 
 @keyframes gear-rotate {
@@ -1261,6 +1261,15 @@ h3 {
   overflow: hidden;
   max-width: 100%;
   box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+}
+
+.profile-info {
+  flex: 1;
+  min-width: 0;
 }
 
 .profile-info h2 {
@@ -1268,20 +1277,58 @@ h3 {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  max-width: 200px;
+  max-width: 150px;
+  margin: 0 0 4px 0;
+  font-size: 18px;
+}
+
+.profile-phone {
+  font-size: 14px;
+  color: #94A3B8;
+  margin: 0;
+}
+
+.profile-level {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.bonus-points {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(59, 130, 246, 0.2);
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  min-width: 80px;
 }
 
 .bonus-count {
-  font-size: 18px !important;
-  word-break: break-word;
-  overflow: hidden;
+  font-size: 16px !important;
+  font-weight: 800;
+  color: #3B82F6;
+  word-break: normal;
+  overflow: visible;
   white-space: nowrap;
+  margin: 0;
+  line-height: 1;
+}
+
+.bonus-label {
+  font-size: 10px;
+  color: #94A3B8;
+  margin: 0;
+  line-height: 1;
 }
 
 .stat-value {
-  font-size: 18px !important;
-  word-break: break-word;
-  overflow: hidden;
+  font-size: 16px !important;
+  word-break: normal;
+  overflow: visible;
   white-space: nowrap;
 }
 
@@ -1289,6 +1336,29 @@ h3 {
   max-width: 100%;
   overflow: hidden;
   box-sizing: border-box;
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  background: rgba(15, 23, 42, 0.6);
+  border-radius: 12px;
+  border: 1px solid #334155;
+  margin-bottom: 12px;
+}
+
+.favorite-item img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.favorite-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 0;
 }
 
 .favorite-info h4 {
@@ -1296,12 +1366,72 @@ h3 {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  max-width: 150px;
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  color: #F8FAFC;
+}
+
+.favorite-brand {
+  font-size: 12px;
+  color: #94A3B8;
+  margin: 0 0 4px 0;
 }
 
 .favorite-price {
   white-space: nowrap;
   flex-shrink: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #10B981;
+  margin: 0;
+}
+
+.favorite-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+  align-items: flex-end;
+}
+
+.favorite-actions .btn-add {
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #10B981, #059669);
+  border: none;
+  color: white;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  min-width: 80px;
+}
+
+.favorite-actions .btn-add:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.favorite-actions .btn-remove {
+  padding: 6px 8px;
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #EF4444;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.favorite-actions .btn-remove:hover {
+  background: rgba(239, 68, 68, 0.3);
+  transform: scale(1.1);
 }
 
 .bonus-system * {
@@ -1317,6 +1447,50 @@ h3 {
 .level-point {
   flex-shrink: 0;
   min-width: 60px;
+}
+
+/* Исправления для категорий - выравнивание и размеры */
+.categories {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)) !important;
+  gap: 16px !important;
+  justify-items: center !important;
+  align-items: stretch !important;
+  margin-bottom: 32px !important;
+}
+
+.category-card {
+  width: 100% !important;
+  max-width: 200px !important;
+  min-height: 140px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  padding: 20px 16px !important;
+}
+
+.category-card h4 {
+  margin: 12px 0 8px 0 !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  color: #F8FAFC !important;
+  line-height: 1.2 !important;
+}
+
+.category-card p {
+  margin: 0 !important;
+  font-size: 12px !important;
+  color: #94A3B8 !important;
+  line-height: 1.3 !important;
+  text-align: center !important;
+}
+
+.category-icon {
+  font-size: 24px !important;
+  margin-bottom: 8px !important;
+  display: block !important;
 }
 
 /* Дополнительные стили для описания */
@@ -1384,20 +1558,92 @@ h3 {
   animation: bmw-headlight-glow 3s ease-in-out infinite;
 }
 
-.angel-eye {
-  animation: angel-eye-rotate 8s linear infinite;
-}
-
-.angel-eye-inner {
-  animation: angel-eye-pulse 2s ease-in-out infinite;
-}
-
 .fog-light {
   animation: fog-light-flicker 4s ease-in-out infinite;
 }
 
 .light-cone {
   animation: light-cone-sweep 5s ease-in-out infinite;
+}
+
+/* Стили для реального фото BMW */
+.car-photo-container {
+  position: relative;
+  width: 200px;
+  height: 100px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.car-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.9) contrast(1.1);
+}
+
+.headlight-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.headlight {
+  position: absolute;
+  top: 35%;
+  width: 20px;
+  height: 15px;
+  border-radius: 50%;
+}
+
+.headlight-left {
+  left: 20%;
+}
+
+.headlight-right {
+  right: 20%;
+}
+
+.headlight-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, #FBBF24 0%, #F59E0B 50%, transparent 70%);
+  border-radius: 50%;
+  animation: headlight-pulse 3s ease-in-out infinite;
+}
+
+.headlight-beam {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 150%;
+  height: 80%;
+  background: linear-gradient(90deg, #FBBF24 0%, transparent 100%);
+  border-radius: 50%;
+  opacity: 0.4;
+  animation: headlight-beam-sweep 4s ease-in-out infinite;
+}
+
+.headlight-left .headlight-beam {
+  transform: translate(-30%, -50%) rotate(-15deg);
+}
+
+.headlight-right .headlight-beam {
+  transform: translate(-70%, -50%) rotate(15deg);
+}
+
+.car-icon-fallback {
+  width: 200px;
+  height: 100px;
 }
 
 @keyframes bmw-headlight-glow {
@@ -1411,27 +1657,23 @@ h3 {
   }
 }
 
-@keyframes angel-eye-rotate {
-  0% { 
-    stroke-dasharray: 0 63;
-    transform: rotate(0deg);
+@keyframes headlight-pulse {
+  0%, 100% { 
+    opacity: 0.6;
+    transform: translate(-50%, -50%) scale(1);
   }
   50% { 
-    stroke-dasharray: 31.5 31.5;
-    transform: rotate(180deg);
-  }
-  100% { 
-    stroke-dasharray: 0 63;
-    transform: rotate(360deg);
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.2);
   }
 }
 
-@keyframes angel-eye-pulse {
+@keyframes headlight-beam-sweep {
   0%, 100% { 
-    opacity: 0.4;
+    opacity: 0.3;
   }
   50% { 
-    opacity: 0.9;
+    opacity: 0.7;
   }
 }
 

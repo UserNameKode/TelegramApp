@@ -95,112 +95,48 @@ class AutoPartsApp {
             <!-- Автомобильная шапка -->
             <div class="hero-banner">
                 <div class="car-animation">
-                    <svg class="car-icon" viewBox="0 0 320 160">
-                        <defs>
-                            <!-- Градиенты для фар -->
-                            <radialGradient id="headlightGlow" cx="50%" cy="50%" r="70%">
-                                <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:1" />
-                                <stop offset="20%" style="stop-color:#FBBF24;stop-opacity:0.9" />
-                                <stop offset="60%" style="stop-color:#F59E0B;stop-opacity:0.7" />
-                                <stop offset="100%" style="stop-color:#D97706;stop-opacity:0.3" />
-                            </radialGradient>
-                            
-                            <!-- Свечение фар -->
-                            <filter id="glow" x="-100%" y="-100%" width="300%" height="300%">
-                                <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
-                                <feMerge> 
-                                    <feMergeNode in="coloredBlur"/>
-                                    <feMergeNode in="SourceGraphic"/>
-                                </feMerge>
-                            </filter>
-
-                            <!-- Металлический градиент -->
-                            <linearGradient id="metalGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                                <stop offset="0%" style="stop-color:#F8F9FA;stop-opacity:1" />
-                                <stop offset="30%" style="stop-color:#E9ECEF;stop-opacity:1" />
-                                <stop offset="70%" style="stop-color:#CED4DA;stop-opacity:1" />
-                                <stop offset="100%" style="stop-color:#ADB5BD;stop-opacity:1" />
-                            </linearGradient>
-                        </defs>
+                    <div class="car-photo-container">
+                        <!-- Используем реальное фото BMW с анимированными фарами -->
+                        <img src="https://images.unsplash.com/photo-1555215695-3004980ad54e?w=600&h=300&fit=crop" 
+                             alt="BMW передняя часть" 
+                             class="car-photo"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                         
-                        <!-- РЕАЛИСТИЧНЫЙ АВТОМОБИЛЬ (вид спереди) -->
+                        <!-- Анимированные фары поверх фото -->
+                        <div class="headlight-overlay">
+                            <div class="headlight headlight-left">
+                                <div class="headlight-glow"></div>
+                                <div class="headlight-beam"></div>
+                            </div>
+                            <div class="headlight headlight-right">
+                                <div class="headlight-glow"></div>
+                                <div class="headlight-beam"></div>
+                            </div>
+                        </div>
                         
-                        <!-- Основной кузов и капот -->
-                        <path d="M60 40 L260 40 L280 65 L280 100 L40 100 L40 65 Z" fill="url(#metalGrad)" stroke="#6C757D" stroke-width="2"/>
-                        
-                        <!-- Лобовое стекло -->
-                        <path d="M70 50 L250 50 L265 70 L55 70 Z" fill="#4FC3F7" opacity="0.6" stroke="#0277BD" stroke-width="1"/>
-                        
-                        <!-- Решетка радиатора (более крупная и заметная) -->
-                        <g class="car-grille">
-                            <rect x="120" y="65" width="80" height="25" fill="#212529" stroke="#6C757D" stroke-width="2" rx="4"/>
-                            <!-- Горизонтальные планки решетки -->
-                            <line x1="125" y1="70" x2="195" y2="70" stroke="#ADB5BD" stroke-width="2"/>
-                            <line x1="125" y1="75" x2="195" y2="75" stroke="#ADB5BD" stroke-width="2"/>
-                            <line x1="125" y1="80" x2="195" y2="80" stroke="#ADB5BD" stroke-width="2"/>
-                            <line x1="125" y1="85" x2="195" y2="85" stroke="#ADB5BD" stroke-width="2"/>
-                            <!-- Центральный логотип -->
-                            <circle cx="160" cy="77" r="8" fill="#E9ECEF" stroke="#6C757D" stroke-width="2"/>
-                        </g>
-                        
-                        <!-- БОЛЬШИЕ ФАРЫ (главный элемент!) -->
-                        <g class="car-headlights">
-                            <!-- Левая фара -->
-                            <g class="left-headlight">
-                                <!-- Корпус фары (большой и заметный) -->
-                                <ellipse cx="90" cy="75" rx="30" ry="20" fill="#F8F9FA" stroke="#6C757D" stroke-width="3"/>
-                                <!-- Внутренняя часть фары -->
-                                <ellipse cx="90" cy="75" rx="25" ry="16" fill="#E9ECEF" stroke="#ADB5BD" stroke-width="1"/>
-                                <!-- Основной луч (яркий и заметный) -->
-                                <ellipse class="main-beam" cx="90" cy="75" rx="18" ry="12" fill="url(#headlightGlow)" filter="url(#glow)"/>
-                                <!-- Дополнительные светодиоды -->
-                                <circle cx="85" cy="70" r="3" fill="#FBBF24" opacity="0.9"/>
-                                <circle cx="95" cy="70" r="3" fill="#FBBF24" opacity="0.9"/>
-                                <circle cx="85" cy="80" r="3" fill="#FBBF24" opacity="0.9"/>
-                                <circle cx="95" cy="80" r="3" fill="#FBBF24" opacity="0.9"/>
-                                <!-- Отражатель -->
-                                <ellipse cx="90" cy="75" rx="8" ry="5" fill="#FFF3CD" opacity="0.8"/>
-                            </g>
-                            
-                            <!-- Правая фара -->
-                            <g class="right-headlight">
-                                <!-- Корпус фары -->
-                                <ellipse cx="230" cy="75" rx="30" ry="20" fill="#F8F9FA" stroke="#6C757D" stroke-width="3"/>
-                                <!-- Внутренняя часть фары -->
-                                <ellipse cx="230" cy="75" rx="25" ry="16" fill="#E9ECEF" stroke="#ADB5BD" stroke-width="1"/>
-                                <!-- Основной луч -->
-                                <ellipse class="main-beam" cx="230" cy="75" rx="18" ry="12" fill="url(#headlightGlow)" filter="url(#glow)"/>
-                                <!-- Дополнительные светодиоды -->
-                                <circle cx="225" cy="70" r="3" fill="#FBBF24" opacity="0.9"/>
-                                <circle cx="235" cy="70" r="3" fill="#FBBF24" opacity="0.9"/>
-                                <circle cx="225" cy="80" r="3" fill="#FBBF24" opacity="0.9"/>
-                                <circle cx="235" cy="80" r="3" fill="#FBBF24" opacity="0.9"/>
-                                <!-- Отражатель -->
-                                <ellipse cx="230" cy="75" rx="8" ry="5" fill="#FFF3CD" opacity="0.8"/>
-                            </g>
-                        </g>
-                        
-                        <!-- Нижний бампер -->
-                        <path d="M50 90 L270 90 L280 110 L40 110 Z" fill="url(#metalGrad)" stroke="#6C757D" stroke-width="2"/>
-                        
-                        <!-- Номерной знак -->
-                        <rect x="135" y="95" width="50" height="12" fill="#FFFFFF" stroke="#212529" stroke-width="1" rx="2"/>
-                        <text x="160" y="103" text-anchor="middle" fill="#212529" font-size="8" font-family="Arial">A123BC</text>
-                        
-                        <!-- Противотуманные фары -->
-                        <circle cx="100" cy="100" r="8" fill="#F8F9FA" stroke="#6C757D" stroke-width="2"/>
-                        <circle cx="220" cy="100" r="8" fill="#F8F9FA" stroke="#6C757D" stroke-width="2"/>
-                        <circle class="fog-light left" cx="100" cy="100" r="5" fill="#FBBF24" opacity="0.8"/>
-                        <circle class="fog-light right" cx="220" cy="100" r="5" fill="#FBBF24" opacity="0.8"/>
-                        
-                        <!-- МОЩНЫЕ СВЕТОВЫЕ ЛУЧИ ОТ ФАР -->
-                        <ellipse class="light-cone left" cx="40" cy="75" rx="50" ry="25" fill="url(#headlightGlow)" opacity="0.4" transform="rotate(-8 40 75)"/>
-                        <ellipse class="light-cone right" cx="280" cy="75" rx="50" ry="25" fill="url(#headlightGlow)" opacity="0.4" transform="rotate(8 280 75)"/>
-                        
-                        <!-- Дополнительные лучи для реализма -->
-                        <ellipse class="light-beam-extra left" cx="20" cy="75" rx="30" ry="15" fill="#FBBF24" opacity="0.2" transform="rotate(-8 20 75)"/>
-                        <ellipse class="light-beam-extra right" cx="300" cy="75" rx="30" ry="15" fill="#FBBF24" opacity="0.2" transform="rotate(8 300 75)"/>
-                    </svg>
+                        <!-- Резервный SVG на случай если фото не загрузится -->
+                        <svg class="car-icon-fallback" viewBox="0 0 300 120" style="display:none;">
+                            <defs>
+                                <radialGradient id="headlightGlow" cx="50%" cy="50%" r="70%">
+                                    <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:1" />
+                                    <stop offset="20%" style="stop-color:#FBBF24;stop-opacity:0.9" />
+                                    <stop offset="100%" style="stop-color:#D97706;stop-opacity:0.3" />
+                                </radialGradient>
+                                <filter id="glow">
+                                    <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+                                    <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                                </filter>
+                            </defs>
+                            <!-- Простой чистый автомобиль -->
+                            <rect x="50" y="40" width="200" height="60" rx="8" fill="#E5E7EB" stroke="#9CA3AF" stroke-width="2"/>
+                            <rect x="70" y="50" width="160" height="30" rx="4" fill="#60A5FA" opacity="0.6"/>
+                            <ellipse cx="90" cy="75" rx="20" ry="15" fill="#F3F4F6" stroke="#9CA3AF" stroke-width="2"/>
+                            <ellipse cx="210" cy="75" rx="20" ry="15" fill="#F3F4F6" stroke="#9CA3AF" stroke-width="2"/>
+                            <ellipse class="main-beam" cx="90" cy="75" rx="12" ry="8" fill="url(#headlightGlow)" filter="url(#glow)"/>
+                            <ellipse class="main-beam" cx="210" cy="75" rx="12" ry="8" fill="url(#headlightGlow)" filter="url(#glow)"/>
+                            <rect x="130" y="65" width="40" height="15" fill="#374151" rx="2"/>
+                        </svg>
+                    </div>
                 </div>
                 <div class="hero-content">
                     <h1>Запчасти для любого автомобиля</h1>
