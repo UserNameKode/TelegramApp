@@ -545,9 +545,10 @@ h3 {
 /* Бонусная система */
 .bonus-system {
   margin-bottom: 24px;
-  padding: 20px;
+  padding: 16px;
   max-width: 100%;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .bonus-system h3 {
@@ -1253,6 +1254,69 @@ h3 {
   .current-price {
     font-size: 24px;
   }
+}
+
+/* Исправления переполнения профиля */
+.profile-header {
+  overflow: hidden;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.profile-info h2 {
+  word-break: break-word;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 200px;
+}
+
+.bonus-count {
+  font-size: 18px !important;
+  word-break: break-word;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.stat-value {
+  font-size: 18px !important;
+  word-break: break-word;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.favorite-item {
+  max-width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.favorite-info h4 {
+  word-break: break-word;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 150px;
+}
+
+.favorite-price {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.bonus-system * {
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+.progress-levels {
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+.level-point {
+  flex-shrink: 0;
+  min-width: 60px;
 }
 
 /* Дополнительные стили для описания */
