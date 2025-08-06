@@ -14,78 +14,50 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 
     <!-- Стили -->
-    <link rel="stylesheet" href="main.css">
-    <link rel="stylesheet" href="components.css">
-    <link rel="stylesheet" href="animations.css">
+    <link rel="stylesheet" href="./main.css">
+    <link rel="stylesheet" href="./components.css">
+    <link rel="stylesheet" href="./animations.css">
 
     <!-- Telegram Web App -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-    <!-- Инициализация приложения -->
+    <!-- Отладка -->
     <script>
-        window.addEventListener('DOMContentLoaded', function() {
-            try {
-                // Проверяем доступность Telegram WebApp
-                if (!window.Telegram?.WebApp) {
-                    throw new Error('Telegram WebApp не доступен');
-                }
+        // Глобальный обработчик ошибок
+        window.onerror = function(msg, url, lineNo, columnNo, error) {
+            console.error('Ошибка:', msg, 'Строка:', lineNo, 'Файл:', url);
+            showError(msg);
+            return false;
+        };
 
-                // Инициализируем WebApp
-                window.Telegram.WebApp.ready();
-                
-                // Получаем параметры
-                const webApp = window.Telegram.WebApp;
-                const colorScheme = webApp.colorScheme || 'light';
-                const themeParams = webApp.themeParams || {};
+        // Показ ошибки на экране
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.style.position = 'fixed';
+            errorDiv.style.top = '10px';
+            errorDiv.style.left = '10px';
+            errorDiv.style.right = '10px';
+            errorDiv.style.padding = '10px';
+            errorDiv.style.background = '#ff6b35';
+            errorDiv.style.color = 'white';
+            errorDiv.style.zIndex = '9999';
+            errorDiv.textContent = message;
+            document.body.appendChild(errorDiv);
+        }
 
-                // Применяем тему
-                document.documentElement.setAttribute('data-theme', colorScheme);
-
-                // Устанавливаем цвета из Telegram
-                const colors = {
-                    '--tg-theme-bg-color': themeParams.bg_color || '#ffffff',
-                    '--tg-theme-text-color': themeParams.text_color || '#000000',
-                    '--tg-theme-hint-color': themeParams.hint_color || '#999999',
-                    '--tg-theme-link-color': themeParams.link_color || '#2481cc',
-                    '--tg-theme-button-color': themeParams.button_color || '#2481cc',
-                    '--tg-theme-button-text-color': themeParams.button_text_color || '#ffffff'
-                };
-
-                Object.entries(colors).forEach(([key, value]) => {
-                    document.documentElement.style.setProperty(key, value);
-                });
-
-                // Расширяем окно
-                webApp.expand();
-
-                console.log('Telegram WebApp инициализирован');
-            } catch (error) {
-                console.error('Ошибка инициализации:', error);
-                document.body.innerHTML = `
-                    <div class="error-message">
-                        <h2>Ошибка</h2>
-                        <p>Пожалуйста, откройте приложение в Telegram</p>
-                        <a href="https://t.me/autoparts63_bot" class="btn btn-accent">
-                            Открыть в Telegram
-                        </a>
-                    </div>
-                `;
-            }
-        });
+        // Логирование загрузки скриптов
+        function logScriptLoad(scriptName) {
+            console.log('Загружен скрипт:', scriptName);
+        }
     </script>
 </head>
 <body>
     <!-- Экран загрузки -->
     <div id="loading-screen" class="loading-screen">
         <div class="loading-logo">
-            <!-- Реалистичная автомобильная шестерня -->
             <svg class="gear-svg" viewBox="0 0 100 100" width="150" height="150">
-                <!-- Внешний круг -->
                 <circle class="gear-base" cx="50" cy="50" r="45" fill="#FF6B35"/>
-                
-                <!-- Зубцы шестерни -->
                 <g class="gear-teeth">
-                    <!-- 12 зубцов -->
                     <path d="M50 5 L55 0 L60 5 L55 10 Z" class="gear-tooth"/>
                     <path d="M71 11 L78 8 L80 14 L73 17 Z" class="gear-tooth"/>
                     <path d="M89 29 L95 29 L93 35 L87 33 Z" class="gear-tooth"/>
@@ -99,22 +71,11 @@
                     <path d="M11 29 L5 26 L7 20 L13 24 Z" class="gear-tooth"/>
                     <path d="M29 11 L25 5 L31 3 L34 9 Z" class="gear-tooth"/>
                 </g>
-                
-                <!-- Внутренние детали -->
                 <circle cx="50" cy="50" r="35" fill="#1E3D59"/>
                 <circle cx="50" cy="50" r="25" fill="#FF6B35"/>
                 <circle cx="50" cy="50" r="15" fill="#1E3D59"/>
                 <circle cx="50" cy="50" r="8" fill="#FFFFFF"/>
-                
-                <!-- Декоративные линии -->
-                <g class="gear-details" stroke="#1E3D59" stroke-width="2">
-                    <line x1="50" y1="15" x2="50" y2="35"/>
-                    <line x1="65" y1="50" x2="85" y2="50"/>
-                    <line x1="50" y1="65" x2="50" y2="85"/>
-                    <line x1="15" y1="50" x2="35" y2="50"/>
-                </g>
             </svg>
-
             <h1 class="brand-title">Auto<span>63</span></h1>
             <div class="loading-progress">
                 <div class="loading-bar"></div>
@@ -123,7 +84,7 @@
     </div>
 
     <!-- Основной контейнер -->
-    <div id="app" class="app-container">
+    <div id="app" class="app-container" style="display: none;">
         <!-- Навигация -->
         <nav class="nav-bar">
             <button class="nav-btn btn-back">
@@ -220,9 +181,47 @@
     </div>
 
     <!-- Скрипты -->
-    <script src="data.js"></script>
-    <script src="telegram-api.js"></script>
-    <script src="components.js"></script>
-    <script src="app.js"></script>
+    <script>
+        // Последовательная загрузка скриптов
+        function loadScript(src) {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = './' + src;
+                script.onload = () => {
+                    logScriptLoad(src);
+                    resolve();
+                };
+                script.onerror = () => reject(new Error(`Ошибка загрузки скрипта ${src}`));
+                document.body.appendChild(script);
+            });
+        }
+
+        // Инициализация приложения
+        async function initApp() {
+            try {
+                // Проверяем Telegram WebApp
+                if (!window.Telegram?.WebApp) {
+                    throw new Error('Telegram WebApp не доступен');
+                }
+
+                // Инициализируем WebApp
+                window.Telegram.WebApp.ready();
+                
+                // Загружаем скрипты последовательно
+                await loadScript('data.js');
+                await loadScript('telegram-api.js');
+                await loadScript('components.js');
+                await loadScript('app.js');
+
+                console.log('Все скрипты загружены');
+            } catch (error) {
+                console.error('Ошибка инициализации:', error);
+                showError(error.message);
+            }
+        }
+
+        // Запускаем инициализацию после загрузки DOM
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
 </body>
 </html>
