@@ -24,15 +24,53 @@
     <!-- Инициализация приложения -->
     <script>
         window.addEventListener('DOMContentLoaded', function() {
-            // Проверяем доступность Telegram WebApp
-            if (!window.Telegram?.WebApp) {
-                console.error('Telegram WebApp не доступен');
-                return;
-            }
+            try {
+                // Проверяем доступность Telegram WebApp
+                if (!window.Telegram?.WebApp) {
+                    throw new Error('Telegram WebApp не доступен');
+                }
 
-            // Инициализируем WebApp
-            window.Telegram.WebApp.ready();
-            console.log('Telegram WebApp инициализирован');
+                // Инициализируем WebApp
+                window.Telegram.WebApp.ready();
+                
+                // Получаем параметры
+                const webApp = window.Telegram.WebApp;
+                const colorScheme = webApp.colorScheme || 'light';
+                const themeParams = webApp.themeParams || {};
+
+                // Применяем тему
+                document.documentElement.setAttribute('data-theme', colorScheme);
+
+                // Устанавливаем цвета из Telegram
+                const colors = {
+                    '--tg-theme-bg-color': themeParams.bg_color || '#ffffff',
+                    '--tg-theme-text-color': themeParams.text_color || '#000000',
+                    '--tg-theme-hint-color': themeParams.hint_color || '#999999',
+                    '--tg-theme-link-color': themeParams.link_color || '#2481cc',
+                    '--tg-theme-button-color': themeParams.button_color || '#2481cc',
+                    '--tg-theme-button-text-color': themeParams.button_text_color || '#ffffff'
+                };
+
+                Object.entries(colors).forEach(([key, value]) => {
+                    document.documentElement.style.setProperty(key, value);
+                });
+
+                // Расширяем окно
+                webApp.expand();
+
+                console.log('Telegram WebApp инициализирован');
+            } catch (error) {
+                console.error('Ошибка инициализации:', error);
+                document.body.innerHTML = `
+                    <div class="error-message">
+                        <h2>Ошибка</h2>
+                        <p>Пожалуйста, откройте приложение в Telegram</p>
+                        <a href="https://t.me/autoparts63_bot" class="btn btn-accent">
+                            Открыть в Telegram
+                        </a>
+                    </div>
+                `;
+            }
         });
     </script>
 </head>

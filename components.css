@@ -5,8 +5,8 @@
     border-radius: var(--radius-lg);
     overflow: hidden;
     box-shadow: var(--shadow-md);
-    transition: transform var(--transition-fast),
-                box-shadow var(--transition-fast);
+    transition: all var(--transition-fast);
+    cursor: pointer;
 }
 
 .category-card:hover {
@@ -22,16 +22,16 @@
 }
 
 .category-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
     padding: var(--spacing-md);
     background: linear-gradient(
         to top,
         rgba(0, 0, 0, 0.8),
         rgba(0, 0, 0, 0)
     );
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
     color: var(--color-white);
 }
 
@@ -54,8 +54,8 @@
     border-radius: var(--radius-lg);
     overflow: hidden;
     box-shadow: var(--shadow-md);
-    transition: transform var(--transition-fast),
-                box-shadow var(--transition-fast);
+    transition: all var(--transition-fast);
+    cursor: pointer;
 }
 
 .product-card:hover {
@@ -94,6 +94,77 @@
     font-size: 0.875rem;
     color: var(--color-gray-500);
     margin-bottom: var(--spacing-md);
+    line-height: 1.5;
+}
+
+/* Навигация */
+.nav-bar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-md);
+    background-color: var(--color-white);
+    box-shadow: var(--shadow-sm);
+}
+
+.nav-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 50%;
+    background: none;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    color: var(--color-primary);
+}
+
+.nav-btn:hover {
+    background-color: var(--color-gray-100);
+}
+
+.nav-btn.active {
+    color: var(--color-accent);
+    background-color: var(--color-gray-100);
+}
+
+.nav-icon {
+    font-size: 1.25rem;
+}
+
+.nav-title {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
+    font-size: 1.25rem;
+    color: var(--color-primary);
+}
+
+.nav-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+/* Бейджи */
+.badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 10px;
+    background-color: var(--color-accent);
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* Кнопки */
@@ -104,8 +175,8 @@
     padding: var(--spacing-sm) var(--spacing-md);
     border: none;
     border-radius: var(--radius-md);
-    font-family: 'Roboto', sans-serif;
-    font-weight: 500;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
     font-size: 1rem;
     cursor: pointer;
     transition: all var(--transition-fast);
@@ -113,7 +184,7 @@
 
 .btn-primary {
     background-color: var(--color-primary);
-    color: var(--color-white);
+    color: white;
 }
 
 .btn-primary:hover {
@@ -122,26 +193,29 @@
 
 .btn-accent {
     background-color: var(--color-accent);
-    color: var(--color-white);
+    color: white;
 }
 
 .btn-accent:hover {
     background-color: #E85A24;
 }
 
-/* Бейджи */
-.badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 20px;
-    height: 20px;
-    padding: 0 var(--spacing-xs);
-    background-color: var(--color-accent);
-    color: var(--color-white);
-    border-radius: var(--radius-full);
-    font-size: 0.75rem;
-    font-weight: 700;
+.btn-outline {
+    border: 2px solid var(--color-primary);
+    color: var(--color-primary);
+    background: none;
+}
+
+.btn-outline:hover {
+    background-color: var(--color-primary);
+    color: white;
+}
+
+/* Иконки */
+.icon {
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
 }
 
 /* Формы */
@@ -163,82 +237,72 @@
     border-radius: var(--radius-md);
     font-family: 'Roboto', sans-serif;
     font-size: 1rem;
-    transition: border-color var(--transition-fast);
+    transition: all var(--transition-fast);
 }
 
 .form-input:focus {
     outline: none;
     border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(30, 61, 89, 0.1);
 }
 
-/* Уведомления */
-.notification {
-    position: fixed;
-    top: var(--spacing-md);
-    right: var(--spacing-md);
-    padding: var(--spacing-md);
+/* Статистика */
+.quick-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-md);
+    margin: var(--spacing-xl) 0;
+}
+
+.stat-item {
     background-color: var(--color-white);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-lg);
-    z-index: 1000;
-}
-
-.notification-success {
-    border-left: 4px solid var(--color-success);
-}
-
-.notification-error {
-    border-left: 4px solid var(--color-error);
-}
-
-/* Модальные окна */
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-}
-
-.modal.active {
-    display: flex;
-}
-
-.modal-content {
-    background-color: var(--color-white);
-    padding: var(--spacing-lg);
     border-radius: var(--radius-lg);
-    max-width: 500px;
-    width: 90%;
-    position: relative;
+    padding: var(--spacing-lg);
+    text-align: center;
+    box-shadow: var(--shadow-md);
+}
+
+.stat-value {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
+    font-size: 2.5rem;
+    color: var(--color-accent);
+    line-height: 1;
+    margin-bottom: var(--spacing-xs);
+}
+
+.stat-label {
+    color: var(--color-gray-500);
+    font-size: 0.875rem;
 }
 
 /* Адаптивность */
 @media (max-width: 768px) {
-    .category-card,
-    .product-card {
-        margin-bottom: var(--spacing-md);
+    .quick-stats {
+        grid-template-columns: repeat(2, 1fr);
     }
 
-    .modal-content {
-        width: 95%;
-        padding: var(--spacing-md);
+    .nav-title {
+        font-size: 1rem;
+    }
+
+    .product-card,
+    .category-card {
+        margin-bottom: var(--spacing-md);
     }
 }
 
 @media (max-width: 480px) {
-    .btn {
-        width: 100%;
-        margin-bottom: var(--spacing-sm);
+    .quick-stats {
+        grid-template-columns: 1fr;
     }
 
-    .notification {
-        left: var(--spacing-md);
-        right: var(--spacing-md);
+    .nav-btn {
+        width: 36px;
+        height: 36px;
+    }
+
+    .nav-icon {
+        font-size: 1rem;
     }
 }
