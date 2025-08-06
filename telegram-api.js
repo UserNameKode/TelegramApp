@@ -146,17 +146,25 @@ class TelegramAPI {
     }
 
     setupButtons() {
-        // Настройка главной кнопки
-        this.webApp.MainButton.setParams({
-            color: '#00d4ff',
-            text_color: '#ffffff'
-        });
+        try {
+            // Настройка главной кнопки
+            if (this.webApp.MainButton) {
+                this.webApp.MainButton.setParams({
+                    color: this.webApp.themeParams?.button_color || '#00d4ff',
+                    text_color: this.webApp.themeParams?.button_text_color || '#ffffff'
+                });
+            }
 
-        // Настройка кнопки назад (с проверкой поддержки)
-        if (this.webApp.BackButton && this.webApp.BackButton.onClick) {
-            this.webApp.BackButton.onClick(() => {
-                this.handleBackButton();
+            // Не используем BackButton, так как он не поддерживается в текущей версии
+            // Вместо этого используем собственную кнопку назад
+            const backButtons = document.querySelectorAll('.btn-back');
+            backButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    this.handleBackButton();
+                });
             });
+        } catch (error) {
+            console.error('Ошибка настройки кнопок:', error);
         }
     }
 

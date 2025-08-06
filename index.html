@@ -7,13 +7,68 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>АвтоЗапчасти - Telegram MiniApp</title>
+    
+    <!-- Telegram Web App SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js?59"></script>
+    
+    <!-- Инициализация Telegram Web App -->
     <script>
-        // Проверяем доступность Telegram Web App
-        if (!window.Telegram || !window.Telegram.WebApp) {
-            document.write('Пожалуйста, откройте приложение в Telegram: <a href="https://t.me/your_bot">@your_bot</a>');
-        }
+        window.addEventListener('DOMContentLoaded', function() {
+            try {
+                // Проверяем доступность Telegram Web App
+                if (!window.Telegram || !window.Telegram.WebApp) {
+                    throw new Error('Telegram Web App не доступен');
+                }
+
+                // Инициализируем WebApp
+                window.Telegram.WebApp.ready();
+                
+                // Получаем параметры
+                const webApp = window.Telegram.WebApp;
+                const colorScheme = webApp.colorScheme || 'light';
+                const themeParams = webApp.themeParams || {};
+                
+                // Применяем тему
+                document.documentElement.setAttribute('data-theme', colorScheme);
+                
+                // Устанавливаем цвета из Telegram
+                const colors = {
+                    '--tg-theme-bg-color': themeParams.bg_color || '#ffffff',
+                    '--tg-theme-text-color': themeParams.text_color || '#000000',
+                    '--tg-theme-hint-color': themeParams.hint_color || '#999999',
+                    '--tg-theme-link-color': themeParams.link_color || '#2481cc',
+                    '--tg-theme-button-color': themeParams.button_color || '#2481cc',
+                    '--tg-theme-button-text-color': themeParams.button_text_color || '#ffffff',
+                    '--tg-theme-secondary-bg-color': themeParams.secondary_bg_color || '#f0f0f0',
+                };
+                
+                Object.entries(colors).forEach(([key, value]) => {
+                    document.documentElement.style.setProperty(key, value);
+                });
+                
+                // Расширяем окно
+                if (webApp.expand) {
+                    webApp.expand();
+                }
+                
+                console.log('Telegram Web App успешно инициализирован');
+                
+            } catch (error) {
+                console.error('Ошибка инициализации:', error);
+                document.body.innerHTML = `
+                    <div class="error-message" style="padding: 20px; text-align: center;">
+                        <h2 style="color: #e74c3c;">Ошибка</h2>
+                        <p>Пожалуйста, откройте приложение в Telegram</p>
+                        <a href="https://t.me/your_bot" style="display: inline-block; margin-top: 10px; padding: 10px 20px; background: #2481cc; color: white; text-decoration: none; border-radius: 8px;">
+                            Открыть в Telegram
+                        </a>
+                    </div>
+                `;
+            }
+        });
     </script>
+    
+    <!-- Стили -->
     <link rel="stylesheet" href="main.css">
     <link rel="stylesheet" href="components.css">
     <link rel="stylesheet" href="animations.css">
@@ -345,53 +400,65 @@
         window.logInitialization('Начало загрузки скриптов');
     </script>
     
-    <script src="data.js"></script>
-    <script>window.logInitialization('data.js загружен');</script>
-    
-    <script src="optimization.js"></script>
-    <script>window.logInitialization('optimization.js загружен');</script>
-    
-    <script src="telegram-api.js"></script>
-    <script>window.logInitialization('telegram-api.js загружен');</script>
-    
-    <script src="components.js"></script>
-    <script>window.logInitialization('components.js загружен');</script>
-    
-    <script src="app.js"></script>
-    <script>window.logInitialization('app.js загружен');</script>
-    
     <script>
-        // Инициализация приложения
-        window.addEventListener('load', function() {
-            window.logInitialization('Страница полностью загружена');
-            
-            // Показываем экран загрузки
-            const loadingScreen = document.getElementById('loading-screen');
-            const app = document.getElementById('app');
-            
-            if (loadingScreen && app) {
-                loadingScreen.style.display = 'flex';
-                app.style.display = 'none';
-                window.logInitialization('Экран загрузки показан');
-            }
-            
-            // Проверяем доступность модулей
-            window.logInitialization(`DataService доступен: ${!!window.DataService}`);
-            window.logInitialization(`telegramAPI доступен: ${!!window.telegramAPI}`);
-            window.logInitialization(`uiComponents доступен: ${!!window.uiComponents}`);
-            window.logInitialization(`performanceOptimizer доступен: ${!!window.performanceOptimizer}`);
-            
-            // Запускаем приложение
-            if (window.DataService && window.telegramAPI && window.uiComponents && window.performanceOptimizer) {
-                window.logInitialization('Все модули доступны, создаем приложение');
+        // Функция для загрузки скрипта
+        function loadScript(src) {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = src;
+                script.onload = () => {
+                    window.logInitialization(`${src} загружен`);
+                    resolve();
+                };
+                script.onerror = () => {
+                    window.logInitialization(`Ошибка загрузки ${src}`, 'error');
+                    reject(new Error(`Не удалось загрузить ${src}`));
+                };
+                document.body.appendChild(script);
+            });
+        }
+
+        // Последовательная загрузка скриптов
+        async function initializeApp() {
+            try {
+                window.logInitialization('Начало инициализации приложения');
+                
+                // Показываем экран загрузки
+                const loadingScreen = document.getElementById('loading-screen');
+                const app = document.getElementById('app');
+                if (loadingScreen && app) {
+                    loadingScreen.style.display = 'flex';
+                    app.style.display = 'none';
+                }
+                
+                // Загружаем скрипты в правильном порядке
+                await loadScript('data.js');
+                await loadScript('optimization.js');
+                await loadScript('telegram-api.js');
+                await loadScript('components.js');
+                await loadScript('app.js');
+                
+                window.logInitialization('Все скрипты загружены');
+                
+                // Проверяем доступность модулей
+                if (!window.DataService) throw new Error('DataService не доступен');
+                if (!window.telegramAPI) throw new Error('telegramAPI не доступен');
+                if (!window.uiComponents) throw new Error('uiComponents не доступен');
+                if (!window.performanceOptimizer) throw new Error('performanceOptimizer не доступен');
+                
+                // Создаем приложение
+                window.logInitialization('Создаем приложение');
                 window.app = new AutoPartsApp();
-            } else {
-                window.logInitialization('ОШИБКА: Не все модули доступны');
+                
+            } catch (error) {
+                window.logInitialization(`Ошибка инициализации: ${error.message}`, 'error');
+                
+                const loadingScreen = document.getElementById('loading-screen');
                 if (loadingScreen) {
                     loadingScreen.innerHTML = `
                         <div class="error-message">
                             <h2>Ошибка загрузки</h2>
-                            <p>Не удалось загрузить все необходимые компоненты</p>
+                            <p>${error.message}</p>
                             <p class="error-details">
                                 DataService: ${!!window.DataService}<br>
                                 telegramAPI: ${!!window.telegramAPI}<br>
@@ -405,7 +472,14 @@
                     `;
                 }
             }
-        });
+        }
+
+        // Запускаем инициализацию после загрузки DOM
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeApp);
+        } else {
+            initializeApp();
+        }
     </script>
 </body>
 </html> 

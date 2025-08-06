@@ -21,7 +21,7 @@ class UIComponents {
     }
 
     // ===== УПРАВЛЕНИЕ ЭКРАНАМИ =====
-    showScreen(screenName) {
+    showScreen(screenName, saveHistory = true) {
         console.log('Переключение на экран:', screenName);
         
         // Скрываем все экраны
@@ -34,6 +34,14 @@ class UIComponents {
         const targetScreen = document.getElementById(`${screenName}-screen`);
         if (targetScreen) {
             targetScreen.classList.add('active');
+            
+            // Сохраняем историю навигации
+            if (saveHistory && this.currentScreen) {
+                const navigationHistory = JSON.parse(localStorage.getItem('navigationHistory') || '[]');
+                navigationHistory.push(this.currentScreen);
+                localStorage.setItem('navigationHistory', JSON.stringify(navigationHistory));
+            }
+            
             this.currentScreen = screenName;
             console.log('Экран показан:', screenName);
         } else {
@@ -42,6 +50,9 @@ class UIComponents {
 
         // Обновляем активную кнопку навигации
         this.updateActiveNavButton(screenName);
+        
+        // Прокручиваем страницу вверх
+        window.scrollTo(0, 0);
     }
 
     updateActiveNavButton(screenName) {
@@ -739,8 +750,41 @@ class UIComponents {
             
             // Кнопка "Назад"
             if (e.target.closest('.btn-back')) {
+                e.preventDefault();
+                e.stopPropagation();
                 console.log('Back button clicked');
-                this.showHome();
+                
+                // Определяем текущий экран
+                const currentScreen = document.querySelector('.screen.active');
+                if (!currentScreen) {
+                    this.showHome();
+                    return;
+                }
+
+                // Получаем историю навигации
+                const navigationHistory = JSON.parse(localStorage.getItem('navigationHistory') || '[]');
+                
+                if (navigationHistory.length > 0) {
+                    // Возвращаемся к предыдущему экрану
+                    const previousScreen = navigationHistory.pop();
+                    localStorage.setItem('navigationHistory', JSON.stringify(navigationHistory));
+                    
+                    if (previousScreen === 'home') {
+                        this.showHome();
+                    } else if (previousScreen.startsWith('category-')) {
+                        const categoryId = previousScreen.split('-')[1];
+                        this.showCategory(categoryId);
+                    } else if (previousScreen.startsWith('product-')) {
+                        const productId = previousScreen.split('-')[1];
+                        this.showProduct(productId);
+                    } else {
+                        // Если не можем определить предыдущий экран, возвращаемся на главную
+                        this.showHome();
+                    }
+                } else {
+                    // Если история пуста, возвращаемся на главную
+                    this.showHome();
+                }
                 return;
             }
             
