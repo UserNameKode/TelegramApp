@@ -4,6 +4,7 @@ class AutoPartsApp {
         this.cart = null;
         this.profile = null;
         this.checkout = null;
+        this._searchDebounceTimer = null;
     }
 
     async init() {
@@ -102,13 +103,10 @@ class AutoPartsApp {
             <div class="hero-banner">
                 <div class="car-animation">
                     <div class="car-photo-container">
-                        <!-- Используем реальное фото BMW с анимированными фарами -->
-                        <img src="https://images.unsplash.com/photo-1555215695-3004980ad54e?w=600&h=300&fit=crop" 
-                             alt="BMW передняя часть" 
-                             class="car-photo"
-                             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <!-- Контейнер для Lottie-анимации автомобиля -->
+                        <div id="car-lottie" class="car-photo" aria-label="Анимация автомобиля"></div>
                         
-                        <!-- Анимированные фары поверх фото -->
+                        <!-- Анимированные фары поверх фото/анимации (тонкая подстройка) -->
                         <div class="headlight-overlay">
                             <div class="headlight headlight-left">
                                 <div class="headlight-glow"></div>
@@ -222,6 +220,32 @@ class AutoPartsApp {
                 `).join('')}
             </div>
         `;
+
+        // Если доступна Lottie, подгружаем анимацию Mustang (локально с фоллбеком)
+        if (window.lottie) {
+            const container = document.getElementById('car-lottie');
+            const fallbackUrl = 'https://assets7.lottiefiles.com/packages/lf20_Vf1VfF.json';
+            const localUrl = 'assets/Mustang.json';
+            const load = (url) => {
+                try {
+                    window.__carLottie && window.__carLottie.destroy && window.__carLottie.destroy();
+                } catch(_) {}
+                window.__carLottie = lottie.loadAnimation({
+                    container,
+                    renderer: 'svg',
+                    loop: true,
+                    autoplay: true,
+                    path: url
+                });
+                // Чуть увеличим скорость, чтобы выглядело динамичнее
+                try { window.__carLottie.setSpeed(1.15); } catch(_) {}
+            };
+            try {
+                fetch(localUrl, { method: 'HEAD' })
+                    .then(r => load(r.ok ? localUrl : fallbackUrl))
+                    .catch(() => load(fallbackUrl));
+            } catch(_) { load(fallbackUrl); }
+        }
 
         this.setupHomeEventListeners();
     }
@@ -398,26 +422,37 @@ class AutoPartsApp {
         if (searchInput) {
             console.log('=== НАСТРОЙКА ПОИСКА ===');
             console.log('Поле поиска найдено:', searchInput);
-            
-            // Простые обработчики без клонирования
+
+            // Дебаунс-обработка ввода, удерживаем фокус после перерисовок
             searchInput.addEventListener('input', (e) => {
-                const query = e.target.value.trim();
-                console.log('ВВОД ТЕКСТА:', query);
-                
-                if (query.length >= 1) {
-                    console.log('Запускаем поиск для:', query);
-                    this.performSearch();
-                } else {
-                    console.log('Очищаем поиск');
-                    this.renderHome();
-                }
+                const value = e.target.value;
+                clearTimeout(this._searchDebounceTimer);
+                this._searchDebounceTimer = setTimeout(() => {
+                    const query = value.trim();
+                    if (query.length >= 1) {
+                        this.performSearch();
+                        setTimeout(() => {
+                            const si = document.getElementById('search-input');
+                            if (si) { si.focus(); si.setSelectionRange(query.length, query.length); }
+                        }, 0);
+                    } else {
+                        this.renderHome();
+                        setTimeout(() => {
+                            const si = document.getElementById('search-input');
+                            if (si) si.focus();
+                        }, 0);
+                    }
+                }, 220);
             });
-            
+
             searchInput.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') {
                     e.preventDefault();
-                    console.log('ENTER - запускаем поиск');
                     this.performSearch();
+                    setTimeout(() => {
+                        const si = document.getElementById('search-input');
+                        if (si) si.focus();
+                    }, 0);
                 }
             });
         } else {

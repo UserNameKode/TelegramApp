@@ -127,7 +127,9 @@
           
           // Загружаем скрипты
           setTimeout(async () => {
-                                    const scripts = ['data.js','Cart.js','Profile.js','Checkout.js','app.js'];
+            // Lottie для анимации автомобиля с фарами
+            await loadScript('https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js');
+            const scripts = ['data.js','Cart.js','Profile.js','Checkout.js','app.js'];
             for (const src of scripts) {
               await loadScript(src);
             }

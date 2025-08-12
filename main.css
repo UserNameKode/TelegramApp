@@ -1790,17 +1790,8 @@ h3 {
   border-radius: 50%;
 }
 
-.headlight-left {
-  left: 28%;
-  top: 58%;
-  transform: rotate(-3deg);
-}
-
-.headlight-right {
-  right: 28%;
-  top: 58%;
-  transform: rotate(3deg);
-}
+.headlight-left { left: 31.5%; top: 62.5%; transform: rotate(-1.5deg); }
+.headlight-right { right: 31.5%; top: 62.5%; transform: rotate(1.5deg); }
 
 .headlight-glow {
   position: absolute;
