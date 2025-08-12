@@ -2047,10 +2047,13 @@ h3 {
 
 .filter-chip.active,
 .filter-chip:hover {
-  background: #3B82F6;
+  background: linear-gradient(135deg, #6366f1, #3b82f6);
   color: white;
-  border-color: #3B82F6;
+  border-color: rgba(99,102,241,.6);
 }
+
+.filter-chip.pulse { transform: scale(0.98); }
+.filter-chip { transition: transform .2s ease, background .2s ease, color .2s ease, border-color .2s ease; }
 
 /* Секции */
 .section-header {
@@ -2090,9 +2093,18 @@ h3 {
 }
 
 .brand-card:hover {
-  transform: translateY(-4px);
-  border-color: #3B82F6;
-  box-shadow: 0 12px 30px rgba(59, 130, 246, 0.2);
+  transform: translateY(-4px) scale(1.02);
+  border-color: rgba(99,102,241,.45);
+  box-shadow: 0 14px 36px rgba(99, 102, 241, 0.25);
+}
+
+.brand-card.hovered::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  pointer-events: none;
+  background: radial-gradient(600px 200px at 50% 0%, rgba(99,102,241,.18), transparent 60%);
 }
 
 .brand-logo {

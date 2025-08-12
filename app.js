@@ -246,6 +246,7 @@ class AutoPartsApp {
         }
 
         this.setupHomeEventListeners();
+        this.setupUIEffects();
     }
 
     performSearch() {
@@ -352,6 +353,7 @@ class AutoPartsApp {
 
         // Обработчики для товаров в результатах поиска
         this.setupProductEventListeners();
+        this.setupUIEffects();
     }
 
     applyFilter(filter) {
@@ -410,6 +412,7 @@ class AutoPartsApp {
         }
 
         this.setupProductEventListeners();
+        this.setupUIEffects();
     }
 
     setupHomeEventListeners() {
@@ -560,6 +563,7 @@ class AutoPartsApp {
                 }
             });
         });
+        this.setupUIEffects();
     }
 
     renderBrandProducts(brandId) {
@@ -982,8 +986,51 @@ class AutoPartsApp {
                 }
             });
         });
+        this.setupUIEffects();
     }
 }
 
 // Глобально доступный объект приложения
 window.app = new AutoPartsApp();
+
+// Визуальные микроэффекты: параллакс, плавные ховеры, пульс фильтров
+AutoPartsApp.prototype.setupUIEffects = function(rootElement) {
+    const root = rootElement || document;
+
+    const maxTilt = 6; // градусов
+    const applyTilt = (el, e) => {
+        const rect = el.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        const dx = (e.clientX - cx) / (rect.width / 2);
+        const dy = (e.clientY - cy) / (rect.height / 2);
+        const rotateX = (dy * -maxTilt).toFixed(2);
+        const rotateY = (dx * maxTilt).toFixed(2);
+        el.style.transform = `perspective(900px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    };
+    const resetTilt = (el) => { el.style.transform = ''; };
+
+    root.querySelectorAll('.card').forEach(card => {
+        if (card.__tiltBound) return;
+        card.__tiltBound = true;
+        card.addEventListener('mousemove', (e) => applyTilt(card, e));
+        card.addEventListener('mouseleave', () => resetTilt(card));
+        card.addEventListener('touchstart', () => resetTilt(card), { passive: true });
+    });
+
+    root.querySelectorAll('.brand-card').forEach(card => {
+        if (card.__brandBound) return;
+        card.__brandBound = true;
+        card.addEventListener('mouseenter', () => card.classList.add('hovered'));
+        card.addEventListener('mouseleave', () => card.classList.remove('hovered'));
+    });
+
+    root.querySelectorAll('.filter-chip').forEach(chip => {
+        if (chip.__chipBound) return;
+        chip.__chipBound = true;
+        chip.addEventListener('click', () => {
+            chip.classList.add('pulse');
+            setTimeout(() => chip.classList.remove('pulse'), 240);
+        });
+    });
+};
