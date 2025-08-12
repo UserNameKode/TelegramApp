@@ -99,6 +99,39 @@
   </div>
 
   <script>
+    function loadScript(url){
+      return new Promise((resolve,reject)=>{
+        const s=document.createElement('script');
+        s.src=url;
+        s.defer=true;
+        s.crossOrigin='anonymous';
+        s.onload=resolve;
+        s.onerror=()=>reject(new Error('script load failed: '+url));
+        document.body.appendChild(s);
+      });
+    }
+
+    async function loadWithFallbacks(relPathWithQuery){
+      const candidates=[];
+      try{
+        candidates.push(new URL(relPathWithQuery, document.baseURI).href);
+      }catch(_){}
+      try{
+        // Репозиторий GitHub Pages: /<repo>/... → доклеиваем doctordom
+        const parts = location.pathname.split('/').filter(Boolean);
+        const repo = parts.length ? `/${parts[0]}/` : '/';
+        candidates.push(location.origin + repo + 'doctordom/' + relPathWithQuery);
+      }catch(_){}
+      // Последний вариант — относительный
+      candidates.push(relPathWithQuery);
+
+      let lastErr;
+      for(const url of candidates){
+        try{ console.debug('Loading', url); await loadScript(url); return; }
+        catch(e){ lastErr=e; }
+      }
+      throw lastErr || new Error('cannot load '+relPathWithQuery);
+    }
     document.addEventListener('DOMContentLoaded', async () => {
       // Показываем анимацию загрузки
       const progressBar = document.getElementById('progress-fill');
@@ -115,43 +148,46 @@
         
         if (progress >= 100) {
           clearInterval(loadingInterval);
-          // Плавный переход к приложению (скрипты подключены статически ниже)
-          setTimeout(() => {
-            loadingScreen.style.opacity = '0';
-            setTimeout(() => {
-              loadingScreen.style.display = 'none';
-              appContainer.style.display = 'block';
-              appContainer.style.opacity = '1';
-              try { window.app && typeof window.app.init === 'function' && window.app.init(); }
+          // Загружаем скрипты последовательно и только затем показываем приложение
+          (async () => {
+            try {
+              await loadScript('https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js');
+              const VERSION='2025-08-12-8';
+              const rel = [
+                'services/Router.js',
+                'services/ThemeService.js',
+                'services/UIService.js',
+                'services/OrderService.js',
+                'screens/Home.js',
+                'screens/Search.js',
+                'screens/Catalog.js',
+                'screens/Product.js',
+                'screens/Favorites.js',
+                'screens/ProfileScreen.js',
+                'screens/CartScreen.js',
+                'screens/CheckoutScreen.js',
+                'data.js','Cart.js','Profile.js','Checkout.js','app.js'
+              ];
+              for(const path of rel){
+                await loadWithFallbacks(`${path}?v=${VERSION}`);
+              }
+            } catch (e) {
+              console.error('Ошибка загрузки модулей', e);
+              return;
+            }
+            // Плавный переход к приложению
+            loadingScreen.style.opacity='0';
+            setTimeout(()=>{
+              loadingScreen.style.display='none';
+              appContainer.style.display='block';
+              appContainer.style.opacity='1';
+              try { window.app && typeof window.app.init==='function' && window.app.init(); }
               catch(e){ console.error('Ошибка инициализации', e); }
-            }, 300);
-          }, 300);
+            },300);
+          })();
         }
       }, 100); // Обновляем каждые 100ms
     });
   </script>
-
-  <!-- Библиотека Lottie -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js" defer></script>
-  <!-- Services -->
-  <script src="services/Router.js?v=2025-08-12-7" defer></script>
-  <script src="services/ThemeService.js?v=2025-08-12-7" defer></script>
-  <script src="services/UIService.js?v=2025-08-12-7" defer></script>
-  <script src="services/OrderService.js?v=2025-08-12-7" defer></script>
-  <!-- Screens -->
-  <script src="screens/Home.js?v=2025-08-12-7" defer></script>
-  <script src="screens/Search.js?v=2025-08-12-7" defer></script>
-  <script src="screens/Catalog.js?v=2025-08-12-7" defer></script>
-  <script src="screens/Product.js?v=2025-08-12-7" defer></script>
-  <script src="screens/Favorites.js?v=2025-08-12-7" defer></script>
-  <script src="screens/ProfileScreen.js?v=2025-08-12-7" defer></script>
-  <script src="screens/CartScreen.js?v=2025-08-12-7" defer></script>
-  <script src="screens/CheckoutScreen.js?v=2025-08-12-7" defer></script>
-  <!-- Core -->
-  <script src="data.js?v=2025-08-12-7" defer></script>
-  <script src="Cart.js?v=2025-08-12-7" defer></script>
-  <script src="Profile.js?v=2025-08-12-7" defer></script>
-  <script src="Checkout.js?v=2025-08-12-7" defer></script>
-  <script src="app.js?v=2025-08-12-7" defer></script>
 </body>
 </html>
