@@ -510,12 +510,6 @@ class AutoPartsApp {
             this.performSearch();
         });
 
-        document.getElementById('search-input').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                this.performSearch();
-            }
-        });
-
         // Просмотр товаров для истории
         document.querySelectorAll('.product-card').forEach(card => {
             card.addEventListener('click', (e) => {
@@ -526,14 +520,6 @@ class AutoPartsApp {
                 }
             });
         });
-    }
-
-    performSearch() {
-        const query = document.getElementById('search-input').value.trim();
-        if (query) {
-            const results = DataService.searchProducts(query);
-            this.renderSearchResults(query, results);
-        }
     }
 
     renderBrandProducts(brandId) {
@@ -855,16 +841,17 @@ class AutoPartsApp {
         document.querySelectorAll('.btn-add-large, .btn-add').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                const productId = e.target.getAttribute('data-product-id');
+                const targetButton = e.currentTarget;
+                const productId = targetButton.getAttribute('data-product-id');
                 const product = DataService.getProduct(productId);
                 if (product) {
                     this.cart.addItem(product);
-                    
-                    btn.textContent = 'Добавлено!';
-                    btn.style.background = '#059669';
+
+                    targetButton.textContent = 'Добавлено!';
+                    targetButton.style.background = '#059669';
                     setTimeout(() => {
-                        btn.textContent = e.target.classList.contains('btn-add-large') ? 'Добавить в корзину' : 'В корзину';
-                        btn.style.background = '#10B981';
+                        targetButton.textContent = targetButton.classList.contains('btn-add-large') ? 'Добавить в корзину' : 'В корзину';
+                        targetButton.style.background = '#10B981';
                     }, 1500);
                 }
             });
@@ -939,17 +926,18 @@ class AutoPartsApp {
         // Добавляем обработчики для кнопок "В корзину"
         document.querySelectorAll('.btn-add[data-product-id]').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                const productId = e.target.getAttribute('data-product-id');
+                const targetButton = e.currentTarget; // гарантированно сама кнопка
+                const productId = targetButton.getAttribute('data-product-id');
                 const product = DataService.getProduct(productId);
                 if (product) {
                     this.cart.addItem(product);
-                    
+
                     // Визуальная обратная связь
-                    btn.textContent = 'Добавлено!';
-                    btn.style.background = '#059669';
+                    targetButton.textContent = 'Добавлено!';
+                    targetButton.style.background = '#059669';
                     setTimeout(() => {
-                        btn.textContent = 'В корзину';
-                        btn.style.background = '#10B981';
+                        targetButton.textContent = 'В корзину';
+                        targetButton.style.background = '#10B981';
                     }, 1000);
                 }
             });

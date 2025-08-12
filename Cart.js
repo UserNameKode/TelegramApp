@@ -6,28 +6,46 @@ class Cart {
 
     loadFromStorage() {
         const stored = localStorage.getItem('cart');
-        this.items = stored ? JSON.parse(stored) : [];
+        const parsed = stored ? JSON.parse(stored) : [];
+        this.items = this.sanitizeItems(parsed);
         this.updateBadge();
     }
 
     saveToStorage() {
+        // Перед сохранением убираем мусорные записи
+        this.items = this.sanitizeItems(this.items);
         localStorage.setItem('cart', JSON.stringify(this.items));
         this.updateBadge();
     }
 
     addItem(product) {
-        const existing = this.items.find(item => item.id === product.id);
+        if (!product || !product.id) {
+            return;
+        }
+        const existing = this.items.find(item => item && item.id === product.id);
         if (existing) {
             existing.quantity += 1;
         } else {
-            this.items.push({ ...product, quantity: 1 });
+            const normalized = {
+                id: String(product.id),
+                title: product.title || 'Без названия',
+                article: product.article || '',
+                price: Number(product.price) || 0,
+                image: product.image || '',
+                quantity: 1
+            };
+            this.items.push(normalized);
         }
         this.saveToStorage();
         this.render();
     }
 
     removeItem(productId) {
-        this.items = this.items.filter(item => item.id !== productId);
+        // Также удаляем все некорректные записи без id
+        this.items = this.items.filter(item => {
+            if (!item || !item.id) return false;
+            return String(item.id) !== String(productId);
+        });
         this.saveToStorage();
         this.render();
     }
@@ -60,6 +78,19 @@ class Cart {
             const quantity = parseInt(item.quantity) || 0;
             return sum + (price * quantity);
         }, 0);
+    }
+
+    sanitizeItems(items) {
+        return (items || [])
+            .filter(item => item && item.id)
+            .map(item => ({
+                id: String(item.id),
+                title: item.title || 'Без названия',
+                article: item.article || '',
+                price: Number(item.price) || 0,
+                image: item.image || '',
+                quantity: Math.max(1, Number(item.quantity) || 1)
+            }));
     }
 
     render() {
