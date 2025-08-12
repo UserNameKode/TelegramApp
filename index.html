@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <base href="./" />
   <title>АвтоЗапчасти63</title>
   <link rel="stylesheet" href="main.css?v=2025-08-12-1" />
 </head>
@@ -158,10 +159,17 @@
               for (const src of scripts) {
                 const clean = src.split('?')[0].replace(/^\.\//,'');
                 const v = src.split('?')[1]||'';
+                const base = clean;
+                const basename = base.split('/').pop();
+                const lc = basename.toLowerCase();
                 const candidates = [
                   src,
-                  clean.startsWith('./')?clean:('./'+clean)+(v?('?'+v):''),
-                  clean+(v?('?'+v):''),
+                  './'+base+(v?('?'+v):''),
+                  base+(v?('?'+v):''),
+                  './'+basename+(v?('?'+v):''),
+                  basename+(v?('?'+v):''),
+                  './'+lc+(v?('?'+v):''),
+                  lc+(v?('?'+v):'')
                 ];
                 await loadScriptAny(candidates);
               }
