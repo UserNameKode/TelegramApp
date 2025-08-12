@@ -116,17 +116,15 @@
       const loadingScreen = document.getElementById('loading-screen');
       const appContainer = document.getElementById('app');
       
-      // Имитируем загрузку с красивой анимацией
+      // Детерминированная загрузка ~1.6 сек
       let progress = 0;
+      const stepMs = 80; // 20 шагов * 80мс = 1.6s
       const loadingInterval = setInterval(() => {
-        progress += Math.random() * 15 + 5; // Случайное увеличение от 5 до 20%
+        progress += 5;
         if (progress > 100) progress = 100;
-        
         progressBar.style.width = progress + '%';
-        
         if (progress >= 100) {
           clearInterval(loadingInterval);
-          
           // Загружаем скрипты
           setTimeout(async () => {
             // Lottie для анимации автомобиля с фарами
@@ -147,10 +145,8 @@
               'services/OrderService.js',
               'data.js','Cart.js','Profile.js','Checkout.js','app.js'
             ].map(s => `${s}?v=${VERSION}`);
-            for (const src of scripts) {
-              await loadScript(src);
-            }
-            
+            try { for (const src of scripts) { await loadScript(src); } }
+            catch (err) { console.error('Ошибка загрузки модулей', err); }
             // Плавный переход к приложению
             setTimeout(() => {
               loadingScreen.style.opacity = '0';
@@ -158,15 +154,17 @@
                 loadingScreen.style.display = 'none';
                 appContainer.style.display = 'block';
                 appContainer.style.opacity = '1';
-                if (window.app && typeof window.app.init === 'function') {
-                  window.app.init();
-                  if(window.ThemeService && ThemeService.init) ThemeService.init();
-                }
+                try {
+                  if (window.app && typeof window.app.init === 'function') {
+                    window.app.init();
+                    if(window.ThemeService && ThemeService.init) ThemeService.init();
+                  }
+                } catch(e){ console.error('Ошибка инициализации', e); }
               }, 300);
-            }, 500);
-          }, 200);
+            }, 200);
+          }, 100);
         }
-      }, 100); // Обновляем каждые 100ms
+      }, stepMs);
     });
   </script>
 </body>
