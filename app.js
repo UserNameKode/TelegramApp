@@ -161,6 +161,9 @@ class AutoPartsApp {
                 </div>
             </div>
 
+            <!-- Живые результаты поиска (без перерисовки поля ввода) -->
+            <div id="live-search-results"></div>
+
             <!-- Марки автомобилей -->
             <div class="section-header">
                 <h3>Выберите марку автомобиля</h3>
@@ -226,25 +229,34 @@ class AutoPartsApp {
             const container = document.getElementById('car-lottie');
             const fallbackUrl = 'https://assets7.lottiefiles.com/packages/lf20_Vf1VfF.json';
             const localUrl = 'assets/Mustang.json';
+
             const load = (url) => {
                 try {
-                    window.__carLottie && window.__carLottie.destroy && window.__carLottie.destroy();
+                    if (window.__carLottie && window.__carLottie.destroy) window.__carLottie.destroy();
                 } catch(_) {}
-                window.__carLottie = lottie.loadAnimation({
+                const anim = lottie.loadAnimation({
                     container,
                     renderer: 'svg',
                     loop: true,
                     autoplay: true,
                     path: url
                 });
-                // Чуть увеличим скорость, чтобы выглядело динамичнее
-                try { window.__carLottie.setSpeed(1.15); } catch(_) {}
+                try { anim.setSpeed(1.15); } catch(_) {}
+                return anim;
             };
+
+            // Сначала пробуем локальный файл /assets/Mustang.json, при ошибке — fallback
             try {
-                fetch(localUrl, { method: 'HEAD' })
-                    .then(r => load(r.ok ? localUrl : fallbackUrl))
-                    .catch(() => load(fallbackUrl));
-            } catch(_) { load(fallbackUrl); }
+                const anim = load(localUrl);
+                try {
+                    anim.addEventListener && anim.addEventListener('data_failed', () => {
+                        load(fallbackUrl);
+                    });
+                } catch(_) {}
+                window.__carLottie = anim;
+            } catch(_) {
+                load(fallbackUrl);
+            }
         }
 
         this.setupHomeEventListeners();
@@ -418,29 +430,36 @@ class AutoPartsApp {
         // Поиск
         const searchInput = document.getElementById('search-input');
         const searchBtn = document.getElementById('search-btn');
+        const liveResults = document.getElementById('live-search-results');
 
         if (searchInput) {
             console.log('=== НАСТРОЙКА ПОИСКА ===');
             console.log('Поле поиска найдено:', searchInput);
 
-            // Дебаунс-обработка ввода, удерживаем фокус после перерисовок
+            // Дебаунс-обработка ввода, без перерисовки всей страницы
             searchInput.addEventListener('input', (e) => {
                 const value = e.target.value;
                 clearTimeout(this._searchDebounceTimer);
                 this._searchDebounceTimer = setTimeout(() => {
                     const query = value.trim();
-                    if (query.length >= 1) {
-                        this.performSearch();
-                        setTimeout(() => {
-                            const si = document.getElementById('search-input');
-                            if (si) { si.focus(); si.setSelectionRange(query.length, query.length); }
-                        }, 0);
-                    } else {
-                        this.renderHome();
-                        setTimeout(() => {
-                            const si = document.getElementById('search-input');
-                            if (si) si.focus();
-                        }, 0);
+                    if (query.length < 1) { if (liveResults) liveResults.innerHTML = ''; return; }
+                    const results = DataService.searchProducts(query).slice(0, 6);
+                    if (liveResults) {
+                        liveResults.innerHTML = results.length ? `
+                            <div class="products search-products mini">
+                              ${results.map(p => `
+                                <div class=\"card product-card\" data-product-id=\"${p.id}\">
+                                  <img src=\"${p.image}\" alt=\"${p.title}\"/>
+                                  <div class=\"product-info\">
+                                    <h4>${p.title}</h4>
+                                    <p class=\"product-brand\">${DataService.getCarBrand(p.brandId)?.name || ''}</p>
+                                    <p class=\"product-price\">${(p.price||0).toLocaleString()} ₽</p>
+                                  </div>
+                                </div>`).join('')}
+                            </div>
+                        ` : '<div class="no-results small">Ничего не найдено</div>';
+                        // навешиваем обработчики на мини-карточки
+                        this.setupProductEventListeners();
                     }
                 }, 220);
             });

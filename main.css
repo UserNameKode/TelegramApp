@@ -1660,6 +1660,20 @@ h3 {
   color: #F8FAFC;
 }
 
+/* Live Search Results (мини-вид) */
+#live-search-results { margin-top: 12px; }
+#live-search-results .products.mini {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+}
+#live-search-results .product-card { padding: 10px; }
+#live-search-results .product-card img {
+  height: 90px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
 .btn-back-search {
   margin-top: 16px;
   padding: 12px 24px;
