@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <base href="./" />
+  <title>АвтоЗапчасти63</title>
+  <link rel="stylesheet" href="main.css?v=2025-08-12-5" />
+</head>
+<body>
+  <!-- НОВЫЙ Loader Screen -->
+  <div id="loading-screen">
+    <div class="loading-content">
+      <!-- СОВРЕМЕННАЯ ЗАГРУЗОЧНАЯ ШЕСТЕРЁНКА -->
+      <div class="gear-container">
+        <svg class="gear-svg" viewBox="0 0 60 60" width="60" height="60">
+          <g class="rotating-gear">
+            <defs>
+              <linearGradient id="modernGear" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#60A5FA;stop-opacity:1" />
+                <stop offset="50%" style="stop-color:#3B82F6;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#1D4ED8;stop-opacity:1" />
+              </linearGradient>
+              <filter id="glow">
+                <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                <feMerge>
+                  <feMergeNode in="coloredBlur"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
+            </defs>
+            
+            <!-- Основная шестерня - 12 зубьев -->
+            <g fill="url(#modernGear)" stroke="#1E40AF" stroke-width="1" filter="url(#glow)">
+              <!-- Зубья распределены равномерно -->
+              <polygon points="30,3 33,6 33,12 30,15 27,12 27,6"/>
+              <polygon points="30,3 33,6 33,12 30,15 27,12 27,6" transform="rotate(30 30 30)"/>
+              <polygon points="30,3 33,6 33,12 30,15 27,12 27,6" transform="rotate(60 30 30)"/>
+              <polygon points="30,3 33,6 33,12 30,15 27,12 27,6" transform="rotate(90 30 30)"/>
+              <polygon points="30,3 33,6 33,12 30,15 27,12 27,6" transform="rotate(120 30 30)"/>
+              <polygon points="30,3 33,6 33,12 30,15 27,12 27,6" transform="rotate(150 30 30)"/>
+              <polygon points="30,3 33,6 33,12 30,15 27,12 27,6" transform="rotate(180 30 30)"/>
+              <polygon points="30,3 33,6 33,12 30,15 27,12 27,6" transform="rotate(210 30 30)"/>
+              <polygon points="30,3 33,6 33,12 30,15 27,12 27,6" transform="rotate(240 30 30)"/>
+              <polygon points="30,3 33,6 33,12 30,15 27,12 27,6" transform="rotate(270 30 30)"/>
+              <polygon points="30,3 33,6 33,12 30,15 27,12 27,6" transform="rotate(300 30 30)"/>
+              <polygon points="30,3 33,6 33,12 30,15 27,12 27,6" transform="rotate(330 30 30)"/>
+            </g>
+            
+            <!-- Центральный диск -->
+            <circle cx="30" cy="30" r="12" fill="url(#modernGear)" stroke="#1E40AF" stroke-width="2"/>
+            
+            <!-- Внутреннее кольцо -->
+            <circle cx="30" cy="30" r="8" fill="none" stroke="#1E40AF" stroke-width="1.5"/>
+            
+            <!-- Центральная точка -->
+            <circle cx="30" cy="30" r="3" fill="#1E40AF" stroke="#0F3460" stroke-width="1"/>
+            
+            <!-- Декоративные линии -->
+            <g stroke="#1E40AF" stroke-width="1" fill="none">
+              <line x1="30" y1="25" x2="30" y2="35"/>
+              <line x1="25" y1="30" x2="35" y2="30"/>
+            </g>
+          </g>
+        </svg>
+      </div>
+      
+      <!-- Прогресс бар -->
+      <div class="progress-container">
+        <div class="progress-bar-new">
+          <div class="progress-fill-new" id="progress-fill"></div>
+        </div>
+        <div class="loading-text">АвтоЗапчасти163</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- App Container -->
+  <div id="app" style="display:none;">
+    <!-- Navigation -->
+    <nav class="nav-bar">
+      <button class="btn-back" id="nav-back-btn">←</button>
+      <h1 class="app-title">АвтоЗапчасти63</h1>
+      <div class="nav-actions">
+        <button data-screen="home">🏠</button>
+        <button data-screen="cart">🛒 <span id="cart-badge">0</span></button>
+        <button data-screen="profile">👤</button>
+      </div>
+    </nav>
+
+    <!-- Screens -->
+    <main>
+      <section id="home-screen" class="screen active"></section>
+      <section id="product-screen" class="screen"></section>
+      <section id="cart-screen" class="screen"></section>
+      <section id="checkout-screen" class="screen"></section>
+      <section id="profile-screen" class="screen"></section>
+    </main>
+  </div>
+
+  <script>
+    function loadScript(url){
+      return new Promise((resolve,reject)=>{
+        const s=document.createElement('script');
+        s.src=url;
+        s.defer=true;
+        s.crossOrigin='anonymous';
+        s.onload=resolve;
+        s.onerror=()=>reject(new Error('script load failed: '+url));
+        document.body.appendChild(s);
+      });
+    }
+
+    async function loadWithFallbacks(relPathWithQuery){
+      const candidates=[];
+      try{
+        candidates.push(new URL(relPathWithQuery, document.baseURI).href);
+      }catch(_){}
+      try{
+        // Репозиторий GitHub Pages: /<repo>/... → доклеиваем doctordom
+        const parts = location.pathname.split('/').filter(Boolean);
+        const repo = parts.length ? `/${parts[0]}/` : '/';
+        candidates.push(location.origin + repo + 'doctordom/' + relPathWithQuery);
+      }catch(_){}
+      // Последний вариант — относительный
+      candidates.push(relPathWithQuery);
+
+      let lastErr;
+      for(const url of candidates){
+        try{ console.debug('Loading', url); await loadScript(url); return; }
+        catch(e){ lastErr=e; }
+      }
+      throw lastErr || new Error('cannot load '+relPathWithQuery);
+    }
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Показываем анимацию загрузки
+      const progressBar = document.getElementById('progress-fill');
+      const loadingScreen = document.getElementById('loading-screen');
+      const appContainer = document.getElementById('app');
+      
+      // Имитируем загрузку с красивой анимацией
+      let progress = 0;
+      const loadingInterval = setInterval(() => {
+        progress += Math.random() * 15 + 5; // Случайное увеличение от 5 до 20%
+        if (progress > 100) progress = 100;
+        
+        progressBar.style.width = progress + '%';
+        
+        if (progress >= 100) {
+          clearInterval(loadingInterval);
+          // Загружаем скрипты последовательно и только затем показываем приложение
+          (async () => {
+            try {
+              await loadScript('https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js');
+              const VERSION='2025-08-12-8';
+              const rel = [
+                'services/Router.js',
+                'services/ThemeService.js',
+                'services/UIService.js',
+                'services/OrderService.js',
+                'screens/Home.js',
+                'screens/Search.js',
+                'screens/Catalog.js',
+                'screens/Product.js',
+                'screens/Favorites.js',
+                'screens/ProfileScreen.js',
+                'screens/CartScreen.js',
+                'screens/CheckoutScreen.js',
+                'data.js','Cart.js','Profile.js','Checkout.js','app.js'
+              ];
+              for(const path of rel){
+                await loadWithFallbacks(`${path}?v=${VERSION}`);
+              }
+            } catch (e) {
+              console.error('Ошибка загрузки модулей', e);
+              return;
+            }
+            // Плавный переход к приложению
+            loadingScreen.style.opacity='0';
+            setTimeout(()=>{
+              loadingScreen.style.display='none';
+              appContainer.style.display='block';
+              appContainer.style.opacity='1';
+              try { window.app && typeof window.app.init==='function' && window.app.init(); }
+              catch(e){ console.error('Ошибка инициализации', e); }
+            },300);
+          })();
+        }
+      }, 100); // Обновляем каждые 100ms
+    });
+  </script>
+</body>
+</html>
