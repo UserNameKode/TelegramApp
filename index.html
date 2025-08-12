@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <base href="./" />
   <title>АвтоЗапчасти63</title>
-  <link rel="stylesheet" href="main.css?v=2025-08-12-1" />
+  <link rel="stylesheet" href="main.css?v=2025-08-12-5" />
 </head>
 <body>
   <!-- НОВЫЙ Loader Screen -->
@@ -84,7 +84,6 @@
       <div class="nav-actions">
         <button data-screen="home">🏠</button>
         <button data-screen="cart">🛒 <span id="cart-badge">0</span></button>
-        <button data-screen="favorites">💖</button>
         <button data-screen="profile">👤</button>
       </div>
     </nav>
@@ -96,7 +95,6 @@
       <section id="cart-screen" class="screen"></section>
       <section id="checkout-screen" class="screen"></section>
       <section id="profile-screen" class="screen"></section>
-      <section id="favorites-screen" class="screen"></section>
     </main>
   </div>
 
@@ -105,6 +103,7 @@
       return new Promise((resolve, reject) => {
         const s = document.createElement('script');
         s.src = src;
+        s.defer = true;
         s.onload = resolve;
         s.onerror = (e) => reject(new Error('script load failed: '+src));
         document.body.appendChild(s);
@@ -114,10 +113,15 @@
     async function loadScriptAny(candidates) {
       let lastErr;
       for (const url of candidates) {
-        try { console.debug('Loading', url); await loadScript(url); return; }
-        catch (e) { lastErr = e; }
+        try {
+          console.debug('Loading', url);
+          await loadScript(url);
+          return;
+        } catch (e) {
+          lastErr = e;
+        }
       }
-      throw lastErr || new Error('No candidates provided');
+      throw lastErr || new Error('No candidates worked');
     }
 
     document.addEventListener('DOMContentLoaded', async () => {
@@ -126,55 +130,76 @@
       const loadingScreen = document.getElementById('loading-screen');
       const appContainer = document.getElementById('app');
       
-      // Детерминированная загрузка ~1.6 сек
+      // Имитируем загрузку с красивой анимацией
       let progress = 0;
-      const stepMs = 80; // 20 шагов * 80мс = 1.6s
       const loadingInterval = setInterval(() => {
-        progress += 5;
+        progress += Math.random() * 15 + 5; // Случайное увеличение от 5 до 20%
         if (progress > 100) progress = 100;
+        
         progressBar.style.width = progress + '%';
+        
         if (progress >= 100) {
           clearInterval(loadingInterval);
+          
           // Загружаем скрипты
           setTimeout(async () => {
             // Lottie для анимации автомобиля с фарами
             await loadScript('https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js');
-            const VERSION = '2025-08-12-3';
+            const VERSION = '2025-08-12-6';
             const scripts = [
-              './screens/Home.js',
-              './screens/Search.js',
-              './screens/Catalog.js',
-              './screens/Product.js',
-              './screens/Favorites.js',
-              './screens/ProfileScreen.js',
-              './screens/CartScreen.js',
-              './screens/CheckoutScreen.js',
-              './services/Router.js',
-              './services/ThemeService.js',
-              './services/UIService.js',
-              './services/OrderService.js',
-              './data.js','./Cart.js','./Profile.js','./Checkout.js','./app.js'
+              'services/Router.js',
+              'services/ThemeService.js',
+              'services/UIService.js',
+              'services/OrderService.js',
+              'screens/Home.js',
+              'screens/Search.js',
+              'screens/Catalog.js',
+              'screens/Product.js',
+              'screens/Favorites.js',
+              'screens/ProfileScreen.js',
+              'screens/CartScreen.js',
+              'screens/CheckoutScreen.js',
+              'data.js',
+              'Cart.js','Profile.js','Checkout.js','app.js'
             ].map(s => `${s}?v=${VERSION}`);
+
             try {
               for (const src of scripts) {
-                const clean = src.split('?')[0].replace(/^\.\//,'');
-                const v = src.split('?')[1]||'';
-                const base = clean;
+                const clean = src.split('?')[0];
+                const v = src.includes('?') ? src.slice(src.indexOf('?')) : '';
+                const base = clean.replace(/^\.\//,'');
                 const basename = base.split('/').pop();
                 const lc = basename.toLowerCase();
+                const repoBase = (function(){
+                  try {
+                    const parts = location.pathname.split('/').filter(Boolean);
+                    // https://username.github.io/TelegramApp/... → repo = TelegramApp
+                    if (parts.length >= 2) return `/${parts[0]}/${parts[1]}/`;
+                  } catch(_){}
+                  return '/';
+                })();
                 const candidates = [
                   src,
-                  './'+base+(v?('?'+v):''),
-                  base+(v?('?'+v):''),
-                  './'+basename+(v?('?'+v):''),
-                  basename+(v?('?'+v):''),
-                  './'+lc+(v?('?'+v):''),
-                  lc+(v?('?'+v):'')
+                  './'+base+v,
+                  base+v,
+                  repoBase + 'doctordom/' + base + v,
+                  repoBase + base + v,
+                  './'+basename+v,
+                  basename+v,
+                  './'+lc+v,
+                  lc+v
                 ];
                 await loadScriptAny(candidates);
               }
+            } catch (err) {
+              console.error('Ошибка загрузки модулей', err);
+              const errBox = document.createElement('div');
+              errBox.style.cssText = 'position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#0F172A;color:#fff;padding:24px;text-align:center;z-index:9999;';
+              errBox.innerHTML = 'Не удалось загрузить приложение. Обновите страницу. Если ошибка повторяется — пришлите скрин консоли с последней строкой “Loading …”.';
+              document.body.appendChild(errBox);
+              return;
             }
-            catch (err) { console.error('Ошибка загрузки модулей', err); }
+            
             // Плавный переход к приложению
             setTimeout(() => {
               loadingScreen.style.opacity = '0';
@@ -182,17 +207,14 @@
                 loadingScreen.style.display = 'none';
                 appContainer.style.display = 'block';
                 appContainer.style.opacity = '1';
-                try {
-                  if (window.app && typeof window.app.init === 'function') {
-                    window.app.init();
-                    if(window.ThemeService && ThemeService.init) ThemeService.init();
-                  }
-                } catch(e){ console.error('Ошибка инициализации', e); }
+                if (window.app && typeof window.app.init === 'function') {
+                  window.app.init();
+                }
               }, 300);
-            }, 200);
-          }, 100);
+            }, 500);
+          }, 200);
         }
-      }, stepMs);
+      }, 100); // Обновляем каждые 100ms
     });
   </script>
 </body>
