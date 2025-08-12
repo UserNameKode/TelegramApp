@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="refresh" content="0; url=doctordom/" />
+    <title>Redirecting…</title>
+    <script>
+      // Надёжный редирект на папку приложения
+      (function(){
+        var target = 'doctordom/';
+        if (location.pathname.endsWith('/'+target)) return;
+        location.replace(target);
+      })();
+    </script>
+    <style>body{font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;margin:0;display:grid;place-items:center;height:100vh;background:#0F172A;color:#fff}a{color:#60A5FA}</style>
+  </head>
+  <body>
+    <p>Перенаправляем в <a href="doctordom/">doctordom/</a>…</p>
+  </body>
+</html>
+
