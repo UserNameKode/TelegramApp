@@ -228,7 +228,7 @@ class AutoPartsApp {
         if (window.lottie) {
             const container = document.getElementById('car-lottie');
             const fallbackUrl = 'https://assets7.lottiefiles.com/packages/lf20_Vf1VfF.json';
-            const localUrl = 'assets/Mustang.json';
+            const localUrl = 'Mustang.json';
 
             const load = (url) => {
                 try {
