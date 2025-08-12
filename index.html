@@ -110,6 +110,15 @@
       });
     }
 
+    async function loadScriptAny(candidates) {
+      let lastErr;
+      for (const url of candidates) {
+        try { console.debug('Loading', url); await loadScript(url); return; }
+        catch (e) { lastErr = e; }
+      }
+      throw lastErr || new Error('No candidates provided');
+    }
+
     document.addEventListener('DOMContentLoaded', async () => {
       // Показываем анимацию загрузки
       const progressBar = document.getElementById('progress-fill');
@@ -145,7 +154,18 @@
               './services/OrderService.js',
               './data.js','./Cart.js','./Profile.js','./Checkout.js','./app.js'
             ].map(s => `${s}?v=${VERSION}`);
-            try { for (const src of scripts) { await loadScript(src); } }
+            try {
+              for (const src of scripts) {
+                const clean = src.split('?')[0].replace(/^\.\//,'');
+                const v = src.split('?')[1]||'';
+                const candidates = [
+                  src,
+                  clean.startsWith('./')?clean:('./'+clean)+(v?('?'+v):''),
+                  clean+(v?('?'+v):''),
+                ];
+                await loadScriptAny(candidates);
+              }
+            }
             catch (err) { console.error('Ошибка загрузки модулей', err); }
             // Плавный переход к приложению
             setTimeout(() => {
