@@ -106,28 +106,7 @@ class AutoPartsApp {
                         <!-- Контейнер для Lottie-анимации автомобиля -->
                         <div id="car-lottie" class="car-photo" aria-label="Анимация автомобиля"></div>
                         
-                        <!-- Резервный SVG на случай если фото не загрузится -->
-                        <svg class="car-icon-fallback" viewBox="0 0 300 120" style="display:none;">
-                            <defs>
-                                <radialGradient id="headlightGlow" cx="50%" cy="50%" r="70%">
-                                    <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:1" />
-                                    <stop offset="20%" style="stop-color:#FBBF24;stop-opacity:0.9" />
-                                    <stop offset="100%" style="stop-color:#D97706;stop-opacity:0.3" />
-                                </radialGradient>
-                                <filter id="glow">
-                                    <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
-                                    <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
-                                </filter>
-                            </defs>
-                            <!-- Простой чистый автомобиль -->
-                            <rect x="50" y="40" width="200" height="60" rx="8" fill="#E5E7EB" stroke="#9CA3AF" stroke-width="2"/>
-                            <rect x="70" y="50" width="160" height="30" rx="4" fill="#60A5FA" opacity="0.6"/>
-                            <ellipse cx="90" cy="75" rx="20" ry="15" fill="#F3F4F6" stroke="#9CA3AF" stroke-width="2"/>
-                            <ellipse cx="210" cy="75" rx="20" ry="15" fill="#F3F4F6" stroke="#9CA3AF" stroke-width="2"/>
-                            <ellipse class="main-beam" cx="90" cy="75" rx="12" ry="8" fill="url(#headlightGlow)" filter="url(#glow)"/>
-                            <ellipse class="main-beam" cx="210" cy="75" rx="12" ry="8" fill="url(#headlightGlow)" filter="url(#glow)"/>
-                            <rect x="130" y="65" width="40" height="15" fill="#374151" rx="2"/>
-                        </svg>
+                        <!-- Фоллбек убран: используем только Lottie -->
                     </div>
                 </div>
                 <div class="hero-content">
