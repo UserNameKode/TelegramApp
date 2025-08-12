@@ -30,11 +30,11 @@ class Checkout {
             <div class="profile-section glass-card slide-up">
                 <h4>Способ получения</h4>
                 ${this.deliveryMethods.map(method => `
-                    <label style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; cursor: pointer;">
+                    <label class="delivery-option">
                         <input type="radio" name="delivery" value="${method.id}" ${method.id === 'pickup' ? 'checked' : ''}>
-                        <div>
-                            <div style="font-weight: 600;">${method.title}</div>
-                            <div style="font-size: 14px; color: #94A3B8;">${method.description} ${method.price > 0 ? `• ${method.price} ₽` : ''}</div>
+                        <div class="delivery-info">
+                            <div class="delivery-title">${method.title}</div>
+                            <div class="delivery-desc">${method.description} ${method.price > 0 ? `• ${method.price} ₽` : ''}</div>
                         </div>
                     </label>
                 `).join('')}

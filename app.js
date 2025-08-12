@@ -222,6 +222,13 @@ class AutoPartsApp {
                 .then(r => r.ok ? r.json() : Promise.reject())
                 .then(data => loadFromData(data))
                 .catch(() => loadFromPath(fallbackUrl));
+
+            // Автовосстановление анимации при скрытии/показе WebView
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'visible' && window.__carLottie) {
+                    try { window.__carLottie.play(); } catch(_) {}
+                }
+            });
         }
 
         this.setupHomeEventListeners();

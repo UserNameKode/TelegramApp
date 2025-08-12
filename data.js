@@ -4,43 +4,43 @@ const DataService = {
         {
             id: 'bmw',
             name: 'BMW',
-            logo: 'https://i.ibb.co/Pzf1KGz/bmw-logo.png',
+            logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/BMW.svg/512px-BMW.svg.png',
             popular: true
         },
         {
             id: 'mercedes',
             name: 'Mercedes-Benz',
-            logo: 'https://i.ibb.co/6y8F2zK/mercedes-logo.png',
+            logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Mercedes-Logo.svg/512px-Mercedes-Logo.svg.png',
             popular: true
         },
         {
             id: 'audi',
             name: 'Audi',
-            logo: 'https://i.ibb.co/NmKc5Jm/audi-logo.png',
+            logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Audi_logo.svg/512px-Audi_logo.svg.png',
             popular: true
         },
         {
             id: 'toyota',
             name: 'Toyota',
-            logo: 'https://i.ibb.co/VWrf4QK/toyota-logo.png',
+            logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Toyota_logo.svg/512px-Toyota_logo.svg.png',
             popular: true
         },
         {
             id: 'hyundai',
             name: 'Hyundai',
-            logo: 'https://i.ibb.co/5xYn1Xq/hyundai-logo.png',
+            logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Hyundai_Motor_Company_logo.svg/512px-Hyundai_Motor_Company_logo.svg.png',
             popular: true
         },
         {
             id: 'lada',
             name: 'Lada',
-            logo: 'https://i.ibb.co/ZBqGzDm/lada-logo.png',
+            logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Lada_2015_logo.svg/512px-Lada_2015_logo.svg.png',
             popular: true
         },
         {
             id: 'kia',
             name: 'Kia',
-            logo: 'https://i.ibb.co/8sQNqYM/kia-logo.png',
+            logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Kia_logo.svg/512px-Kia_logo.svg.png',
             popular: false
         },
         {
@@ -58,13 +58,13 @@ const DataService = {
         {
             id: 'landrover',
             name: 'Land Rover',
-            logo: 'https://i.ibb.co/8NtjKpK/landrover-logo.png',
+            logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/02/Land_Rover_2011_logo.svg/512px-Land_Rover_2011_logo.svg.png',
             popular: false
         },
         {
             id: 'honda',
             name: 'Honda',
-            logo: 'https://i.ibb.co/7vYGz8m/honda-logo.png',
+            logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Honda_Logo.svg/512px-Honda_Logo.svg.png',
             popular: false
         }
     ],

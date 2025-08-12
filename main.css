@@ -130,6 +130,13 @@ h3 { font-size: 18px; font-weight: 700; }
 .profile-field input::placeholder, .profile-field textarea::placeholder { color: var(--muted); }
 .profile-field input:focus, .profile-field textarea:focus { border-color: rgba(99,102,241,.55); box-shadow: 0 0 0 4px rgba(99,102,241,.14); }
 
+/* Checkout radio options */
+.delivery-option { display:flex; align-items:center; gap:12px; margin-bottom:12px; cursor:pointer; }
+.delivery-option input { accent-color: var(--brand); }
+.delivery-info { display:flex; flex-direction:column; }
+.delivery-title { font-weight:600; }
+.delivery-desc { font-size:14px; color: var(--muted); }
+
 /* Корзина */
 .glass-card { border-radius: var(--radius); border: 1px solid var(--line); box-shadow: var(--shadow-1); }
 .cart-item { background: linear-gradient(180deg, rgba(18,26,43,.9), rgba(23,34,57,.9)); }
