@@ -1,4 +1,5 @@
 /* Базовые стили */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@600;700&display=swap');
 * {
   margin: 0;
   padding: 0;
@@ -6,10 +7,12 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background: #0F172A;
   color: #F8FAFC;
   line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Экран загрузки */
@@ -118,14 +121,16 @@ body {
 
 /* Навигация */
 .nav-bar {
-  background: #1E293B;
-  padding: 12px 16px;
+  background: linear-gradient(90deg, rgba(30,41,59,.95), rgba(15,23,42,.95));
+  padding: 14px 18px;
   display: flex;
   align-items: center;
   gap: 12px;
   position: sticky;
   top: 0;
   z-index: 100;
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(59,130,246,.15);
 }
 
 .btn-back {
@@ -208,21 +213,21 @@ h3 {
 
 /* Карточки */
 .card {
-  background: linear-gradient(145deg, #1E293B, #334155);
+  background: linear-gradient(145deg, #182335, #283548);
   border-radius: 16px;
   padding: 20px;
   cursor: pointer;
   transition: all 0.3s ease;
-  border: 1px solid rgba(59, 130, 246, 0.2);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  box-shadow: 0 10px 30px rgba(2, 6, 23, 0.45);
   position: relative;
   overflow: hidden;
 }
 
 .card:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 20px 40px rgba(59, 130, 246, 0.3);
-  border-color: #3B82F6;
+  transform: translateY(-6px);
+  box-shadow: 0 18px 40px rgba(2, 6, 23, 0.55);
+  border-color: rgba(99, 102, 241, .45);
 }
 
 /* Убираем фиолетовый градиент с категорий */
@@ -254,23 +259,20 @@ h3 {
 
 .btn-add {
   width: 100%;
-  background: linear-gradient(135deg, #10B981, #059669);
+  background: linear-gradient(135deg, #22c55e, #16a34a);
   border: none;
   color: white;
   padding: 12px 20px;
   border-radius: 12px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.28);
 }
 
-.btn-add:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
-}
+.btn-add:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(16,185,129,.38); }
 
 .btn-add:active {
   transform: translateY(0);
@@ -484,7 +486,7 @@ h3 {
 
 .btn-checkout {
   width: 100%;
-  background: linear-gradient(135deg, #3B82F6, #2563EB);
+  background: linear-gradient(135deg, #6366f1, #3b82f6);
   border: none;
   color: white;
   padding: 16px 24px;
@@ -498,7 +500,7 @@ h3 {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 10px 30px rgba(99, 102, 241, 0.35);
 }
 
 .btn-checkout:hover {
@@ -697,8 +699,8 @@ h3 {
 .profile-tabs {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
-  margin-bottom: 24px;
+  gap: 10px;
+  margin-bottom: 20px;
   width: 100%;
   overflow: hidden;
 }
@@ -711,14 +713,14 @@ h3 {
 }
 
 .tab-btn {
-  padding: 10px 6px;
-  background: rgba(30, 41, 59, 0.6);
-  border: 1px solid #334155;
+  padding: 12px 10px;
+  background: rgba(2,6,23,.5);
+  border: 1px solid rgba(148,163,184,.18);
   border-radius: 12px;
-  color: #94A3B8;
-  font-size: 11px;
+  color: #cbd5e1;
+  font-size: 12px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
   text-align: center;
   white-space: nowrap;
   overflow: hidden;
@@ -727,9 +729,10 @@ h3 {
 }
 
 .tab-btn.active {
-  background: #3B82F6;
+  background: linear-gradient(135deg, #6366f1, #3b82f6);
   color: white;
-  border-color: #3B82F6;
+  border-color: rgba(99,102,241,.6);
+  box-shadow: 0 8px 20px rgba(99,102,241,.35);
 }
 
 .tab-btn:hover:not(.active) {
@@ -1743,8 +1746,8 @@ h3 {
   right: 0;
   bottom: 0;
   background: 
-    radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 80% 50%, rgba(251, 191, 36, 0.1) 0%, transparent 50%);
+    radial-gradient(600px 200px at 30% 60%, rgba(30,144,255,.25) 0%, transparent 60%),
+    radial-gradient(600px 200px at 70% 60%, rgba(56,189,248,.18) 0%, transparent 60%);
   pointer-events: none;
 }
 
@@ -1774,14 +1777,14 @@ h3 {
 /* Стили для реального фото BMW */
 .car-photo-container {
   position: relative;
-  width: 200px;
-  height: 100px;
+  width: 260px;
+  height: 140px;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
 }
 
-#car-lottie { width: 100%; height: 100%; display: block; }
+#car-lottie { width: 100%; height: 100%; display: block; filter: drop-shadow(0 6px 24px rgba(59,130,246,.35)) saturate(1.15) contrast(1.05) brightness(1.05); }
 
 .car-photo {
   width: 100%;
@@ -1790,59 +1793,7 @@ h3 {
   filter: brightness(0.9) contrast(1.1);
 }
 
-.headlight-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-}
-
-.headlight {
-  position: absolute;
-  width: 12px;
-  height: 8px;
-  border-radius: 50%;
-}
-
-.headlight-left { left: 31.5%; top: 62.5%; transform: rotate(-1.5deg); }
-.headlight-right { right: 31.5%; top: 62.5%; transform: rotate(1.5deg); }
-
-.headlight-glow {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(circle, #FFFFFF 0%, #E0F4FF 40%, transparent 70%);
-  border-radius: 50%;
-  animation: headlight-pulse 2s ease-in-out infinite;
-  box-shadow: 0 0 15px #FFFFFF, 0 0 30px #E0F4FF;
-}
-
-.headlight-beam {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 200%;
-  height: 100%;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.9) 0%, rgba(224, 244, 255, 0.7) 30%, rgba(135, 206, 235, 0.5) 60%, transparent 100%);
-  border-radius: 50%;
-  opacity: 0.8;
-  animation: headlight-beam-sweep 3s ease-in-out infinite;
-  filter: blur(2px);
-}
-
-.headlight-left .headlight-beam {
-  transform: translate(-30%, -50%) rotate(-12deg);
-}
-
-.headlight-right .headlight-beam {
-  transform: translate(-70%, -50%) rotate(12deg);
-}
+/* Убраны прежние накладные фары */
 
 .car-icon-fallback {
   width: 200px;

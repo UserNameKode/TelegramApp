@@ -106,18 +106,6 @@ class AutoPartsApp {
                         <!-- Контейнер для Lottie-анимации автомобиля -->
                         <div id="car-lottie" class="car-photo" aria-label="Анимация автомобиля"></div>
                         
-                        <!-- Анимированные фары поверх фото/анимации (тонкая подстройка) -->
-                        <div class="headlight-overlay">
-                            <div class="headlight headlight-left">
-                                <div class="headlight-glow"></div>
-                                <div class="headlight-beam"></div>
-                            </div>
-                            <div class="headlight headlight-right">
-                                <div class="headlight-glow"></div>
-                                <div class="headlight-beam"></div>
-                            </div>
-                        </div>
-                        
                         <!-- Резервный SVG на случай если фото не загрузится -->
                         <svg class="car-icon-fallback" viewBox="0 0 300 120" style="display:none;">
                             <defs>
