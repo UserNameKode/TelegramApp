@@ -4,7 +4,8 @@
     document.body.classList.toggle('theme-light', mode==='light');
   }
   function init(){
-    const saved = localStorage.getItem(KEY) || 'dark';
+    // По умолчанию включаем светлую тему, как просил пользователь
+    const saved = localStorage.getItem(KEY) || 'light';
     apply(saved);
   }
   function setTheme(mode){
