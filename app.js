@@ -230,33 +230,31 @@ class AutoPartsApp {
             const fallbackUrl = 'https://assets7.lottiefiles.com/packages/lf20_Vf1VfF.json';
             const localUrl = 'Mustang.json';
 
-            const load = (url) => {
-                try {
-                    if (window.__carLottie && window.__carLottie.destroy) window.__carLottie.destroy();
-                } catch(_) {}
+            const loadFromData = (data) => {
+                try { if (window.__carLottie && window.__carLottie.destroy) window.__carLottie.destroy(); } catch(_) {}
                 const anim = lottie.loadAnimation({
                     container,
                     renderer: 'svg',
                     loop: true,
                     autoplay: true,
-                    path: url
+                    animationData: data
                 });
                 try { anim.setSpeed(1.15); } catch(_) {}
-                return anim;
+                window.__carLottie = anim;
             };
 
-            // Сначала пробуем локальный файл /assets/Mustang.json, при ошибке — fallback
-            try {
-                const anim = load(localUrl);
-                try {
-                    anim.addEventListener && anim.addEventListener('data_failed', () => {
-                        load(fallbackUrl);
-                    });
-                } catch(_) {}
+            const loadFromPath = (url) => {
+                try { if (window.__carLottie && window.__carLottie.destroy) window.__carLottie.destroy(); } catch(_) {}
+                const anim = lottie.loadAnimation({ container, renderer: 'svg', loop: true, autoplay: true, path: url });
+                try { anim.setSpeed(1.15); } catch(_) {}
                 window.__carLottie = anim;
-            } catch(_) {
-                load(fallbackUrl);
-            }
+            };
+
+            // Пытаемся загрузить локальный JSON и отдать его как animationData (надёжнее для GitHub Pages)
+            fetch(localUrl, { cache: 'no-store' })
+                .then(r => r.ok ? r.json() : Promise.reject())
+                .then(data => loadFromData(data))
+                .catch(() => loadFromPath(fallbackUrl));
         }
 
         this.setupHomeEventListeners();

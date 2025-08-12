@@ -1781,6 +1781,8 @@ h3 {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
+#car-lottie { width: 100%; height: 100%; display: block; }
+
 .car-photo {
   width: 100%;
   height: 100%;
