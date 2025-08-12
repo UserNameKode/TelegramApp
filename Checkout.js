@@ -13,9 +13,9 @@ class Checkout {
         const cartTotal = window.cart.calculateTotal();
 
         checkoutScreen.innerHTML = `
-            <h3>Оформление заказа</h3>
+            <h3 class="fade-in">Оформление заказа</h3>
             
-            <div class="profile-section">
+            <div class="profile-section glass-card slide-up">
                 <h4>Контактные данные</h4>
                 <div class="profile-field">
                     <label>Имя *</label>
@@ -27,7 +27,7 @@ class Checkout {
                 </div>
             </div>
 
-            <div class="profile-section">
+            <div class="profile-section glass-card slide-up">
                 <h4>Способ получения</h4>
                 ${this.deliveryMethods.map(method => `
                     <label style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; cursor: pointer;">
@@ -40,7 +40,7 @@ class Checkout {
                 `).join('')}
             </div>
 
-            <div class="profile-section" id="address-section" style="display: none;">
+            <div class="profile-section glass-card slide-up" id="address-section" style="display: none;">
                 <h4>Адрес доставки</h4>
                 <div class="profile-field">
                     <label>Адрес</label>
@@ -52,7 +52,7 @@ class Checkout {
                 </div>
             </div>
 
-            <div class="cart-total">
+            <div class="cart-total glass-card fade-in" style="margin-top:12px; padding:16px; border:1px solid var(--line); border-radius:12px;">
                 Товары: ${cartTotal} ₽<br>
                 Доставка: <span id="delivery-cost">0 ₽</span><br>
                 <strong>Итого: <span id="final-total">${cartTotal} ₽</span></strong>

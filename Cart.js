@@ -110,12 +110,12 @@ class Cart {
         }
 
         cartScreen.innerHTML = `
-            <div class="cart-header">
+            <div class="cart-header slide-up">
                 <h3>Корзина</h3>
                 <span class="cart-count">${this.items.length} товар${this.items.length > 1 ? 'а' : ''}</span>
             </div>
             
-            <div class="cart-items">
+            <div class="cart-items fade-in">
                 ${this.items.map(item => `
                     <div class="cart-item glass-card">
                         <div class="cart-item-image">
@@ -139,7 +139,7 @@ class Cart {
                 `).join('')}
             </div>
             
-            <div class="cart-summary glass-card">
+            <div class="cart-summary glass-card slide-up">
                 <div class="summary-row">
                     <span>Товары (${this.items.reduce((sum, item) => sum + (parseInt(item.quantity) || 0), 0)} шт.)</span>
                     <span class="summary-price">${this.calculateTotal().toLocaleString()} ₽</span>

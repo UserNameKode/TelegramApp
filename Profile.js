@@ -48,7 +48,7 @@ class Profile {
 
         profileScreen.innerHTML = `
             <!-- Профиль заголовок -->
-            <div class="profile-header">
+            <div class="profile-header fade-in">
                 <div class="profile-avatar">
                     <div class="avatar-circle">
                         <span class="avatar-text">${this.userData.firstName ? this.userData.firstName[0].toUpperCase() : 'П'}</span>
@@ -70,7 +70,7 @@ class Profile {
             </div>
 
             <!-- Бонусная система -->
-            <div class="bonus-system glass-card">
+            <div class="bonus-system glass-card slide-up">
                 <h3>💎 Программа лояльности</h3>
                 <div class="bonus-progress">
                     <div class="progress-info">
@@ -107,7 +107,7 @@ class Profile {
             </div>
 
             <!-- Вкладки -->
-            <div class="profile-tabs">
+            <div class="profile-tabs slide-up">
                 <button class="tab-btn ${this.activeTab === 'personal' ? 'active' : ''}" data-tab="personal">
                     👤 Личные данные
                 </button>
@@ -123,7 +123,7 @@ class Profile {
             </div>
 
             <!-- Содержимое вкладок -->
-            <div class="tab-content">
+            <div class="tab-content fade-in">
                 ${this.renderTabContent()}
             </div>
         `;
@@ -135,7 +135,7 @@ class Profile {
         switch (this.activeTab) {
             case 'personal':
                 return `
-                    <div class="profile-section glass-card">
+                    <div class="profile-section glass-card fade-in">
                         <h3>Личная информация</h3>
                         <div class="profile-field">
                             <label>Имя *</label>
@@ -161,7 +161,7 @@ class Profile {
 
             case 'orders':
                 return `
-                    <div class="profile-section glass-card">
+                    <div class="profile-section glass-card fade-in">
                         <h3>История заказов</h3>
                         <div class="orders-list">
                             ${this.userData.orders.length === 0 ? `
@@ -201,7 +201,7 @@ class Profile {
                 this.userData.favorites = currentFavorites;
                 const favoriteProducts = currentFavorites.map(id => DataService.getProduct(id)).filter(Boolean);
                 return `
-                    <div class="profile-section glass-card">
+                    <div class="profile-section glass-card fade-in">
                         <h3>Избранные товары</h3>
                         <div class="favorites-list">
                             ${favoriteProducts.length === 0 ? `
