@@ -171,7 +171,7 @@ class Profile {
                                     <p>Ваши заказы появятся здесь после оформления</p>
                                     <button class="btn-add" data-screen="home">Перейти к покупкам</button>
                                 </div>
-                            ` : this.userData.orders.map(order => `
+                             ` : this.userData.orders.map(order => `
                                 <div class="order-item">
                                     <div class="order-header">
                                         <span class="order-number">Заказ #${order.id}</span>
@@ -189,6 +189,10 @@ class Profile {
                                         `).join(', ')}
                                         ${order.items?.length > 2 ? ` и ещё ${order.items.length - 2}` : ''}
                                     </div>
+                                     <div style="margin-top:8px; display:flex; gap:8px;">
+                                       <button class="btn-add" data-reorder-id="${order.id}">Повторить заказ</button>
+                                       <button class="btn-primary" data-view-order="${order.id}" style="display:none">Подробнее</button>
+                                     </div>
                                 </div>
                             `).join('')}
                         </div>
@@ -264,6 +268,16 @@ class Profile {
                                     <span class="toggle-slider"></span>
                                 </label>
                             </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <span class="setting-title">Тема приложения</span>
+                                    <span class="setting-description">Светлая / Тёмная</span>
+                                </div>
+                                <label class="toggle">
+                                    <input type="checkbox" data-theme-toggle ${document.body.classList.contains('theme-light') ? 'checked' : ''}>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
                         </div>
                         
                         <div class="danger-zone">
@@ -298,11 +312,32 @@ class Profile {
             });
         });
 
+        // Переключение темы
+        const themeToggle = document.querySelector('input[data-theme-toggle]');
+        if(themeToggle){
+            themeToggle.addEventListener('change', (e)=>{
+                ThemeService.setTheme(e.target.checked?'light':'dark');
+            });
+        }
+
         // Кнопки навигации
         document.querySelectorAll('[data-screen]').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const screen = e.target.getAttribute('data-screen');
                 window.app.showScreen(screen);
+            });
+        });
+
+        // Повторить заказ
+        document.querySelectorAll('[data-reorder-id]').forEach(btn => {
+            btn.addEventListener('click', async (e)=>{
+                const id = e.currentTarget.getAttribute('data-reorder-id');
+                const order = (this.userData.orders||[]).find(o=> String(o.id)===String(id));
+                if(!order) return;
+                // Заполнить корзину по этому заказу
+                window.cart.items = order.items.map(i=>({ id:i.id, title:i.title, price:i.price, image:i.image||'', quantity:i.quantity||1 }));
+                window.cart.saveToStorage();
+                Router.navigate('cart');
             });
         });
     }

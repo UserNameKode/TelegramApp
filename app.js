@@ -23,8 +23,17 @@ class AutoPartsApp {
         // Настраиваем навигацию
         this.setupNavigation();
         
+        // Подключаем модульные экраны
+        this.home = HomeScreen;
+        this.search = SearchScreen;
+        this.catalog = CatalogScreen;
+        this.product = ProductScreen;
+
+        // Инициализируем роутер
+        Router?.init('home');
+
         // Рендерим главный экран
-        this.renderHome();
+        this.home.render(this);
         
         // Показываем главный экран
         this.showScreen('home');
@@ -37,13 +46,13 @@ class AutoPartsApp {
         document.addEventListener('click', (e) => {
             if (e.target.hasAttribute('data-screen')) {
                 const screen = e.target.getAttribute('data-screen');
-                this.showScreen(screen);
+                Router.navigate(screen);
             }
         });
 
         // Кнопка "Назад" в навигации
         document.getElementById('nav-back-btn').addEventListener('click', () => {
-            this.goBack();
+            Router.back();
         });
     }
 
@@ -74,13 +83,16 @@ class AutoPartsApp {
                     this.renderHome();
                     break;
                 case 'cart':
-                    this.cart.render();
+                    CartScreen.render();
                     break;
                 case 'profile':
-                    this.profile.render();
+                    ProfileScreen.render();
                     break;
                 case 'checkout':
-                    this.checkout.render();
+                    CheckoutScreen.render();
+                    break;
+                case 'favorites':
+                    FavoritesScreen.render();
                     break;
             }
         }

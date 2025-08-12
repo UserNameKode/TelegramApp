@@ -492,12 +492,17 @@ const DataService = {
     },
 
     addToViewHistory(productId) {
+        if(!this.userData.viewHistory) this.userData.viewHistory = [];
         this.userData.viewHistory = this.userData.viewHistory.filter(id => id !== productId);
         this.userData.viewHistory.unshift(productId);
         if (this.userData.viewHistory.length > 20) {
             this.userData.viewHistory = this.userData.viewHistory.slice(0, 20);
         }
+        // Сохраняем в userData и дублируем в localStorage для быстрых выводов на главной
         this.saveUserData();
+        try {
+            localStorage.setItem('view_history', JSON.stringify(this.userData.viewHistory));
+        } catch(_) {}
     },
 
     addBonusPoints(amount) {

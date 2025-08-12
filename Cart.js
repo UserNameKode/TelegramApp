@@ -152,6 +152,7 @@ class Cart {
                     Оформить заказ
                     <span class="checkout-arrow">→</span>
                 </button>
+                <button class="btn-add" id="btn-quick-order" style="margin-top:10px">Быстрый заказ 1 клик</button>
             </div>
         `;
 
@@ -159,5 +160,19 @@ class Cart {
         document.querySelector('.btn-checkout').addEventListener('click', (e) => {
             window.app.showScreen('checkout');
         });
+
+        const quickBtn = document.getElementById('btn-quick-order');
+        if(quickBtn){
+            quickBtn.addEventListener('click', async ()=>{
+                quickBtn.classList.add('btn-loading');
+                quickBtn.setAttribute('disabled','');
+                const customer = { name: window.profile?.userData?.firstName||'', phone: window.profile?.userData?.phone||'' };
+                const res = await OrderService.createOrderFromCart(customer);
+                if(res.ok){ UIService.toast('Заказ оформлен! Мы свяжемся с вами.','success'); this.items=[]; this.saveToStorage(); this.render(); }
+                else UIService.toast('Не удалось оформить заказ','error');
+                quickBtn.classList.remove('btn-loading');
+                quickBtn.removeAttribute('disabled');
+            });
+        }
     }
 }
